@@ -184,7 +184,7 @@ nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nav.cla
 const navLinks = [...document.querySelectorAll('#mainNav .nav-item')];
 const setActive = fn => navLinks.forEach(l => l.classList.toggle('active', fn(l)));
 if (PAGE === 'work' || PAGE === 'project') setActive(l => l.dataset.page === 'work');
-else if (PAGE === 'about' || PAGE === 'blog') setActive(l => l.dataset.page === PAGE);
+else if (PAGE === 'about' || PAGE === 'blog' || PAGE === 'article') setActive(l => l.dataset.page === (PAGE === 'article' ? 'blog' : PAGE));
 else {
   const spy = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting) setActive(l => l.getAttribute('href') === '#' + e.target.id);
@@ -217,12 +217,13 @@ $('yr').textContent = new Date().getFullYear();
 
 /* ================= BLOG ================= */
 const postArt = b => art({type: b.type || 'web', c1: b.c1, c2: b.c2});
+const postHref = b => b.url || 'article.html?p=' + slug(b);
 const postCover = (b, cls) => b.img ? `<img class="${cls}" src="${b.img}" alt="${esc(b.t)}" loading="lazy">` : postArt(b);
 
 /* Home: "From the blog" — store-style cards */
 if ($('blogHome') && typeof POSTS !== 'undefined'){
   $('blogHome').innerHTML = POSTS.slice(0, 3).map((b, i) => `
-    <a class="panel product-card" href="${b.url || 'blog.html'}">
+    <a class="panel product-card" href="${postHref(b)}">
       <div class="product-card-media">${postCover(b, 'product-card-image')}
         <div class="product-card-platform-slot"><span class="card-platform"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>${esc(b.cat)}</span></div>
         ${i === 0 ? '<div class="product-card-badge-slot"><span class="badge">New</span></div>' : ''}
@@ -244,7 +245,7 @@ if ($('blogGrid') && typeof POSTS !== 'undefined'){
   const render = cat => {
     const list = POSTS.filter(b => cat === 'all' || b.cat === cat);
     grid.innerHTML = list.map(b => `
-      <a class="panel article-card" href="${b.url || '#'}">
+      <a class="panel article-card" href="${postHref(b)}">
         <div class="article-card-media">${postCover(b, 'article-card-image')}</div>
         <div class="article-card-strip"><div class="article-card-meta">${meta(b)}</div><h3 class="article-card-title">${esc(b.t)}</h3></div>
         <div class="article-row">
@@ -273,4 +274,58 @@ if ($('blogGrid') && typeof POSTS !== 'undefined'){
   let sv; try { sv = localStorage.getItem('blogView'); } catch (e) {}
   setView(new URLSearchParams(location.search).get('view') || sv || 'grid');
   $('blogView').onclick = e => { const b = e.target.closest('button'); if (b) setView(b.dataset.view); };
+}
+
+/* ================= ARTICLE PAGE ================= */
+const articleCard = b => `
+  <a class="panel article-card" href="${postHref(b)}">
+    <div class="article-card-media">${postCover(b, 'article-card-image')}</div>
+    <div class="article-card-strip"><div class="article-card-meta"><span class="tag-pill">${esc(b.cat)}</span><span>${esc(b.date)}</span><span>${esc(b.read)} read</span></div><h3 class="article-card-title">${esc(b.t)}</h3></div>
+  </a>`;
+
+if ($('article') && typeof POSTS !== 'undefined'){
+  const id = new URLSearchParams(location.search).get('p');
+  const b = POSTS.find(x => slug(x) === id) || POSTS[0];
+  const a = (typeof ARTICLES !== 'undefined' && ARTICLES[slug(b)]) || {};
+  document.title = `${b.t} — Sheikh Md Maruf`;
+  const body = a.body || ['The full article is coming soon.'];
+
+  const block = x => {
+    if (typeof x === 'string') return `<p class="rich-p">${esc(x)}</p>`;
+    if (x.h2) return `<h2 class="rich-h2">${esc(x.h2)}</h2>`;
+    if (x.h3) return `<h3 class="rich-h3">${esc(x.h3)}</h3>`;
+    if (x.quote) return `<blockquote class="rich-quote">${esc(x.quote)}</blockquote>`;
+    if (x.list) return `<ul class="rich-list">${x.list.map(i => `<li class="rich-list-item">${esc(i)}</li>`).join('')}</ul>`;
+    return '';
+  };
+
+  $('article').innerHTML = `
+    <div class="detail-row-grid is-half">
+      <div class="panel detail-copy is-top">
+        <div class="detail-lead">
+          <a href="blog.html" class="back-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Blog</a>
+          <div class="article-meta"><span class="tag-pill">${esc(b.cat)}</span><span>${esc(b.date)}</span><span>${esc(b.read)} read</span></div>
+          <h1 class="detail-title">${esc(b.t)}</h1>
+          ${a.sum ? `<p class="detail-summary">${esc(a.sum)}</p>` : ''}
+        </div>
+      </div>
+      <div class="article-cover">${postCover(b, 'article-cover-image')}</div>
+    </div>
+    <div class="panel article-panel"><div class="rich-text">${body.map(block).join('')}</div></div>
+    <div class="author-row">
+      <div class="panel author-card">
+        <div class="author-person">
+          <div class="author-avatar"><img class="author-avatar-image" src="https://cdn.dribbble.com/users/10909349/avatars/normal/786be272a45d098029b23504313c8718.jpg" alt="Sheikh Md Maruf" onerror="this.remove()"></div>
+          <div class="author-copy"><p class="author-name">Sheikh Md Maruf</p><span class="author-role">UI/UX & brand designer</span></div>
+        </div>
+        <p class="author-bio">I design websites, apps and dashboards, and write about UI/UX and freelancing from my client work.</p>
+        <div class="author-actions">
+          <a href="#contact" class="btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/></svg>Start a project</a>
+          <a href="about.html" class="btn btn-sec">About me</a>
+        </div>
+      </div>
+    </div>`;
+
+  const start = POSTS.indexOf(b);
+  $('keepReading').innerHTML = [1, 2, 3].map(k => POSTS[(start + k) % POSTS.length]).filter(x => x !== b).map(articleCard).join('');
 }
