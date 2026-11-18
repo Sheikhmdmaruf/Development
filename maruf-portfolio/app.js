@@ -233,7 +233,7 @@ if ($('blogHome') && typeof POSTS !== 'undefined'){
           <div class="product-card-title">${esc(b.t)}</div>
           <div class="product-card-type">${esc(b.date)}</div>
         </div>
-        <span class="product-card-price">${esc(b.read)}</span>
+        <span class="product-card-price"><span class="mins">${esc(b.read)}</span><span class="view">View</span></span>
       </div>
     </a>`).join('');
 }
@@ -328,4 +328,42 @@ if ($('article') && typeof POSTS !== 'undefined'){
 
   const start = POSTS.indexOf(b);
   $('keepReading').innerHTML = [1, 2, 3].map(k => POSTS[(start + k) % POSTS.length]).filter(x => x !== b).map(articleCard).join('');
+}
+
+/* ================= SIDEBAR SEARCH (projects, blog posts, pages) ================= */
+if ($('navSearch')){
+  const input = $('navSearchInput'), box = $('searchResults');
+  const PAGES = [
+    {t:'Home', s:'Page', h:'index.html'}, {t:'About', s:'Page', h:'about.html'},
+    {t:'Work', s:'Page', h:'work.html'}, {t:'Blog', s:'Page', h:'blog.html'},
+    {t:'Services', s:'Page', h:'index.html#services'}, {t:'FAQ', s:'Page', h:'index.html#faq'}
+  ];
+  const items = () => [
+    ...PAGES,
+    ...PROJECTS.map(p => ({t:p.t, s:'Project · ' + p.cat, h:'project.html?p=' + slug(p), k:p.sum + ' ' + p.hl})),
+    ...(typeof POSTS !== 'undefined' ? POSTS.map(b => ({t:b.t, s:'Blog · ' + b.cat, h:postHref(b)})) : [])
+  ];
+  let found = [], sel = -1;
+  const show = () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q){ box.hidden = true; return; }
+    found = items().filter(i => (i.t + ' ' + i.s + ' ' + (i.k || '')).toLowerCase().includes(q)).slice(0, 8);
+    sel = found.length ? 0 : -1;
+    box.innerHTML = found.length
+      ? found.map((i, n) => `<a href="${i.h}"${n === sel ? ' class="on"' : ''}>${esc(i.t)}<span>${esc(i.s)}</span></a>`).join('')
+      : '<div class="none">No results</div>';
+    box.hidden = false;
+  };
+  input.addEventListener('input', show);
+  input.addEventListener('keydown', e => {
+    if (!found.length) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+      e.preventDefault();
+      sel = (sel + (e.key === 'ArrowDown' ? 1 : -1) + found.length) % found.length;
+      box.querySelectorAll('a').forEach((a, n) => a.classList.toggle('on', n === sel));
+    }
+    if (e.key === 'Escape'){ box.hidden = true; input.blur(); }
+  });
+  $('navSearch').onsubmit = e => { e.preventDefault(); if (found[sel]) location.href = found[sel].h; };
+  document.addEventListener('click', e => { if (!$('navSearch').contains(e.target)) box.hidden = true; });
 }
