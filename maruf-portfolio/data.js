@@ -47,3 +47,19 @@ const FAQ = [
 
 const TOOLS = ["Figma","Adobe XD","Photoshop","Illustrator","FigJam","Webflow","Framer","Prototyping","Design systems"];
 /* ====================================================== */
+
+/* ======================================================
+   BLOG POSTS — newest first. The first 3 show on the home page.
+   cat: must match a filter on blog.html (UI/UX, Web Design, Freelancing)
+   img: put a cover in /images and set e.g. "images/blog-1.jpg"
+   url: link to the full article (Medium, LinkedIn, Dribbble...)
+   !! These are SAMPLE titles — replace them with your real posts.
+   ====================================================== */
+const POSTS = [
+  {t:"5 UI mistakes that make users leave your app", cat:"UI/UX", date:"12 November 2026", read:"6 min", c1:"#dc9058", c2:"#6b3416", type:"app", url:"blog.html"},
+  {t:"How I design a landing page that converts", cat:"Web Design", date:"30 October 2026", read:"8 min", c1:"#7f7bff", c2:"#3b2bd6", type:"web", url:"blog.html"},
+  {t:"What I learned from my first 50 Fiverr orders", cat:"Freelancing", date:"18 October 2026", read:"5 min", c1:"#4ade80", c2:"#0e7a52", type:"web", url:"blog.html"},
+  {t:"Designing dashboards people actually understand", cat:"UI/UX", date:"2 October 2026", read:"7 min", c1:"#38bdf8", c2:"#0b4f8a", type:"dash", url:"blog.html"},
+  {t:"My Figma workflow from wireframe to handoff", cat:"UI/UX", date:"19 September 2026", read:"6 min", c1:"#a855f7", c2:"#4c1d95", type:"web", url:"blog.html"},
+  {t:"How to write a project brief for your designer", cat:"Freelancing", date:"5 September 2026", read:"5 min", c1:"#fbbf24", c2:"#c2410c", type:"web", url:"blog.html"}
+];

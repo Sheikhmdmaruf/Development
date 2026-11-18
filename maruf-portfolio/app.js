@@ -184,7 +184,7 @@ nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nav.cla
 const navLinks = [...document.querySelectorAll('#mainNav .nav-item')];
 const setActive = fn => navLinks.forEach(l => l.classList.toggle('active', fn(l)));
 if (PAGE === 'work' || PAGE === 'project') setActive(l => l.dataset.page === 'work');
-else if (PAGE === 'about') setActive(l => l.dataset.page === 'about');
+else if (PAGE === 'about' || PAGE === 'blog') setActive(l => l.dataset.page === PAGE);
 else {
   const spy = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting) setActive(l => l.getAttribute('href') === '#' + e.target.id);
@@ -214,3 +214,63 @@ $('form').onsubmit = e => {
   location.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
 };
 $('yr').textContent = new Date().getFullYear();
+
+/* ================= BLOG ================= */
+const postArt = b => art({type: b.type || 'web', c1: b.c1, c2: b.c2});
+const postCover = (b, cls) => b.img ? `<img class="${cls}" src="${b.img}" alt="${esc(b.t)}" loading="lazy">` : postArt(b);
+
+/* Home: "From the blog" — store-style cards */
+if ($('blogHome') && typeof POSTS !== 'undefined'){
+  $('blogHome').innerHTML = POSTS.slice(0, 3).map((b, i) => `
+    <a class="panel product-card" href="${b.url || 'blog.html'}">
+      <div class="product-card-media">${postCover(b, 'product-card-image')}
+        <div class="product-card-platform-slot"><span class="card-platform"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>${esc(b.cat)}</span></div>
+        ${i === 0 ? '<div class="product-card-badge-slot"><span class="badge">New</span></div>' : ''}
+      </div>
+      <div class="product-card-strip">
+        <div class="product-card-text">
+          <div class="product-card-title">${esc(b.t)}</div>
+          <div class="product-card-type">${esc(b.date)}</div>
+        </div>
+        <span class="product-card-price">${esc(b.read)}</span>
+      </div>
+    </a>`).join('');
+}
+
+/* Blog page: filters + grid/list */
+if ($('blogGrid') && typeof POSTS !== 'undefined'){
+  const grid = $('blogGrid');
+  const meta = b => `<span class="tag-pill">${esc(b.cat)}</span><span>${esc(b.date)}</span><span>${esc(b.read)} read</span>`;
+  const render = cat => {
+    const list = POSTS.filter(b => cat === 'all' || b.cat === cat);
+    grid.innerHTML = list.map(b => `
+      <a class="panel article-card" href="${b.url || '#'}">
+        <div class="article-card-media">${postCover(b, 'article-card-image')}</div>
+        <div class="article-card-strip"><div class="article-card-meta">${meta(b)}</div><h3 class="article-card-title">${esc(b.t)}</h3></div>
+        <div class="article-row">
+          <div class="article-row-thumb">${postCover(b, 'article-card-image')}</div>
+          <div class="article-row-body">
+            <span class="article-row-title">${esc(b.t)}</span>
+            <span class="article-row-category"><span class="tag-pill">${esc(b.cat)}</span></span>
+            <span class="article-row-date">${esc(b.date)}</span>
+            <span class="article-row-read-time">${esc(b.read)} read</span>
+          </div>
+          <svg class="article-row-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg>
+        </div>
+      </a>`).join('') || '<div class="panel empty">No posts yet.</div>';
+  };
+  const tabs = (bar, attr, value) => bar.querySelectorAll('button').forEach(b => b.classList.toggle('is-active', b.dataset[attr] === value));
+  render('all');
+  $('blogFilters').onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    tabs($('blogFilters'), 'f', b.dataset.f); render(b.dataset.f);
+  };
+  const setView = v => {
+    grid.classList.toggle('is-list', v === 'list');
+    tabs($('blogView'), 'view', v);
+    try { localStorage.setItem('blogView', v); } catch (e) {}
+  };
+  let sv; try { sv = localStorage.getItem('blogView'); } catch (e) {}
+  setView(new URLSearchParams(location.search).get('view') || sv || 'grid');
+  $('blogView').onclick = e => { const b = e.target.closest('button'); if (b) setView(b.dataset.view); };
+}
