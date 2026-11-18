@@ -21,6 +21,7 @@ const PROJECTS = [
   {t:"Doctor Landing Page", type:"web", cat:"Website", y:"2022", hl:"Healthcare", sum:"Trustworthy clinic booking page.", url:"https://dribbble.com/shots/17730616-Doctor-Landing-Page", c1:"#60a5fa", c2:"#1e3a8a"}
 ];
 
+// Optional: add price:"From $300" to a service to show a starting price (otherwise "Custom quote")
 const SERVICES = [
   {t:"Website design", s:"Landing pages and full websites that explain your offer fast and turn visitors into leads.", tags:["Landing pages","Agency sites","E-commerce"], icon:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>'},
   {t:"Mobile app design", s:"Clean, easy app screens for iOS and Android, from wireframe to clickable prototype.", tags:["Fintech","Fitness","Food delivery"], icon:'<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>'},

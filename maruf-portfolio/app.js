@@ -141,7 +141,7 @@ if ($('services-grid')) $('services-grid').innerHTML = SERVICES.map(s => `
       <div class="stitle">${s.t}</div><p class="ssum">${s.s}</p>
       <div class="stags">${s.tags.map(t => `<span>${t}</span>`).join('')}</div>
     </div>
-    <div class="sstrip"><span class="muted">Custom quote</span><span class="v">Start project <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+    <div class="sstrip"><span class="sprice">${s.price || "Custom quote"}</span><span class="v">Get a quote <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg></span></div>
   </a>`).join('');
 
 if ($('tTrack')){
@@ -184,7 +184,7 @@ nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nav.cla
 const navLinks = [...document.querySelectorAll('#mainNav .nav-item')];
 const setActive = fn => navLinks.forEach(l => l.classList.toggle('active', fn(l)));
 if (PAGE === 'work' || PAGE === 'project') setActive(l => l.dataset.page === 'work');
-else if (PAGE === 'about' || PAGE === 'blog' || PAGE === 'article') setActive(l => l.dataset.page === (PAGE === 'article' ? 'blog' : PAGE));
+else if (PAGE === 'about' || PAGE === 'blog' || PAGE === 'article' || PAGE === 'services') setActive(l => l.dataset.page === (PAGE === 'article' ? 'blog' : PAGE));
 else {
   const spy = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting) setActive(l => l.getAttribute('href') === '#' + e.target.id);
@@ -336,7 +336,7 @@ if ($('navSearch')){
   const PAGES = [
     {t:'Home', s:'Page', h:'index.html'}, {t:'About', s:'Page', h:'about.html'},
     {t:'Work', s:'Page', h:'work.html'}, {t:'Blog', s:'Page', h:'blog.html'},
-    {t:'Services', s:'Page', h:'index.html#services'}, {t:'FAQ', s:'Page', h:'index.html#faq'}
+    {t:'Services', s:'Page', h:'services.html'}, {t:'FAQ', s:'Page', h:'index.html#faq'}
   ];
   const items = () => [
     ...PAGES,

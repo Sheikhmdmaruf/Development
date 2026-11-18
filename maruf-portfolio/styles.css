@@ -534,3 +534,7 @@ a.info-row:hover{background:var(--shell-hover)}
 .product-card:hover .product-card-price .view{display:inline-flex}
 .nav-group,.nav-bottom>*{flex-shrink:0}
 .nav-search{flex:none;padding:0 8px 0 12px;display:flex}
+
+/* ================= SERVICES PAGE ================= */
+.sprice{color:var(--text)}
+.services-page .stags{display:none}
