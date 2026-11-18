@@ -184,6 +184,7 @@ nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nav.cla
 const navLinks = [...document.querySelectorAll('#mainNav .nav-item')];
 const setActive = fn => navLinks.forEach(l => l.classList.toggle('active', fn(l)));
 if (PAGE === 'work' || PAGE === 'project') setActive(l => l.dataset.page === 'work');
+else if (PAGE === 'about') setActive(l => l.dataset.page === 'about');
 else {
   const spy = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting) setActive(l => l.getAttribute('href') === '#' + e.target.id);
