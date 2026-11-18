@@ -75,26 +75,34 @@
 <div class="page">
   <main class="window">
 
-    <!-- WORK PAGE HERO -->
+    <!-- WORK PAGE HEADER -->
     <section id="home">
       <div class="shell">
-        <div class="panel hero-copy page-hero">
-          <a href="https://dribbble.com/sheikhmdmaruf" target="_blank" rel="noopener" class="announce"><b>Work</b><span>More shots on Dribbble</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
-          <h1>All projects <span class="m">websites, apps & dashboards.</span></h1>
-          <p class="hero-text">A collection of my UI/UX and brand work. Click any project to see it in full on Dribbble.</p>
+        <div class="panel page-header-panel">
+          <div class="page-header-lead">
+            <a href="#" target="_blank" rel="noopener" class="announce" id="latest"><b>New</b><span></span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+            <h1 class="page-title">Selected projects,<span class="m">start to finish.</span></h1>
+            <p class="hero-text">Websites, mobile apps and dashboards, each designed around one clear business goal.</p>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- ALL PROJECTS (every project in data.js) -->
     <section id="projects">
-      <div class="work-bar rv">
-        <div class="filters" id="filters">
-          <button class="on" data-f="all">All</button><button data-f="web">Website</button><button data-f="app">Mobile app</button><button data-f="dash">Dashboard</button>
+      <div class="work-toolbar rv">
+        <div class="filter-bar" id="filters">
+          <button class="filter-tab is-active" data-f="all">All</button>
+          <button class="filter-tab" data-f="web">Website Design</button>
+          <button class="filter-tab" data-f="app">Mobile App Design</button>
+          <button class="filter-tab" data-f="dash">Dashboard Design</button>
         </div>
-        <span class="work-count" id="workCount"></span>
+        <div class="filter-bar view-toggle" id="viewToggle">
+          <button class="filter-tab is-active" data-view="grid"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Grid</button>
+          <button class="filter-tab" data-view="list"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>List</button>
+        </div>
       </div>
-      <div class="shell rv"><div class="grid-3" id="allWork"></div></div>
+      <div class="projects-grid rv" id="allWork"></div>
     </section>
 
     <!-- CTA + CONTACT + FOOTER -->

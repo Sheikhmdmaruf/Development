@@ -23,21 +23,37 @@ if ($('featured')){
   $('featured').innerHTML = card(f[0]) + `<div class="stack">${f.slice(1).map(card).join('')}</div>`;
 }
 
-/* Work page: all projects + filters (link with ?type=app etc. to pre-filter) */
+/* Work page: all projects, filter tabs, grid/list toggle (link with ?type=app to pre-filter) */
 if ($('allWork')){
+  const grid = $('allWork');
   const render = type => {
     const list = PROJECTS.filter(p => type === 'all' || p.type === type);
-    $('allWork').innerHTML = list.map(card).join('') || '<div class="panel empty">No projects yet.</div>';
-    $('workCount').textContent = list.length + (list.length === 1 ? ' project' : ' projects');
+    grid.innerHTML = list.map(card).join('') || '<div class="panel empty">No projects yet.</div>';
   };
+  const tabs = (bar, attr, value) => bar.querySelectorAll('button').forEach(b => b.classList.toggle('is-active', b.dataset[attr] === value));
+
   const start = new URLSearchParams(location.search).get('type') || 'all';
-  $('filters').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.f === start));
+  tabs($('filters'), 'f', start);
   render(start);
   $('filters').onclick = e => {
     const b = e.target.closest('button'); if (!b) return;
-    $('filters').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    tabs($('filters'), 'f', b.dataset.f);
     render(b.dataset.f);
   };
+
+  const setView = v => {
+    grid.classList.toggle('is-list', v === 'list');
+    tabs($('viewToggle'), 'view', v);
+    try { localStorage.setItem('workView', v); } catch (e) {}
+  };
+  let savedView; try { savedView = localStorage.getItem('workView'); } catch (e) {}
+  setView(new URLSearchParams(location.search).get('view') || savedView || 'grid');
+  $('viewToggle').onclick = e => { const b = e.target.closest('button'); if (b) setView(b.dataset.view); };
+
+  /* "New" announcement points to the first (latest) project */
+  const latest = PROJECTS[0];
+  $('latest').href = latest.url;
+  $('latest').querySelector('span').textContent = latest.t;
 }
 
 if ($('services-grid')) $('services-grid').innerHTML = SERVICES.map(s => `
