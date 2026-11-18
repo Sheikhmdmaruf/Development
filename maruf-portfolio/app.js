@@ -10,8 +10,9 @@ function art(p){
     : `<div class="bar"><i></i><i></i><i></i></div><div class="l s"></div><div class="l m"></div><div class="blk"></div>${p.type==='web'?'<div class="row"><div></div><div></div><div></div></div>':''}`;
   return `<div class="art ${p.type}" style="--c1:${p.c1};--c2:${p.c2}"><div class="frame">${inner}</div></div>`;
 }
+const slug = p => p.slug || p.t.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 function card(p){
-  return `<a class="panel pcard" data-type="${p.type}" href="${p.url}" target="_blank" rel="noopener">
+  return `<a class="panel pcard" data-type="${p.type}" href="project.html?p=${slug(p)}">
     <div class="pmedia">${art(p)}<span class="pill"><b>✦</b>${p.hl}</span>${p.badge?`<span class="badge">${p.badge}</span>`:''}</div>
     <div class="pstrip"><div><div class="ptitle">${p.t}<span class="dot-sep"></span><span class="cat">${p.cat}</span></div><div class="psum">${p.sum}</div></div>
     <div class="pmeta">${p.y}${arrowUR}</div></div></a>`;
@@ -54,6 +55,86 @@ if ($('allWork')){
   const latest = PROJECTS[0];
   $('latest').href = latest.url;
   $('latest').querySelector('span').textContent = latest.t;
+}
+
+/* Project detail page: project.html?p=<slug> */
+const ICONS = {
+  cart:'<path d="M3 4h2l2.4 11h11L21 7H6.2"/><circle cx="9" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  star:'<path d="M12 3l2.6 5.6L20 9.5l-4 4 1 5.8-5-2.8-5 2.8 1-5.8-4-4 5.4-.9z"/>'
+};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function media(p, src, cls, label){
+  const inner = src && /[./]/.test(src) ? `<img class="gallery-image" src="${src}" alt="${esc(p.t)}" loading="lazy">` : art(p);
+  return `<div class="gallery-media ${cls || ''}">${inner}${label ? `<span class="pill media-label">${label}</span>` : ''}</div>`;
+}
+function gallery(p, imgs){
+  if (!imgs || !imgs.length) return '';
+  if (imgs.length === 1) return `<div class="gallery">${media(p, imgs[0])}</div>`;
+  return `<div class="gallery"><div class="gallery-row">${imgs.map(i => media(p, i, 'is-half')).join('')}</div></div>`;
+}
+
+if ($('detail')){
+  const id = new URLSearchParams(location.search).get('p');
+  const p = PROJECTS.find(x => slug(x) === id) || PROJECTS[0];
+  const c = (typeof CASES !== 'undefined' && CASES[slug(p)]) || {};
+  document.title = `${p.t} — Sheikh Md Maruf`;
+
+  const rows = [
+    ['Client', c.client], ['Year', p.y], ['Role', c.role], ['Duration', c.duration],
+    ['Platform', c.platform], ['Tools', c.tools], ['Team', c.team], ['Category', p.cat]
+  ].filter(r => r[1]);
+
+  const steps = c.steps || [
+    {title:'Overview', body:[p.sum, 'The full case study for this project is coming soon. Meanwhile you can see all the screens on Dribbble.'], images:['full']}
+  ];
+
+  const stepHTML = (s, i) => `
+    <div class="story-step rv" id="step-${i + 1}">
+      <div class="story-step-label"><span class="story-step-index">${String(i + 1).padStart(2, '0')}</span><h2 class="story-step-title">${esc(s.title)}</h2></div>
+      <div class="story-step-body">
+        ${(s.body || []).map(t => `<p class="rich-p">${esc(t)}</p>`).join('')}
+        ${s.list ? `<ul class="rich-list">${s.list.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
+        ${s.stats ? `<div class="step-stats">${s.stats.map(st => `<div class="step-stat"><b>${esc(st[0])}</b><span>${esc(st[1])}</span></div>`).join('')}</div>` : ''}
+        ${s.quote ? `<blockquote class="rich-quote"><p>“${esc(s.quote.text)}”</p><cite>${esc(s.quote.by)}</cite></blockquote>` : ''}
+        ${s.beforeAfter ? `<div class="gallery-row before-after">${media(p, s.before, 'is-half', 'Before')}${media(p, s.after, 'is-half', 'After')}</div>` : ''}
+      </div>
+    </div>
+    ${s.images ? `<div class="rv">${gallery(p, s.images)}</div>` : ''}`;
+
+  $('detail').innerHTML = `
+    <div class="detail-row-grid">
+      <div class="panel detail-copy">
+        <div class="detail-lead">
+          <a href="work.html" class="back-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Work</a>
+          ${c.draft ? '<span class="badge">Draft case study — details being updated</span>' : ''}
+          <h1 class="detail-title">${esc(p.t)}</h1>
+          <p class="detail-summary">${esc(p.sum)}</p>
+        </div>
+        <div class="detail-actions">
+          <a href="#contact" class="btn">Start a similar project <span class="arr">→</span></a>
+          <a href="${p.url}" target="_blank" rel="noopener" class="btn btn-sec">View on Dribbble ${arrowUR}</a>
+        </div>
+      </div>
+      <div class="panel detail-panel">
+        ${rows.map(r => `<div class="detail-row"><span class="detail-row-label">${r[0]}</span><span class="detail-row-value">${esc(r[1])}</span></div>`).join('')}
+        <div class="detail-row"><span class="detail-row-label">Services</span><span class="inline-links"><a class="inline-link" href="index.html#services">${esc(p.cat)} design</a></span></div>
+      </div>
+    </div>
+    ${c.metrics ? `<div class="detail-metrics">${c.metrics.map(m => `
+      <div class="panel metric">
+        <div class="metric-top">${esc(m.label)} <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">${ICONS[m.icon] || ICONS.star}</svg></div>
+        <div><div class="metric-val">${esc(m.value)}</div><div class="metric-cap">${esc(m.cap)}</div></div>
+      </div>`).join('')}</div>` : ''}
+    <div class="detail-cover">${p.cover || p.img ? `<img class="gallery-image" src="${p.cover || p.img}" alt="${esc(p.t)}">` : art(p)}</div>
+    <div class="story-steps">${steps.map(stepHTML).join('')}</div>`;
+
+  const others = PROJECTS.filter(x => x !== p);
+  const start = PROJECTS.indexOf(p);
+  const next = [0, 1].map(k => PROJECTS[(start + 1 + k) % PROJECTS.length]).filter(x => x !== p);
+  $('moreWork').innerHTML = (next.length ? next : others.slice(0, 2)).map(card).join('');
 }
 
 if ($('services-grid')) $('services-grid').innerHTML = SERVICES.map(s => `
@@ -105,7 +186,7 @@ nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nav.cla
 /* active nav item */
 const navLinks = [...document.querySelectorAll('#mainNav .nav-item')];
 const setActive = fn => navLinks.forEach(l => l.classList.toggle('active', fn(l)));
-if (PAGE === 'work') setActive(l => l.dataset.page === 'work');
+if (PAGE === 'work' || PAGE === 'project') setActive(l => l.dataset.page === 'work');
 else {
   const spy = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting) setActive(l => l.getAttribute('href') === '#' + e.target.id);
