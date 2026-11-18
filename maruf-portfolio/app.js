@@ -134,15 +134,18 @@ if ($('detail')){
   $('moreWork').innerHTML = [1, 2].map(k => PROJECTS[(start + k) % PROJECTS.length]).filter(x => x !== p).map(card).join('');
 }
 
-if ($('services-grid')) $('services-grid').innerHTML = SERVICES.map(s => `
-  <a class="panel scard" href="#contact">
+function serviceCard(s){
+  return `
+  <a class="panel scard" href="service.html?s=${slug(s)}">
     <div class="spanel">
       <div class="sicon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${s.icon}</svg></div>
       <div class="stitle">${s.t}</div><p class="ssum">${s.s}</p>
       <div class="stags">${s.tags.map(t => `<span>${t}</span>`).join('')}</div>
     </div>
-    <div class="sstrip"><span class="sprice">${s.price || "Custom quote"}</span><span class="v">Get a quote <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg></span></div>
-  </a>`).join('');
+    <div class="sstrip"><span class="sprice">${s.price || "Custom quote"}</span><span class="v">View service <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg></span></div>
+  </a>`;
+}
+if ($('services-grid')) $('services-grid').innerHTML = SERVICES.map(serviceCard).join('');
 
 if ($('tTrack')){
   const tc = REVIEWS.map(r => `
@@ -184,7 +187,7 @@ nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nav.cla
 const navLinks = [...document.querySelectorAll('#mainNav .nav-item')];
 const setActive = fn => navLinks.forEach(l => l.classList.toggle('active', fn(l)));
 if (PAGE === 'work' || PAGE === 'project') setActive(l => l.dataset.page === 'work');
-else if (PAGE === 'about' || PAGE === 'blog' || PAGE === 'article' || PAGE === 'services') setActive(l => l.dataset.page === (PAGE === 'article' ? 'blog' : PAGE));
+else if (['about','blog','article','services','service'].includes(PAGE)) setActive(l => l.dataset.page === ({article:'blog', service:'services'}[PAGE] || PAGE));
 else {
   const spy = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting) setActive(l => l.getAttribute('href') === '#' + e.target.id);
@@ -366,4 +369,58 @@ if ($('navSearch')){
   });
   $('navSearch').onsubmit = e => { e.preventDefault(); if (found[sel]) location.href = found[sel].h; };
   document.addEventListener('click', e => { if (!$('navSearch').contains(e.target)) box.hidden = true; });
+}
+
+/* ================= SERVICE DETAIL PAGE ================= */
+if ($('serviceDetail')){
+  const id = new URLSearchParams(location.search).get('s');
+  const s = SERVICES.find(x => slug(x) === id) || SERVICES[0];
+  const d = (typeof SERVICE_DETAILS !== 'undefined' && SERVICE_DETAILS[slug(s)]) || {};
+  const icon = (name, size) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${(typeof SERVICE_ICONS !== 'undefined' && SERVICE_ICONS[name]) || ICONS[name] || ICONS.star}</svg>`;
+  document.title = `${s.t} — Sheikh Md Maruf`;
+  const related = PROJECTS.filter(p => !d.type || p.type === d.type).slice(0, 2);
+  const cover = related[0] || PROJECTS[0];
+
+  const metrics = [['Price', s.price || 'Custom quote', 'cart'], ...(d.metrics || [])];
+
+  $('serviceDetail').innerHTML = `
+    <div class="hero-row is-half">
+      <div class="panel detail-copy">
+        <div class="detail-lead">
+          <a href="services.html" class="back-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Services</a>
+          <h1 class="detail-title">${esc(s.t)}</h1>
+          <p class="detail-summary">${esc(d.summary || s.s)}</p>
+        </div>
+        <div class="detail-actions">
+          <a href="#contact" class="btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/></svg>Start a project</a>
+          <a href="mailto:${CONTACT_EMAIL}" class="btn btn-sec">Email me</a>
+        </div>
+      </div>
+      <div class="panel portrait">${cover.img ? `<img src="${cover.img}" alt="${esc(s.t)}">` : art(cover)}</div>
+    </div>
+    <div class="detail-metrics is-four">${metrics.map(m => `
+      <div class="panel metric">
+        <div class="metric-top">${esc(m[0])} ${icon(m[2], 18)}</div>
+        <div><div class="metric-val">${esc(m[1])}</div></div>
+      </div>`).join('')}</div>`;
+
+  $('included-grid').innerHTML = (d.included || []).map(i => `
+    <div class="sub-card">
+      <div class="sub-card-icon-box">${icon(i[0], 20)}</div>
+      <h3 class="sub-card-title">${esc(i[1])}</h3>
+      <p class="sub-card-text">${esc(i[2])}</p>
+    </div>`).join('');
+
+  $('stepsGrid').innerHTML = (d.steps || []).map((st, n) => `
+    <div class="process-step">
+      <span class="process-step-index">${String(n + 1).padStart(2, '0')}</span>
+      <h3 class="process-step-title">${esc(st[0])}</h3>
+      <p class="process-step-text">${esc(st[1])}</p>
+    </div>`).join('');
+
+  $('relatedWork').innerHTML = related.map(card).join('');
+
+  $('otherServices').innerHTML = SERVICES.filter(x => x !== s).map(serviceCard).join('');
+
+  ['included', 'how'].forEach(sec => { if (!(d[sec === 'how' ? 'steps' : 'included'] || []).length) $(sec).remove(); });
 }
