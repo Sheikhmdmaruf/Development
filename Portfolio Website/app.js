@@ -79,8 +79,10 @@ if ($('detail')){
 
   // details panel (same rows component as the reference)
   const rows = [
-    ['Client', c.client, ''], ['Year', p.y, 'work.html'], ['Role', c.role, 'services.html'], ['Category', p.cat, 'work.html']
-  ].filter(r => r[1]);
+    ['Client', c.client || 'Concept project', ''], ['Year', p.y, 'work.html'],
+    ['Role', c.role || ({web:'Website design (UI/UX)', app:'Mobile app design (UI/UX)', dash:'Dashboard design (UI/UX)'}[p.type] || 'UI/UX design'), 'services.html'],
+    ['Category', p.cat, 'work.html']
+  ];
 
   // 3 metric cards
   const metrics = c.metrics || [
@@ -89,9 +91,11 @@ if ($('detail')){
     {label:'Platform', value:p.type === 'app' ? 'Mobile' : 'Web', cap:p.type === 'app' ? 'iOS & Android' : 'desktop & mobile', icon:'star'}
   ];
 
-  // numbered story panels (text only)
+  // numbered story panels: 01 Challenge, 02 Process, 03 Result (like the reference)
   const steps = c.steps || [
-    {title:'Overview', body:[p.sum + ' The full case study is coming soon — you can see all the screens on Dribbble.']}
+    {title:'Challenge', body:[`${p.sum} The goal was a ${p.cat.toLowerCase()} design that is clear at first look and easy to use on every screen size.`]},
+    {title:'Process', body:['I started with research and wireframes to plan the layout and flow, then moved to visual design in Figma with clear type, a consistent colour palette and reusable components.']},
+    {title:'Result', body:[`A finished ${p.hl.toLowerCase()} design, ready for development. You can see all the screens on Dribbble.`]}
   ];
 
   // gallery at the end: 1 wide + 2 half

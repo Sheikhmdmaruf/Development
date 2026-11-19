@@ -28,22 +28,12 @@ const CASES = {
       {label:"Screens", value:"40+", cap:"designed and prototyped", icon:"grid"}
     ],
     steps: [
-      {title:"Overview", body:[
-        "A growing food delivery service wanted its app to feel faster and friendlier. It serves 20K+ monthly users and 300+ partner restaurants across 5 cities.",
-        "My job was to redesign the full ordering experience, from finding food to tracking the rider, and to build a simple design system the team could reuse."]},
-      {title:"Problem", body:[
-        "Users opened the app hungry and in a hurry, but the path to checkout was long and confusing. Many carts were left before payment, search results were hard to scan and delivery fees appeared only at the last step."]},
-      {title:"Research & discovery", body:[
-        "I ran 12 user interviews, audited 5 competitor apps and reviewed 200+ support tickets to find where people got stuck.",
-        "Key findings: people decide by photo and delivery time, hidden fees break trust, and repeat orders take as long as new ones."]},
-      {title:"Ideation & user flow", body:[
-        "I sketched several directions and chose one goal: get from hunger to order in under a minute.",
-        "I mapped three core journeys — discover, reorder and track — and removed every step that didn't help the user decide or pay."]},
-      {title:"Wireframing & visual design", body:[
-        "Low-fidelity wireframes let us test layout and flow early. The final UI uses a warm, appetising palette, large food photography and clear type, built on a reusable Figma component library."]},
-      {title:"Testing & iterations", body:[
-        "I tested a clickable prototype with 15 people over 3 rounds, reaching 90% task success.",
-        "Testing showed users missed the reorder button and wanted fees earlier, so I moved reorder to the home screen and showed the total price on every restaurant card."]},
+      {title:"Challenge", body:[
+        "A growing food delivery service with 20K+ monthly users wanted its app to feel faster and friendlier, but the path to checkout was long and confusing.",
+        "Many carts were left before payment, search results were hard to scan and delivery fees appeared only at the last step."]},
+      {title:"Process", body:[
+        "I ran 12 user interviews, audited 5 competitor apps and reviewed 200+ support tickets, then set one goal: get from hunger to order in under a minute.",
+        "Wireframes and a clickable prototype were tested with 15 people over 3 rounds. The final UI uses a warm palette, large food photography and a reusable Figma component library."]},
       {title:"Result", body:[
         "Checkout now takes 35% fewer steps, a past order can be repeated in two taps and the team has 40+ reusable components to build new features faster.",
         "Next steps: personalised recommendations, group ordering and dark mode."]}
