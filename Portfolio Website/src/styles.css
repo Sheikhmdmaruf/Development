@@ -90,8 +90,10 @@ h1{font-size:56px;line-height:1.02;letter-spacing:-.035em;font-weight:400;text-w
 h1 .m{display:block;color:var(--muted)}
 .hero-text{max-width:450px;color:var(--text-2);font-size:17px;line-height:1.5;letter-spacing:-.01em;text-wrap:balance}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
-.portrait{position:relative;min-height:480px;background:var(--placeholder)}
+.portrait{position:relative;min-height:480px;background:var(--placeholder);overflow:hidden}
 .portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* profile photo: slight zoom hides the dark edges of the source image; keep the face in frame */
+.portrait img.photo{object-position:50% 35%;transform:scale(1.08)}
 .portrait .ph{position:absolute;inset:0;display:grid;place-items:center;font-size:120px;letter-spacing:-.06em;color:var(--muted);opacity:.5}
 .portrait .pill{position:absolute;left:12px;bottom:12px}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap-3xs)}

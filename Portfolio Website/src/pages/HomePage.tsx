@@ -39,8 +39,8 @@ export function Portrait({ children }: { children?: ReactNode }) {
   return (
     <div className="panel portrait">
       <span className="ph" aria-hidden="true">M.</span>
-      {/* Add your photo as public/images/maruf.jpg */}
-      {hasPhoto && <img src="/images/maruf.jpg" alt="Sheikh Md Maruf" onError={() => setHasPhoto(false)} />}
+      {/* Profile photo: public/images/maruf.jpg */}
+      {hasPhoto && <img className="photo" src="/images/maruf.jpg" alt="Sheikh Md Maruf" onError={() => setHasPhoto(false)} />}
       {children}
     </div>
   );
