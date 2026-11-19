@@ -1,12 +1,14 @@
+import type { Project, Service, Review, FaqItem, Post } from './types';
+
 /* ======================================================
    EDIT YOUR CONTENT HERE
    The first 3 projects in PROJECTS show on the home page.
-   Every project shows on the Work page (work.html).
+   Every project shows on the Work page (/work).
    ====================================================== */
-const CONTACT_EMAIL = "hello@yourdomain.com"; // TODO: your email
+export const CONTACT_EMAIL = "hello@yourdomain.com"; // TODO: your email
 
-// type: web | app | dash   ·   img: put file in /images and set e.g. "images/agency.jpg"
-const PROJECTS = [
+// type: web | app | dash   ·   img: put file in public/images and set e.g. "/images/agency.jpg"
+export const PROJECTS: Project[] = [
   {t:"Creative Agency Website", type:"web", cat:"Website", y:"2024", hl:"Landing + inner pages", sum:"Bold, modern website for a creative studio.", url:"https://dribbble.com/shots/25125559-Creative-Agency-Website", c1:"#dc9058", c2:"#6b3416", badge:"Featured"},
   {t:"Fintech App", type:"app", cat:"Mobile app", y:"2024", hl:"iOS & Android", sum:"Simple money app with clean dashboards.", url:"https://dribbble.com/shots/25053234-Fintech-App", c1:"#7f7bff", c2:"#3b2bd6"},
   {t:"AI Image Generator", type:"web", cat:"Website", y:"2024", hl:"SaaS landing", sum:"Landing page for an AI art product.", url:"https://dribbble.com/shots/24718465-Modern-AI-Image-Generator-Website", c1:"#a855f7", c2:"#4c1d95"},
@@ -22,7 +24,7 @@ const PROJECTS = [
 ];
 
 // Optional: add price:"From $300" to a service to show a starting price (otherwise "Custom quote")
-const SERVICES = [
+export const SERVICES: Service[] = [
   {t:"Website design", s:"Landing pages and full websites that explain your offer fast and turn visitors into leads.", tags:["Landing pages","Agency sites","E-commerce"], icon:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>'},
   {t:"Mobile app design", s:"Clean, easy app screens for iOS and Android, from wireframe to clickable prototype.", tags:["Fintech","Fitness","Food delivery"], icon:'<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>'},
   {t:"Dashboard & SaaS UI", s:"Data-heavy screens made simple. Dashboards your users understand at first look.", tags:["Admin panels","Crypto","Analytics"], icon:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'},
@@ -30,7 +32,7 @@ const SERVICES = [
 ];
 
 // TODO: sample quotes — replace with real reviews before going live
-const REVIEWS = [
+export const REVIEWS: Review[] = [
   {q:"Maruf understood our idea quickly and delivered a clean, modern design. Great communication.", n:"Client name", r:"Founder", co:"Startup", a:"#dc9058", b:"#6b3416"},
   {q:"The app design was simple and beautiful. Our users loved the new flow.", n:"Client name", r:"Product manager", co:"Fintech", a:"#7f7bff", b:"#3b2bd6"},
   {q:"Fast delivery, helpful revisions and Figma files our developers could use right away.", n:"Client name", r:"CTO", co:"Agency", a:"#4ade80", b:"#0e9f6e"},
@@ -38,7 +40,7 @@ const REVIEWS = [
   {q:"Very detail-focused designer. The dashboard is much easier for our team to use.", n:"Client name", r:"Operations lead", co:"SaaS", a:"#38bdf8", b:"#0b4f8a"}
 ];
 
-const FAQ = [
+export const FAQ: FaqItem[] = [
   ["Timeline","How long does a project take?","A landing page usually takes 3–7 days. A full website or app takes 2–4 weeks, depending on the number of screens."],
   ["Start","What do I need to get started?","Just your idea, your goals and any brand materials you have. If you don't have a brand yet, I can create one."],
   ["Build","Do you also build the website?","I focus on design and deliver clean Figma files ready for developers. I can also build on Webflow or Framer when needed."],
@@ -46,18 +48,18 @@ const FAQ = [
   ["Payment","How do payments work?","You can hire me through Fiverr or directly. Direct projects usually start with a 50% deposit."]
 ];
 
-const TOOLS = ["Figma","Adobe XD","Photoshop","Illustrator","FigJam","Webflow","Framer","Prototyping","Design systems"];
+export const TOOLS: string[] = ["Figma","Adobe XD","Photoshop","Illustrator","FigJam","Webflow","Framer","Prototyping","Design systems"];
 /* ====================================================== */
 
 /* ======================================================
    BLOG POSTS — newest first. The first 3 show on the home page.
-   cat: must match a filter on blog.html (UI/UX, Web Design, Freelancing)
-   img: put a cover in /images and set e.g. "images/blog-1.jpg"
+   cat: must match a filter on the Blog page (UI/UX, Web Design, Freelancing)
+   img: put a cover in public/images and set e.g. "/images/blog-1.jpg"
    url: optional — link to an outside article (Medium, LinkedIn...).
-        Leave it out to open the article page (text lives in articles.js).
+        Leave it out to open the article page (text lives in articles.ts).
    !! These are SAMPLE titles — replace them with your real posts.
    ====================================================== */
-const POSTS = [
+export const POSTS: Post[] = [
   {t:"5 UI mistakes that make users leave your app", cat:"UI/UX", date:"12 November 2026", read:"6 min", c1:"#dc9058", c2:"#6b3416", type:"app"},
   {t:"How I design a landing page that converts", cat:"Web Design", date:"30 October 2026", read:"8 min", c1:"#7f7bff", c2:"#3b2bd6", type:"web"},
   {t:"What I learned from my first 50 Fiverr orders", cat:"Freelancing", date:"18 October 2026", read:"5 min", c1:"#4ade80", c2:"#0e7a52", type:"web"},
