@@ -188,12 +188,7 @@ const navLinks = [...document.querySelectorAll('#mainNav .nav-item')];
 const setActive = fn => navLinks.forEach(l => l.classList.toggle('active', fn(l)));
 if (PAGE === 'work' || PAGE === 'project') setActive(l => l.dataset.page === 'work');
 else if (['about','blog','article','services','service'].includes(PAGE)) setActive(l => l.dataset.page === ({article:'blog', service:'services'}[PAGE] || PAGE));
-else {
-  const spy = new IntersectionObserver(es => es.forEach(e => {
-    if (e.isIntersecting) setActive(l => l.getAttribute('href') === '#' + e.target.id);
-  }), { rootMargin: '-40% 0px -55% 0px' });
-  document.querySelectorAll('section[id]').forEach(s => spy.observe(s));
-}
+else setActive(l => l.getAttribute('href') === '#home'); /* home page: keep Home selected */
 
 /* reveal on scroll */
 const io = new IntersectionObserver(es => es.forEach(e => {
