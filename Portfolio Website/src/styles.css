@@ -12,13 +12,13 @@
   --border:#333333;      /* border / divider */
   --window:#0F0F0F; --shell:#141414; --shell-hover:#181818; --raised:#262626; --placeholder:#262626;
   --text-3:#8C8C8C; --muted:#8C8C8C;
-  --btn:#B9FF66; --btn-text:#0A0A0A;
+  --btn:#FFFFFF; --btn-text:#0A0A0A;   /* CTA buttons: white with black text */
   --brand-subtle:#1F2A12; --brand-border:rgba(185,255,102,.25); --success:#B9FF66;
 }
 :root[data-theme="light"]{
   --bg:#efede8; --window:#f4f2ee; --shell:#e7e4de; --shell-hover:#ece9e4; --panel:#faf9f6; --raised:#f0eee9; --placeholder:#e2dfd8;
   --text:#1a1815; --text-2:#57534c; --text-3:#67635b; --muted:#868178;
-  --border:rgba(40,30,15,.08); --btn:#1a1815; --btn-text:#faf9f6;
+  --border:rgba(40,30,15,.08); --btn:#0A0A0A; --btn-text:#FFFFFF;
   --brand:#3F6B0A; --brand-subtle:#EEF9DF; --brand-border:rgba(63,107,10,.25); --success:#3F6B0A;
 }
 *{box-sizing:border-box;margin:0;padding:0}
