@@ -1,5 +1,7 @@
+import type { ServiceDetail } from './types';
+
 /* ======================================================
-   SERVICE DETAILS — shown on service.html?s=<slug>
+   SERVICE DETAILS — shown on /service/<slug>
    Key = the service's slug (title in lowercase with dashes),
    e.g. "Website design" -> "website-design".
 
@@ -12,7 +14,7 @@
    !! Durations, deliverables and revisions are SUGGESTED
    !! defaults — change them to match how you really work.
    ====================================================== */
-const SERVICE_ICONS = {
+export const SERVICE_ICONS: Record<string, string> = {
   compass:'<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
   layout:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/>',
   phone:'<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>',
@@ -25,7 +27,7 @@ const SERVICE_ICONS = {
   check:'<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>'
 };
 
-const SERVICE_DETAILS = {
+export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
   "website-design": {
     type: "web",
     summary: "Landing pages and full websites planned around what your visitors need to decide, then designed for desktop, tablet and phone.",

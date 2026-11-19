@@ -1,5 +1,7 @@
+import type { CaseStudy } from './types';
+
 /* ======================================================
-   CASE STUDIES — shown on project.html?p=<slug>
+   CASE STUDIES — shown on /project/<slug>
    The key is the project's slug (title in lowercase with dashes),
    e.g. "Food Delivery App" -> "food-delivery-app".
 
@@ -8,14 +10,14 @@
      metrics: 3 cards under the header
      steps:   numbered story panels — each has a title and paragraphs
      gallery: images at the end — 1 wide + 2 half
-              (use paths like "images/food-1.jpg"; leave out to show placeholders)
+              (use paths like "/images/food-1.jpg"; leave out to show placeholders)
 
    Projects without an entry still get a page with an overview.
 
    !! The Food Delivery App entry below is SAMPLE text with made-up
    !! numbers. Replace it with your real story before publishing.
    ====================================================== */
-const CASES = {
+export const CASES: Record<string, CaseStudy> = {
   "food-delivery-app": {
     client: "Food delivery startup",
     role: "Product designer (UI/UX)",
@@ -38,6 +40,6 @@ const CASES = {
         "Checkout now takes 35% fewer steps, a past order can be repeated in two taps and the team has 40+ reusable components to build new features faster.",
         "Next steps: personalised recommendations, group ordering and dark mode."]}
     ]
-    // gallery: ["images/food-1.jpg", "images/food-2.jpg", "images/food-3.jpg"]
+    // gallery: ["/images/food-1.jpg", "/images/food-2.jpg", "/images/food-3.jpg"]
   }
 };

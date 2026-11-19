@@ -1,5 +1,7 @@
+import type { Article } from './types';
+
 /* ======================================================
-   BLOG ARTICLES — shown on article.html?p=<slug>
+   BLOG ARTICLES — shown on /blog/<slug>
    Key = the post's slug (title in lowercase with dashes),
    e.g. "5 UI mistakes that make users leave your app"
         -> "5-ui-mistakes-that-make-users-leave-your-app"
@@ -17,7 +19,7 @@
    !! SAMPLE ARTICLES — written as placeholders. Replace them
    !! with your own writing before publishing.
    ====================================================== */
-const ARTICLES = {
+export const ARTICLES: Record<string, Article> = {
   "5-ui-mistakes-that-make-users-leave-your-app": {
     sum: "Small design problems that quietly push people away — and simple ways to fix them.",
     body: [
