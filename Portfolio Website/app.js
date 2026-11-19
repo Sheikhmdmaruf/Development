@@ -158,8 +158,13 @@ if ($('tTrack')){
 }
 
 if ($('faqList')) $('faqList').innerHTML = FAQ.map((f, i) => `
-  <details class="panel"${i === 0 ? ' open' : ''}><summary><span class="q"><span class="pill">${f[0]}</span>${f[1]}</span>
+  <details class="panel" name="faq"${i === 0 ? ' open' : ''}><summary><span class="q"><span class="pill">${f[0]}</span>${f[1]}</span>
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg></summary><p>${f[2]}</p></details>`).join('');
+
+/* FAQ accordion: only one open at a time (fallback for browsers without <details name>) */
+document.querySelectorAll('#faqList details').forEach(d => d.addEventListener('toggle', () => {
+  if (d.open) document.querySelectorAll('#faqList details[open]').forEach(o => { if (o !== d) o.open = false; });
+}));
 
 if ($('tools')){
   const t = TOOLS.map(t => `<span><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--brand)"><path d="M12 2l2 8 8 2-8 2-2 8-2-8-8-2 8-2z"/></svg>${t}</span>`).join('');
