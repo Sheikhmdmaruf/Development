@@ -79,8 +79,7 @@ if ($('detail')){
 
   // details panel (same rows component as the reference)
   const rows = [
-    ['Client', c.client], ['Year', p.y], ['Role', c.role], ['Duration', c.duration],
-    ['Tools', c.tools], ['Team', c.team], ['Category', p.cat]
+    ['Client', c.client, ''], ['Year', p.y, 'work.html'], ['Role', c.role, 'services.html'], ['Category', p.cat, 'work.html']
   ].filter(r => r[1]);
 
   // 3 metric cards
@@ -109,14 +108,16 @@ if ($('detail')){
         <div class="detail-actions"><a href="#contact" class="btn">Start a similar project</a></div>
       </div>
       <div class="panel detail-panel">
-        ${rows.map(r => `<div class="detail-row"><span class="detail-row-label">${r[0]}</span><span class="detail-row-value">${esc(r[1])}</span></div>`).join('')}
+        ${rows.map(r => `<div class="detail-row"><span class="detail-row-label">${r[0]}</span>${r[2]
+          ? `<a class="detail-row-value" href="${r[2]}">${esc(r[1])}</a>`
+          : `<span class="detail-row-value">${esc(r[1])}</span>`}</div>`).join('')}
         <div class="detail-row"><span class="detail-row-label">Services</span><span class="inline-links"><a class="inline-link" href="index.html#services">${esc(p.cat)} Design</a><a class="inline-link" href="${p.url}" target="_blank" rel="noopener">Dribbble</a></span></div>
       </div>
     </div>
     <div class="detail-metrics">${metrics.map(m => `
-      <div class="panel metric">
-        <div class="metric-top">${esc(m.label)} <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">${ICONS[m.icon] || ICONS.star}</svg></div>
-        <div><div class="metric-val">${esc(m.value)}</div><div class="metric-cap">${esc(m.cap)}</div></div>
+      <div class="panel metric-card">
+        <div class="metric-card-top"><span class="metric-card-label">${esc(m.label)}</span><svg class="metric-card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">${ICONS[m.icon] || ICONS.star}</svg></div>
+        <div class="metric-card-body"><div class="metric-card-value">${esc(m.value)}</div><div class="metric-card-caption">${esc(m.cap)}</div></div>
       </div>`).join('')}</div>
     ${media(p, p.cover || p.img, 'detail-cover')}
     <div class="story-steps">${steps.map((s, i) => `
