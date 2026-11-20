@@ -5,7 +5,9 @@ import type { Project, Service, Review, FaqItem, Post } from './types';
    The first 3 projects in PROJECTS show on the home page.
    Every project shows on the Work page (/work).
    ====================================================== */
-export const CONTACT_EMAIL = "hello@yourdomain.com"; // TODO: your email
+export let CONTACT_EMAIL = "hello@yourdomain.com"; // TODO: your email (or set it in the admin dashboard → Site Settings)
+/** Used by live.ts when the admin dashboard provides the contact email. */
+export function setContactEmail(email: string): void { CONTACT_EMAIL = email; }
 
 // type: web | app | dash   ·   img: put file in public/images and set e.g. "/images/agency.jpg"
 export const PROJECTS: Project[] = [

@@ -1,0 +1,9 @@
+@{ ViewData["Title"] = "No access"; if (User.Identity?.IsAuthenticated != true) { Layout = "_AuthLayout"; } }
+<div class="card">
+    <div class="empty">
+        <div class="empty-icon tone-amber"><i data-lucide="shield-alert"></i></div>
+        <h3>You don't have access to this page</h3>
+        <p>Your role doesn't include the permission this page needs. Ask an admin if you need it.</p>
+        <a class="btn btn-ghost" href="/"><i data-lucide="arrow-left"></i>Back to overview</a>
+    </div>
+</div>

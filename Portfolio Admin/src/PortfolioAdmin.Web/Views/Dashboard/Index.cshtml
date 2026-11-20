@@ -1,0 +1,156 @@
+@model OverviewModel
+@{
+    ViewData["Title"] = "Overview";
+    ViewData["Charts"] = Model.CanContacts;
+    var hour = DateTime.Now.Hour;
+    var greet = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+    var first = User.DisplayName().Split(' ')[0];
+    int delta = Model.NewInquiriesPrev30 == 0 ? (Model.NewInquiries30 > 0 ? 100 : 0)
+        : (int)Math.Round((Model.NewInquiries30 - Model.NewInquiriesPrev30) * 100.0 / Model.NewInquiriesPrev30);
+    var conversion = Model.TotalContacts == 0 ? 0 : (int)Math.Round(Model.Converted * 100.0 / Model.TotalContacts);
+    var maxPipe = Math.Max(1, Model.Pipeline.Values.DefaultIfEmpty(0).Max());
+}
+
+<div class="page-head">
+    <div>
+        <span class="eyebrow">@DateTime.Now.ToString("dddd, d MMMM")</span>
+        <h1>@greet, @first</h1>
+        <p>Here's what's happening across your websites and pipeline.</p>
+    </div>
+    <div class="page-actions">
+        @if (User.Has(Permissions.Contacts.Export)) { <a class="btn btn-ghost" href="/contacts/export"><i data-lucide="download"></i>Export contacts</a> }
+        @if (User.Has(Permissions.Contacts.Create)) { <a class="btn btn-primary" href="/contacts/new"><i data-lucide="user-plus"></i>Add contact</a> }
+    </div>
+</div>
+
+@if (Model.CanContacts)
+{
+    <div class="grid cols-4">
+        <a class="card stat" href="/contacts">
+            <div class="stat-top"><span class="eyebrow">Total contacts</span><span class="stat-icon tone-blue"><i data-lucide="contact"></i></span></div>
+            <div class="stat-value">@Model.TotalContacts.ToString("N0")</div>
+            <div class="stat-foot">@Model.OpenLeads open leads in the pipeline</div>
+        </a>
+        <a class="card stat" href="/contacts?sort=newest">
+            <div class="stat-top"><span class="eyebrow">New inquiries · 30d</span><span class="stat-icon tone-coral"><i data-lucide="inbox"></i></span></div>
+            <div class="stat-value">@Model.NewInquiries30</div>
+            <div class="stat-foot">
+                @if (Model.NewInquiries30 + Model.NewInquiriesPrev30 > 0)
+                {
+                    <span class="delta @(delta >= 0 ? "up" : "down")"><i data-lucide="@(delta >= 0 ? "trending-up" : "trending-down")" class="sm"></i> @(delta >= 0 ? "+" : "")@delta%</span><span>vs previous 30 days</span>
+                }
+                else { <span>No inquiries yet</span> }
+            </div>
+        </a>
+        <a class="card stat" href="/contacts?unread=true">
+            <div class="stat-top"><span class="eyebrow">Unread</span><span class="stat-icon tone-amber"><i data-lucide="mail-warning"></i></span></div>
+            <div class="stat-value">@Model.Unread</div>
+            <div class="stat-foot">Inquiries nobody has opened yet</div>
+        </a>
+        <a class="card stat" href="/contacts?status=Converted">
+            <div class="stat-top"><span class="eyebrow">Converted</span><span class="stat-icon tone-green"><i data-lucide="badge-check"></i></span></div>
+            <div class="stat-value">@Model.Converted</div>
+            <div class="stat-foot">@conversion% of all contacts became clients</div>
+        </a>
+    </div>
+
+    <div class="grid cols-3 mt">
+        <div class="card span-2">
+            <div class="card-head">
+                <div><h2>Inquiries per month</h2><p>Form submissions from all websites, last 12 months</p></div>
+            </div>
+            <div class="card-body"><div class="chart-box"><canvas data-chart="chart-monthly" role="img" aria-label="Bar chart of inquiries per month"></canvas></div></div>
+            <script type="application/json" id="chart-monthly">@Json.Serialize(new { labels = Model.Monthly.Select(x => x.Label), series = new[] { new { label = "Inquiries", data = Model.Monthly.Select(x => x.Count), color = "--series-1" } } })</script>
+            <details class="table-view"><summary>Show as table</summary>
+                <div class="table-wrap" style="padding:0 20px 16px"><table class="table"><thead><tr>@foreach (var x in Model.Monthly) { <th>@x.Label</th> }</tr></thead><tbody><tr>@foreach (var x in Model.Monthly) { <td>@x.Count</td> }</tr></tbody></table></div>
+            </details>
+        </div>
+        <div class="card">
+            <div class="card-head"><div><h2>Lead pipeline</h2><p>Contacts by status</p></div><a class="btn btn-text btn-sm" href="/leads">Board <i data-lucide="arrow-right"></i></a></div>
+            <div class="card-body pipe">
+                @foreach (var s in Ui.Statuses)
+                {
+                    var n = Model.Pipeline.GetValueOrDefault(s);
+                    <a class="pipe-row row-link" href="/contacts?status=@s">
+                        <span class="badge status-@s">@s.Label()</span>
+                        <span class="bar"><span style="width:@(n * 100 / maxPipe)%"></span></span>
+                        <b>@n</b>
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="grid cols-3 mt">
+        <div class="card">
+            <div class="card-head"><div><h2>Inquiries by website</h2><p>Last 12 months</p></div></div>
+            @if (Model.BySite.Count == 0)
+            {
+                <div class="empty small"><p>No submissions yet. Connect a website to start collecting inquiries.</p>@if (Model.CanWebsites) { <a class="btn btn-soft btn-sm" href="/websites">Connect a website</a> }</div>
+            }
+            else
+            {
+                <div class="card-body"><div class="chart-box short"><canvas data-chart="chart-sites" role="img" aria-label="Bar chart of inquiries by website"></canvas></div></div>
+                <script type="application/json" id="chart-sites">@Json.Serialize(new { horizontal = true, labels = Model.BySite.Select(x => x.Label), series = new[] { new { label = "Inquiries", data = Model.BySite.Select(x => x.Count), color = "--series-1" } } })</script>
+            }
+        </div>
+        <div class="card">
+            <div class="card-head"><div><h2>Inquiry types</h2><p>What people ask for</p></div></div>
+            @if (Model.ByType.Count == 0) { <div class="empty small"><p>No contacts yet.</p></div> }
+            else
+            {
+                <div class="card-body"><div class="chart-box short"><canvas data-chart="chart-types" role="img" aria-label="Bar chart of contacts by inquiry type"></canvas></div></div>
+                <script type="application/json" id="chart-types">@Json.Serialize(new { horizontal = true, labels = Model.ByType.Select(x => x.Label), series = new[] { new { label = "Contacts", data = Model.ByType.Select(x => x.Count), color = "--series-2" } } })</script>
+            }
+        </div>
+        <div class="card">
+            <div class="card-head"><div><h2>Latest inquiries</h2><p>Most recent activity first</p></div><a class="btn btn-text btn-sm" href="/contacts">All <i data-lucide="arrow-right"></i></a></div>
+            <div class="list">
+                @if (Model.RecentContacts.Count == 0) { <div class="empty small"><p>Nothing here yet.</p></div> }
+                @foreach (var c in Model.RecentContacts)
+                {
+                    <a class="list-item" href="/contacts/@c.Id">
+                        <span class="avatar sm" style="@Ui.AvatarStyle(c.Email)">@Ui.Initials(c.Name)</span>
+                        <div class="grow"><div class="truncate" style="font-weight:@(c.IsUnread ? 700 : 500)">@c.Name</div><div class="small faint truncate">@(c.FirstWebsite?.Name ?? c.Source ?? "Manual") · @Time.Ago(c.LastActivityAt)</div></div>
+                        <span class="badge status-@c.Status">@c.Status.Label()</span>
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<div class="grid cols-3 mt">
+    <div class="card span-2">
+        <div class="card-head"><div><h2>Recent activity</h2><p>@(User.Has(Permissions.Team.ViewActivity) ? "Across your workspace" : "Your recent actions")</p></div>@if (User.Has(Permissions.Team.ViewActivity)) { <a class="btn btn-text btn-sm" href="/team/activity">All activity <i data-lucide="arrow-right"></i></a> }</div>
+        <div class="feed" style="padding-bottom:8px">
+            @if (Model.Activity.Count == 0) { <div class="empty small"><p>No activity yet.</p></div> }
+            @foreach (var a in Model.Activity)
+            {
+                var (icon, tone) = ActivityService.Visual(a.Action);
+                <div class="feed-item">
+                    <span class="fi-icon tone-@tone"><i data-lucide="@icon"></i></span>
+                    <div class="grow"><div class="fi-text">@a.Summary</div><div class="fi-meta">@(a.User?.FullName ?? "System") · <time datetime="@a.CreatedAt.ToString("o")" title="@a.CreatedAt.ToLocalTime().ToString("f")">@Time.Ago(a.CreatedAt)</time></div></div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="stack">
+        <div class="card">
+            <div class="card-head"><h2>Workspace</h2></div>
+            <div class="list">
+                @if (Model.CanWebsites) { <a class="list-item" href="/websites"><span class="stat-icon tone-teal"><i data-lucide="globe"></i></span><div class="grow"><b>@Model.ActiveWebsites of @Model.Websites</b><div class="small faint">websites connected</div></div><i data-lucide="chevron-right" class="sm faint"></i></a> }
+                @if (Model.CanContent)
+                {
+                    <a class="list-item" href="/content/projects"><span class="stat-icon tone-violet"><i data-lucide="briefcase"></i></span><div class="grow"><b>@Model.Projects projects</b><div class="small faint">live on your portfolio</div></div><i data-lucide="chevron-right" class="sm faint"></i></a>
+                    <a class="list-item" href="/content/posts"><span class="stat-icon tone-blue"><i data-lucide="pen-line"></i></span><div class="grow"><b>@Model.Posts blog posts · @Model.Services services</b><div class="small faint">published</div></div><i data-lucide="chevron-right" class="sm faint"></i></a>
+                }
+                @if (Model.CanTeam) { <a class="list-item" href="/team"><span class="stat-icon tone-amber"><i data-lucide="users"></i></span><div class="grow"><b>@Model.TeamMembers members</b><div class="small faint">active in your team</div></div><i data-lucide="chevron-right" class="sm faint"></i></a> }
+            </div>
+        </div>
+        <div class="card pad stack-sm">
+            <span class="eyebrow">Coming in the next phases</span>
+            <p class="small muted">Projects &amp; tasks (Kanban, calendar, comments), email inbox, and reports will add their own numbers to this overview.</p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,12 @@
+# build output
+bin/
+obj/
+*.user
+.vs/
+.vscode/
+
+# uploaded files and local secrets
+src/PortfolioAdmin.Web/wwwroot/uploads/
+appsettings.*.local.json
+*.env
+.env*

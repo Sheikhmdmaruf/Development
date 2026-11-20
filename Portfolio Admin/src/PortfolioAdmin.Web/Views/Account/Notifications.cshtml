@@ -1,0 +1,16 @@
+@{ ViewData["Title"] = "Notification settings"; var muted = (List<string>)ViewBag.Muted; }
+<partial name="_SettingsHead" model="@("notifications")" />
+<form method="post" action="/account/notifications" class="card" style="max-width:720px">
+    <div class="card-head"><div><h2>In-app notifications</h2><p>Choose what shows up in your notification bell.</p></div></div>
+    <div class="card-body flush list">
+        @foreach (var (type, label, help) in NotificationTypes.All)
+        {
+            <label class="list-item" style="cursor:pointer">
+                <div class="grow"><b>@label</b><div class="small muted">@help</div></div>
+                <span class="switch"><input type="checkbox" name="enabled" value="@type" checked="@(!muted.Contains(type))"></span>
+            </label>
+        }
+    </div>
+    <div class="card-body"><div class="form-actions"><button class="btn btn-primary">Save preferences</button></div></div>
+</form>
+<p class="small faint mt">More notification types (tasks, projects, email) arrive with those modules.</p>

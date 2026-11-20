@@ -1,0 +1,17 @@
+@model List<Notification>
+@if (Model.Count == 0)
+{
+    <div class="empty small"><div class="empty-icon"><i data-lucide="bell-off"></i></div><p>You're all caught up.</p></div>
+}
+@foreach (var n in Model)
+{
+    var icon = n.Type switch { NotificationTypes.NewInquiry => ("inbox", "coral"), NotificationTypes.ContactAssigned => ("user-round-check", "blue"), NotificationTypes.ContactNote => ("message-square-text", "violet"), _ => ("bell", "slate") };
+    <a class="notif-item @(n.IsRead ? null : "unread")" href="/notifications/@n.Id/open">
+        <span class="fi-icon tone-@icon.Item2" style="width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex-shrink:0"><i data-lucide="@icon.Item1" class="sm"></i></span>
+        <div class="grow" style="min-width:0">
+            <div class="t">@n.Title</div>
+            @if (!string.IsNullOrEmpty(n.Body)) { <div class="b truncate">@n.Body</div> }
+            <div class="w">@Time.Ago(n.CreatedAt)</div>
+        </div>
+    </a>
+}

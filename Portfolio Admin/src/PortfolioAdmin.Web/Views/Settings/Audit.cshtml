@@ -1,0 +1,29 @@
+@model Paged<ActivityLog>
+@{ ViewData["Title"] = "Audit log"; string? q = ViewBag.Q; }
+<div class="page-head"><div><span class="eyebrow">System</span><h1>Audit log</h1><p>Sign-ins, key changes, role changes, deletions and exports. Entries can't be edited.</p></div></div>
+<div class="card">
+    <form class="filters" method="get" action="/settings/audit">
+        <div class="input-group"><i data-lucide="search"></i><input class="input input-sm" name="q" value="@q" placeholder="Search action, summary or IP…" aria-label="Search audit log"></div>
+        <button class="btn btn-ghost btn-sm">Search</button>
+    </form>
+    @if (Model.Items.Count == 0) { <div class="empty"><div class="empty-icon"><i data-lucide="scroll-text"></i></div><h3>No audit entries</h3></div> }
+    else
+    {
+        <div class="table-wrap"><table class="table">
+            <thead><tr><th>When</th><th>Who</th><th>Action</th><th>Details</th><th class="hide-sm">IP</th></tr></thead>
+            <tbody>
+                @foreach (var a in Model.Items)
+                {
+                    <tr>
+                        <td class="small nowrap" title="@a.CreatedAt.ToString("u")">@a.CreatedAt.ToLocalTime().ToString("d MMM yyyy, HH:mm:ss")</td>
+                        <td class="small">@(a.User?.FullName ?? "—")</td>
+                        <td><code class="@(a.Action.Contains("failed") || a.Action.Contains("locked") || a.Action.Contains("deleted") ? "" : "")" style="@(a.Action.Contains("failed") || a.Action.Contains("locked") ? "color:var(--danger)" : "")">@a.Action</code></td>
+                        <td class="small">@a.Summary</td>
+                        <td class="hide-sm small mono faint">@a.IpAddress</td>
+                    </tr>
+                }
+            </tbody>
+        </table></div>
+    }
+    <partial name="_Pager" model="@(new PagerModel(Model.Page, Model.Pages, Model.From, Model.To, Model.Total))" />
+</div>

@@ -1,0 +1,22 @@
+@model List<CmsFaq>
+@{ ViewData["Title"] = "FAQ"; var canEdit = User.Has(Permissions.Content.Edit); }
+<partial name="_Head" model="@(("faq", "FAQ", "Questions on the home page. Drag to reorder.", (string?)"Add question"))" />
+@if (Model.Count == 0) { <div class="card"><div class="empty"><div class="empty-icon"><i data-lucide="circle-help"></i></div><h3>No questions yet</h3></div></div> }
+<div class="card">
+    <div class="table-wrap"><table class="table">
+        <tbody data-sortable="@(canEdit ? "/content/faq/reorder" : null)">
+            @foreach (var f in Model)
+            {
+                <tr data-id="@f.Id" draggable="@(canEdit ? "true" : "false")">
+                    @if (canEdit) { <td style="width:32px"><i data-lucide="grip-vertical" class="sortable-handle sm"></i></td> }
+                    <td>
+                        <div class="row" style="gap:8px"><span class="tag tone-blue">@f.Pill</span><b>@f.Question</b></div>
+                        <p class="small muted" style="margin-top:4px">@f.Answer</p>
+                    </td>
+                    <td style="width:90px">@if (f.IsPublished) { <span class="badge tone-green">Live</span> } else { <span class="badge tone-slate">Hidden</span> }</td>
+                    <td class="actions" style="width:120px"><partial name="_RowActions" model="@(("faq", f.Id, f.IsPublished, f.Question))" /></td>
+                </tr>
+            }
+        </tbody>
+    </table></div>
+</div>

@@ -1,0 +1,47 @@
+@model List<Contact>
+@{
+    ViewData["Title"] = "Leads";
+    string? assigned = ViewBag.Assigned; string? q = ViewBag.Q;
+    var canMove = User.Has(Permissions.Contacts.Edit);
+}
+<div class="page-head">
+    <div><span class="eyebrow">CRM</span><h1>Leads board</h1><p>@(canMove ? "Drag a card to change its status." : "Your role can view leads but not move them.") Converted and rejected show the last 90 days.</p></div>
+    <form method="get" action="/leads" class="page-actions">
+        <div class="input-group"><i data-lucide="search"></i><input class="input input-sm" name="q" value="@q" placeholder="Filter leads…" aria-label="Filter leads"></div>
+        <div class="seg">
+            <a href="/leads@(q is null ? "" : "?q=" + Uri.EscapeDataString(q))" class="@(assigned is null ? "active" : null)">Everyone</a>
+            <a href="/leads?assigned=me@(q is null ? "" : "&q=" + Uri.EscapeDataString(q))" class="@(assigned == "me" ? "active" : null)">Mine</a>
+        </div>
+    </form>
+</div>
+
+<div class="board" data-board="/leads/move">
+    @foreach (var s in Ui.Statuses)
+    {
+        var cards = Model.Where(c => c.Status == s).ToList();
+        <section class="board-col" aria-label="@s.Label()">
+            <div class="board-col-head">
+                <span class="badge status-@s">@s.Label()</span>
+                <span class="small faint" data-col-count>@cards.Count</span>
+            </div>
+            <div class="board-col-body" data-status="@s">
+                @foreach (var c in cards)
+                {
+                    <a class="board-card" href="/contacts/@c.Id" draggable="@(canMove ? "true" : "false")" data-id="@c.Id">
+                        <div class="row between" style="align-items:flex-start">
+                            <div style="min-width:0"><div class="title truncate">@c.Name</div><div class="small faint truncate">@(c.Company ?? c.Email)</div></div>
+                            @if (c.IsUnread) { <span class="dot-status warn" title="Unread"></span> }
+                        </div>
+                        @if (c.InquiryType is not null) { <span class="tag tone-slate" style="justify-self:start">@c.InquiryType</span> }
+                        <div class="row between small faint">
+                            <span class="truncate">@(c.FirstWebsite?.Name ?? c.Source)</span>
+                            <span class="row" style="gap:6px">@Time.Ago(c.LastActivityAt)
+                                @if (c.AssignedTo is { } a) { <span class="avatar sm" title="@a.FullName" style="@Ui.AvatarStyle(a.FullName);width:22px;height:22px;font-size:9.5px">@a.Initials</span> }
+                            </span>
+                        </div>
+                    </a>
+                }
+            </div>
+        </section>
+    }
+</div>

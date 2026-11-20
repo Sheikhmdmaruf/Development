@@ -1,0 +1,725 @@
+{
+  "contactEmail": "hello@yourdomain.com",
+  "tools": [
+    "Figma",
+    "Adobe XD",
+    "Photoshop",
+    "Illustrator",
+    "FigJam",
+    "Webflow",
+    "Framer",
+    "Prototyping",
+    "Design systems"
+  ],
+  "projects": [
+    {
+      "t": "Creative Agency Website",
+      "type": "web",
+      "cat": "Website",
+      "y": "2024",
+      "hl": "Landing + inner pages",
+      "sum": "Bold, modern website for a creative studio.",
+      "url": "https://dribbble.com/shots/25125559-Creative-Agency-Website",
+      "c1": "#dc9058",
+      "c2": "#6b3416",
+      "badge": "Featured"
+    },
+    {
+      "t": "Fintech App",
+      "type": "app",
+      "cat": "Mobile app",
+      "y": "2024",
+      "hl": "iOS & Android",
+      "sum": "Simple money app with clean dashboards.",
+      "url": "https://dribbble.com/shots/25053234-Fintech-App",
+      "c1": "#7f7bff",
+      "c2": "#3b2bd6"
+    },
+    {
+      "t": "AI Image Generator",
+      "type": "web",
+      "cat": "Website",
+      "y": "2024",
+      "hl": "SaaS landing",
+      "sum": "Landing page for an AI art product.",
+      "url": "https://dribbble.com/shots/24718465-Modern-AI-Image-Generator-Website",
+      "c1": "#a855f7",
+      "c2": "#4c1d95"
+    },
+    {
+      "t": "EV Vehicles Website",
+      "type": "web",
+      "cat": "Website",
+      "y": "2023",
+      "hl": "Product site",
+      "sum": "Electric vehicle brand website.",
+      "url": "https://dribbble.com/shots/22944003-EV-vehicles-website-UI-design",
+      "c1": "#4ade80",
+      "c2": "#0e7a52"
+    },
+    {
+      "t": "Fitness & Workout App",
+      "type": "app",
+      "cat": "Mobile app",
+      "y": "2023",
+      "hl": "Health",
+      "sum": "Workout tracking with clear progress.",
+      "url": "https://dribbble.com/shots/21767589-Fitness-Workout-Mobile-App",
+      "c1": "#bef264",
+      "c2": "#4d7c0f"
+    },
+    {
+      "t": "Sports Matches Dashboard",
+      "type": "dash",
+      "cat": "Dashboard",
+      "y": "2023",
+      "hl": "Live data",
+      "sum": "Scores, stats and fixtures in one view.",
+      "url": "https://dribbble.com/shots/21741384-Sports-Matchs-Dashboard",
+      "c1": "#38bdf8",
+      "c2": "#0b4f8a"
+    },
+    {
+      "t": "Food Delivery App",
+      "type": "app",
+      "cat": "Mobile app",
+      "y": "2023",
+      "hl": "Ordering flow",
+      "sum": "Fast ordering from menu to checkout.",
+      "url": "https://dribbble.com/shots/21541077-Food-delivery-UI-Design-Mobile-app",
+      "c1": "#fbbf24",
+      "c2": "#c2410c"
+    },
+    {
+      "t": "Crypto Dashboard",
+      "type": "dash",
+      "cat": "Dashboard",
+      "y": "2022",
+      "hl": "Fintech",
+      "sum": "Portfolio and market tracking.",
+      "url": "https://dribbble.com/shots/18393214-Crypto-Currency-Dashboard",
+      "c1": "#f7931a",
+      "c2": "#5a3300"
+    },
+    {
+      "t": "E-Commerce Web UI",
+      "type": "web",
+      "cat": "Website",
+      "y": "2022",
+      "hl": "Online store",
+      "sum": "Shop design focused on sales.",
+      "url": "https://dribbble.com/shots/19414020-E-Commerce-Web-UI-Design",
+      "c1": "#f472b6",
+      "c2": "#9d174d"
+    },
+    {
+      "t": "Travel Agency Landing",
+      "type": "web",
+      "cat": "Website",
+      "y": "2022",
+      "hl": "Booking",
+      "sum": "Inspiring travel landing page.",
+      "url": "https://dribbble.com/shots/18535523-Travel-Agency-Landing-Page-Design",
+      "c1": "#22d3ee",
+      "c2": "#0e5f74"
+    },
+    {
+      "t": "Game Landing Page",
+      "type": "web",
+      "cat": "Website",
+      "y": "2022",
+      "hl": "Gaming",
+      "sum": "High-energy page for a game launch.",
+      "url": "https://dribbble.com/shots/19848408-Game-Landing-Page-UI-Design",
+      "c1": "#ef4444",
+      "c2": "#5f0f0f"
+    },
+    {
+      "t": "Doctor Landing Page",
+      "type": "web",
+      "cat": "Website",
+      "y": "2022",
+      "hl": "Healthcare",
+      "sum": "Trustworthy clinic booking page.",
+      "url": "https://dribbble.com/shots/17730616-Doctor-Landing-Page",
+      "c1": "#60a5fa",
+      "c2": "#1e3a8a"
+    }
+  ],
+  "services": [
+    {
+      "t": "Website design",
+      "s": "Landing pages and full websites that explain your offer fast and turn visitors into leads.",
+      "tags": [
+        "Landing pages",
+        "Agency sites",
+        "E-commerce"
+      ],
+      "icon": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M3 9h18M7 6.5h.01M10 6.5h.01\"/>"
+    },
+    {
+      "t": "Mobile app design",
+      "s": "Clean, easy app screens for iOS and Android, from wireframe to clickable prototype.",
+      "tags": [
+        "Fintech",
+        "Fitness",
+        "Food delivery"
+      ],
+      "icon": "<rect x=\"7\" y=\"2.5\" width=\"10\" height=\"19\" rx=\"2.5\"/><path d=\"M11 18.5h2\"/>"
+    },
+    {
+      "t": "Dashboard & SaaS UI",
+      "s": "Data-heavy screens made simple. Dashboards your users understand at first look.",
+      "tags": [
+        "Admin panels",
+        "Crypto",
+        "Analytics"
+      ],
+      "icon": "<path d=\"M4 20V10M10 20V4M16 20v-7M22 20H2\"/>"
+    },
+    {
+      "t": "Brand & graphic design",
+      "s": "Logos, brand identity and marketing graphics that make your business look trustworthy.",
+      "tags": [
+        "Logo",
+        "Brand identity",
+        "Social media"
+      ],
+      "icon": "<path d=\"M12 3l2.6 5.6L20 9.5l-4 4 1 5.8-5-2.8-5 2.8 1-5.8-4-4 5.4-.9z\"/>"
+    }
+  ],
+  "reviews": [
+    {
+      "q": "Maruf understood our idea quickly and delivered a clean, modern design. Great communication.",
+      "n": "Client name",
+      "r": "Founder",
+      "co": "Startup",
+      "a": "#dc9058",
+      "b": "#6b3416"
+    },
+    {
+      "q": "The app design was simple and beautiful. Our users loved the new flow.",
+      "n": "Client name",
+      "r": "Product manager",
+      "co": "Fintech",
+      "a": "#7f7bff",
+      "b": "#3b2bd6"
+    },
+    {
+      "q": "Fast delivery, helpful revisions and Figma files our developers could use right away.",
+      "n": "Client name",
+      "r": "CTO",
+      "co": "Agency",
+      "a": "#4ade80",
+      "b": "#0e9f6e"
+    },
+    {
+      "q": "Our landing page looks professional now and we get more enquiries every week.",
+      "n": "Client name",
+      "r": "Owner",
+      "co": "Local business",
+      "a": "#fbbf24",
+      "b": "#d97706"
+    },
+    {
+      "q": "Very detail-focused designer. The dashboard is much easier for our team to use.",
+      "n": "Client name",
+      "r": "Operations lead",
+      "co": "SaaS",
+      "a": "#38bdf8",
+      "b": "#0b4f8a"
+    }
+  ],
+  "faq": [
+    [
+      "Timeline",
+      "How long does a project take?",
+      "A landing page usually takes 3–7 days. A full website or app takes 2–4 weeks, depending on the number of screens."
+    ],
+    [
+      "Start",
+      "What do I need to get started?",
+      "Just your idea, your goals and any brand materials you have. If you don't have a brand yet, I can create one."
+    ],
+    [
+      "Build",
+      "Do you also build the website?",
+      "I focus on design and deliver clean Figma files ready for developers. I can also build on Webflow or Framer when needed."
+    ],
+    [
+      "Revisions",
+      "How many revisions do I get?",
+      "Every project includes revision rounds, so you are happy with the final result."
+    ],
+    [
+      "Payment",
+      "How do payments work?",
+      "You can hire me through Fiverr or directly. Direct projects usually start with a 50% deposit."
+    ]
+  ],
+  "posts": [
+    {
+      "t": "5 UI mistakes that make users leave your app",
+      "cat": "UI/UX",
+      "date": "12 November 2026",
+      "read": "6 min",
+      "c1": "#dc9058",
+      "c2": "#6b3416",
+      "type": "app"
+    },
+    {
+      "t": "How I design a landing page that converts",
+      "cat": "Web Design",
+      "date": "30 October 2026",
+      "read": "8 min",
+      "c1": "#7f7bff",
+      "c2": "#3b2bd6",
+      "type": "web"
+    },
+    {
+      "t": "What I learned from my first 50 Fiverr orders",
+      "cat": "Freelancing",
+      "date": "18 October 2026",
+      "read": "5 min",
+      "c1": "#4ade80",
+      "c2": "#0e7a52",
+      "type": "web"
+    },
+    {
+      "t": "Designing dashboards people actually understand",
+      "cat": "UI/UX",
+      "date": "2 October 2026",
+      "read": "7 min",
+      "c1": "#38bdf8",
+      "c2": "#0b4f8a",
+      "type": "dash"
+    },
+    {
+      "t": "My Figma workflow from wireframe to handoff",
+      "cat": "UI/UX",
+      "date": "19 September 2026",
+      "read": "6 min",
+      "c1": "#a855f7",
+      "c2": "#4c1d95",
+      "type": "web"
+    },
+    {
+      "t": "How to write a project brief for your designer",
+      "cat": "Freelancing",
+      "date": "5 September 2026",
+      "read": "5 min",
+      "c1": "#fbbf24",
+      "c2": "#c2410c",
+      "type": "web"
+    }
+  ],
+  "cases": {
+    "food-delivery-app": {
+      "client": "Food delivery startup",
+      "role": "Product designer (UI/UX)",
+      "duration": "6 weeks",
+      "tools": "Figma, FigJam, Maze",
+      "team": "1 designer, 1 PM, 2 developers",
+      "metrics": [
+        {
+          "label": "Checkout",
+          "value": "-35%",
+          "cap": "fewer steps to place an order",
+          "icon": "cart"
+        },
+        {
+          "label": "Timeline",
+          "value": "6 weeks",
+          "cap": "from research to handoff",
+          "icon": "clock"
+        },
+        {
+          "label": "Screens",
+          "value": "40+",
+          "cap": "designed and prototyped",
+          "icon": "grid"
+        }
+      ],
+      "steps": [
+        {
+          "title": "Challenge",
+          "body": [
+            "A growing food delivery service with 20K+ monthly users wanted its app to feel faster and friendlier, but the path to checkout was long and confusing.",
+            "Many carts were left before payment, search results were hard to scan and delivery fees appeared only at the last step."
+          ]
+        },
+        {
+          "title": "Process",
+          "body": [
+            "I ran 12 user interviews, audited 5 competitor apps and reviewed 200+ support tickets, then set one goal: get from hunger to order in under a minute.",
+            "Wireframes and a clickable prototype were tested with 15 people over 3 rounds. The final UI uses a warm palette, large food photography and a reusable Figma component library."
+          ]
+        },
+        {
+          "title": "Result",
+          "body": [
+            "Checkout now takes 35% fewer steps, a past order can be repeated in two taps and the team has 40+ reusable components to build new features faster.",
+            "Next steps: personalised recommendations, group ordering and dark mode."
+          ]
+        }
+      ]
+    }
+  },
+  "articles": {
+    "5-ui-mistakes-that-make-users-leave-your-app": {
+      "sum": "Small design problems that quietly push people away — and simple ways to fix them.",
+      "body": [
+        "Most people don't delete an app because of one big problem. They leave because of many small moments that feel slow, confusing or annoying. After designing apps for fintech, fitness and food delivery clients, I keep seeing the same mistakes.",
+        "Here are five of them, and what I do instead.",
+        {
+          "h2": "1. Asking for too much, too early"
+        },
+        "Long sign-up forms before the user sees any value are the fastest way to lose them. Let people explore first, and ask for details only when they are needed.",
+        {
+          "h2": "2. Buttons that don't look like buttons"
+        },
+        "Flat text links, low-contrast colours and tiny tap areas make users guess. Every main action should be obvious at first glance and easy to tap with one thumb.",
+        {
+          "quote": "If a user has to think about where to tap, the design has already failed."
+        },
+        {
+          "h2": "3. Hidden costs and surprises"
+        },
+        "Showing fees or limits only at the last step breaks trust. Be honest early — a clear total on the first screen converts better than a surprise at checkout.",
+        {
+          "h2": "4. No feedback after an action"
+        },
+        "When a user taps and nothing happens, they tap again, or leave. Every action needs a response: a loading state, a success message or a clear error.",
+        {
+          "h3": "Simple feedback checklist"
+        },
+        {
+          "list": [
+            "Show a loading state for anything over half a second",
+            "Confirm success with a short message or animation",
+            "Write errors in plain words and say how to fix them",
+            "Never lose what the user already typed"
+          ]
+        },
+        {
+          "h2": "5. Too many things on one screen"
+        },
+        "Trying to show everything at once makes nothing stand out. Pick one main goal per screen and move the rest one tap away.",
+        {
+          "h2": "The result"
+        },
+        "Fixing these five problems doesn't need a full redesign. Small, focused changes can make an app feel faster, clearer and more trustworthy — and that is what keeps people coming back."
+      ]
+    },
+    "how-i-design-a-landing-page-that-converts": {
+      "sum": "My step-by-step process for landing pages that turn visitors into leads.",
+      "body": [
+        "A landing page has one job: get the visitor to take one action. Everything on the page should help with that job, or it should go.",
+        {
+          "h2": "Start with the message, not the layout"
+        },
+        "Before I open Figma, I write the headline, the main benefit and the call to action. If those three are not clear in words, no design will save the page.",
+        {
+          "quote": "Visitors decide in a few seconds whether to stay. The headline has to do the work."
+        },
+        {
+          "h2": "Answer three questions at the top"
+        },
+        {
+          "list": [
+            "What is this?",
+            "Why should I care?",
+            "What should I do next?"
+          ]
+        },
+        "If the first screen answers these three questions, most of the work is done.",
+        {
+          "h2": "Build trust as they scroll"
+        },
+        "Below the hero I add proof: results, client logos, reviews and examples. Then I answer common doubts in a short FAQ, and repeat the call to action at the end.",
+        {
+          "h2": "The result"
+        },
+        "A clear message, a simple structure and honest proof — that is what turns a nice-looking page into one that actually brings in leads."
+      ]
+    },
+    "what-i-learned-from-my-first-50-fiverr-orders": {
+      "sum": "Lessons on clients, communication and pricing from my early freelance work.",
+      "body": [
+        "My first Fiverr orders taught me more about running a design business than any course. Here is what I wish I had known on day one.",
+        {
+          "h2": "Communication matters as much as design"
+        },
+        "Clients remember how the project felt. Quick replies, clear updates and honest timelines build trust even before they see the first design.",
+        {
+          "h2": "Ask more questions before you start"
+        },
+        "Most revision rounds come from a weak brief. Now I always ask about goals, audience, examples they like and what success looks like.",
+        {
+          "quote": "A good brief saves more time than a fast designer."
+        },
+        {
+          "h2": "What I do on every order now"
+        },
+        {
+          "list": [
+            "Send a short summary of the brief before starting",
+            "Share early wireframes, not just final designs",
+            "Agree on the number of revisions up front",
+            "Deliver organised, clearly named files"
+          ]
+        },
+        {
+          "h2": "The result"
+        },
+        "Happier clients, fewer revisions and more repeat orders. Good process turned one-time buyers into long-term clients."
+      ]
+    }
+  },
+  "serviceDetails": {
+    "website-design": {
+      "type": "web",
+      "summary": "Landing pages and full websites planned around what your visitors need to decide, then designed for desktop, tablet and phone.",
+      "metrics": [
+        [
+          "Duration",
+          "1–3 weeks",
+          "clock"
+        ],
+        [
+          "Deliverables",
+          "Figma files",
+          "grid"
+        ],
+        [
+          "Revisions",
+          "Two rounds",
+          "check"
+        ]
+      ],
+      "included": [
+        [
+          "compass",
+          "Research and structure",
+          "A clear page plan based on your goals, users and competitors."
+        ],
+        [
+          "layout",
+          "Responsive page design",
+          "Every page designed for desktop, tablet and phone."
+        ],
+        [
+          "play",
+          "Clickable prototype",
+          "A Figma prototype you can click through before anything is built."
+        ],
+        [
+          "file",
+          "Developer handoff",
+          "Organised files, styles and components ready to build."
+        ]
+      ],
+      "steps": [
+        [
+          "Discover",
+          "We talk about your goals, audience and what the site must achieve."
+        ],
+        [
+          "Structure",
+          "I plan the pages and content so every section has a purpose."
+        ],
+        [
+          "Design",
+          "High-quality designs for every screen size, with your feedback."
+        ],
+        [
+          "Handoff",
+          "Final files and support for your developer or Webflow build."
+        ]
+      ]
+    },
+    "mobile-app-design": {
+      "type": "app",
+      "summary": "Clean, easy-to-use app screens for iOS and Android — from user flows and wireframes to a polished, clickable prototype.",
+      "metrics": [
+        [
+          "Duration",
+          "2–4 weeks",
+          "clock"
+        ],
+        [
+          "Deliverables",
+          "30+ screens",
+          "grid"
+        ],
+        [
+          "Revisions",
+          "Two rounds",
+          "check"
+        ]
+      ],
+      "included": [
+        [
+          "users",
+          "User flows",
+          "Simple journeys for the tasks your users care about most."
+        ],
+        [
+          "phone",
+          "App UI design",
+          "Every screen and state designed for iOS and Android."
+        ],
+        [
+          "play",
+          "Interactive prototype",
+          "A clickable prototype for testing and investor demos."
+        ],
+        [
+          "grid",
+          "Component library",
+          "Reusable components so new screens stay consistent."
+        ]
+      ],
+      "steps": [
+        [
+          "Discover",
+          "We define your users, their goals and the core features."
+        ],
+        [
+          "Wireframe",
+          "Low-fidelity flows to test the structure quickly."
+        ],
+        [
+          "Design",
+          "Polished UI with a clickable prototype for feedback."
+        ],
+        [
+          "Handoff",
+          "Organised Figma files and support for your developers."
+        ]
+      ]
+    },
+    "dashboard-and-saas-ui": {
+      "type": "dash",
+      "summary": "Data-heavy products made simple. Dashboards and SaaS interfaces your users understand at first look and enjoy using every day.",
+      "metrics": [
+        [
+          "Duration",
+          "2–4 weeks",
+          "clock"
+        ],
+        [
+          "Deliverables",
+          "Design system",
+          "grid"
+        ],
+        [
+          "Revisions",
+          "Two rounds",
+          "check"
+        ]
+      ],
+      "included": [
+        [
+          "chart",
+          "Dashboard design",
+          "Clear charts, tables and layouts that show what matters."
+        ],
+        [
+          "users",
+          "User flows",
+          "Smooth paths through complex tasks and settings."
+        ],
+        [
+          "grid",
+          "Design system",
+          "Components, states and rules your team can reuse."
+        ],
+        [
+          "file",
+          "Developer handoff",
+          "Specs and organised files that make building easier."
+        ]
+      ],
+      "steps": [
+        [
+          "Audit",
+          "I review your product, data and the problems users face."
+        ],
+        [
+          "Structure",
+          "We decide what each screen must show and in what order."
+        ],
+        [
+          "Design",
+          "Clean, consistent UI built on a reusable component library."
+        ],
+        [
+          "Handoff",
+          "Files, components and support while your team builds."
+        ]
+      ]
+    },
+    "brand-and-graphic-design": {
+      "type": "web",
+      "summary": "Logos, brand identity and marketing graphics that make your business look trustworthy and consistent everywhere.",
+      "metrics": [
+        [
+          "Duration",
+          "1–2 weeks",
+          "clock"
+        ],
+        [
+          "Deliverables",
+          "Logo + brand kit",
+          "grid"
+        ],
+        [
+          "Revisions",
+          "Two rounds",
+          "check"
+        ]
+      ],
+      "included": [
+        [
+          "pen",
+          "Logo design",
+          "A distinctive logo with variations for every use."
+        ],
+        [
+          "palette",
+          "Colour and type",
+          "A palette and fonts that work on screen and in print."
+        ],
+        [
+          "file",
+          "Brand guidelines",
+          "A short, practical guide for using your brand."
+        ],
+        [
+          "layout",
+          "Marketing graphics",
+          "Social posts, flyers and banners in your new style."
+        ]
+      ],
+      "steps": [
+        [
+          "Brief",
+          "We agree on your audience, values and the feeling you want."
+        ],
+        [
+          "Concepts",
+          "A few focused logo and style directions to choose from."
+        ],
+        [
+          "Refine",
+          "One direction, two rounds of changes, every detail polished."
+        ],
+        [
+          "Deliver",
+          "All files, formats and guidelines, ready to use."
+        ]
+      ]
+    }
+  }
+}

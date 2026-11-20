@@ -1,0 +1,28 @@
+@model List<CmsService>
+@{ ViewData["Title"] = "Services"; var canEdit = User.Has(Permissions.Content.Edit); }
+<partial name="_Head" model="@(("services", "Services", "What you offer. Each service has a card and its own detail page. Drag to reorder.", (string?)"New service"))" />
+<div class="card">
+    @if (Model.Count == 0) { <div class="empty"><div class="empty-icon"><i data-lucide="layers"></i></div><h3>No services yet</h3></div> }
+    else
+    {
+        <div class="table-wrap"><table class="table">
+            <thead><tr>@if (canEdit) { <th style="width:32px"></th> }<th>Service</th><th class="hide-sm">Tags</th><th class="hide-sm">Price</th><th>Status</th><th></th></tr></thead>
+            <tbody data-sortable="@(canEdit ? "/content/services/reorder" : null)">
+                @foreach (var s in Model)
+                {
+                    <tr data-id="@s.Id" draggable="@(canEdit ? "true" : "false")">
+                        @if (canEdit) { <td><i data-lucide="grip-vertical" class="sortable-handle sm"></i></td> }
+                        <td><a class="row row-link" href="/content/services/@s.Id">
+                            <span class="svg-preview"><svg viewBox="0 0 24 24" aria-hidden="true">@Html.Raw(SvgSanitizer.Clean(s.IconSvg))</svg></span>
+                            <span style="min-width:0"><b>@s.Title</b><span class="small faint truncate" style="display:block;max-width:420px">@s.ShortText</span></span>
+                        </a></td>
+                        <td class="hide-sm"><div class="tags">@foreach (var t in s.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)) { <span class="tag tone-slate">@t</span> }</div></td>
+                        <td class="hide-sm small">@(s.Price ?? "Custom quote")</td>
+                        <td>@if (s.IsPublished) { <span class="badge tone-green">Live</span> } else { <span class="badge tone-slate">Hidden</span> }</td>
+                        <td class="actions"><partial name="_RowActions" model="@(("services", s.Id, s.IsPublished, s.Title))" /></td>
+                    </tr>
+                }
+            </tbody>
+        </table></div>
+    }
+</div>

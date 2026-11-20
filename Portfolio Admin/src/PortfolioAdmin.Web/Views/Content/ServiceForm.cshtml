@@ -1,0 +1,69 @@
+@model CmsService
+@{
+    var isNew = Model.Id == 0;
+    ViewData["Title"] = isNew ? "New service" : Model.Title;
+    var icons = new[] { "compass", "layout", "phone", "chart", "pen", "palette", "play", "file", "users", "check" };
+    var metricFields = Json.Serialize(new object[] {
+        new { label = "Label", placeholder = "Delivery" }, new { label = "Value", placeholder = "3–7 days" }, new { label = "Icon", options = icons },
+    }).ToString();
+    var includedFields = Json.Serialize(new object[] {
+        new { label = "Icon", options = icons }, new { label = "Title", placeholder = "Responsive layouts" }, new { label = "Text", placeholder = "Desktop, tablet and mobile", multiline = true, rows = 2, wide = true },
+    }).ToString();
+    var stepFields = Json.Serialize(new object[] {
+        new { label = "Title", placeholder = "Discovery" }, new { label = "Text", placeholder = "We talk about your goals…", multiline = true, rows = 2, wide = true },
+    }).ToString();
+}
+<div class="crumbs"><a href="/content/services">Services</a><i data-lucide="chevron-right" class="sm"></i><span>@(isNew ? "New" : Model.Title)</span></div>
+<form method="post" action="@(isNew ? "/content/services/new" : $"/content/services/{Model.Id}")">
+    <div class="page-head">
+        <div><h1>@(isNew ? "New service" : Model.Title)</h1><p>Service card + detail page at <code>/service/@(string.IsNullOrEmpty(Model.Slug) ? "…" : Model.Slug)</code></p></div>
+        <div class="page-actions">
+            <label class="switch"><input type="checkbox" asp-for="IsPublished"><span class="small"><b>Published</b></span></label>
+            <a class="btn btn-ghost" href="/content/services">Cancel</a>
+            @if (User.Has(Permissions.Content.Edit)) { <button class="btn btn-primary"><i data-lucide="save"></i>Save</button> }
+        </div>
+    </div>
+    <div asp-validation-summary="ModelOnly" style="margin-bottom:16px"></div>
+    <div class="grid cols-3">
+        <div class="span-2 stack">
+            <div class="card">
+                <div class="card-head"><h2>Service card</h2></div>
+                <div class="card-body form-grid">
+                    <div class="field"><label asp-for="Title"></label><input asp-for="Title" class="input" id="title" autofocus><span asp-validation-for="Title"></span></div>
+                    <div class="field"><label asp-for="Slug">URL slug</label><input asp-for="Slug" class="input mono" data-slug-from="#title" placeholder="auto from title"><span asp-validation-for="Slug"></span></div>
+                    <div class="field full"><label asp-for="ShortText">Short description</label><textarea asp-for="ShortText" class="textarea" rows="2"></textarea></div>
+                    <div class="field"><label asp-for="Tags">Tags (comma separated)</label><input asp-for="Tags" class="input" placeholder="Landing pages, Agency sites"></div>
+                    <div class="field"><label asp-for="Price">Starting price (optional)</label><input asp-for="Price" class="input" placeholder="From $300 — empty shows “Custom quote”"></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-head"><div><h2>Detail page</h2><p>Leave empty to show the default layout.</p></div></div>
+                <div class="card-body stack">
+                    <div class="form-grid">
+                        <div class="field">
+                            <label asp-for="DetailType">Related work type</label>
+                            <select asp-for="DetailType" class="select"><option value="">None</option><option value="web">Websites</option><option value="app">Mobile apps</option><option value="dash">Dashboards</option></select>
+                        </div>
+                        <div class="field full"><label asp-for="Summary">Long summary</label><textarea asp-for="Summary" class="textarea" rows="3"></textarea></div>
+                    </div>
+                    <div class="section-title"><h3>Metric cards</h3><span class="small faint">e.g. Delivery · Revisions · Deliverables (price comes from above)</span></div>
+                    <partial name="_Repeater" model="@(("MetricsJson", Model.MetricsJson, "tuple", metricFields, "Add metric"))" />
+                    <div class="section-title"><h3>What's included</h3></div>
+                    <partial name="_Repeater" model="@(("IncludedJson", Model.IncludedJson, "tuple", includedFields, "Add item"))" />
+                    <div class="section-title"><h3>How it works</h3><span class="small faint">Usually 4 steps</span></div>
+                    <partial name="_Repeater" model="@(("StepsJson", Model.StepsJson, "tuple", stepFields, "Add step"))" />
+                </div>
+            </div>
+        </div>
+        <div class="card pad stack" style="align-self:start">
+            <span class="eyebrow">Icon</span>
+            <div class="row"><span class="svg-preview" id="icon-preview" style="width:56px;height:56px"></span><span class="small muted">Live preview</span></div>
+            <div class="field">
+                <label asp-for="IconSvg">SVG shapes (24×24, stroke)</label>
+                <textarea asp-for="IconSvg" class="textarea mono" rows="6" data-svg-input="#icon-preview" placeholder="&lt;path d=&quot;M4 20V10M10 20V4&quot;/&gt;"></textarea>
+                <span class="hint">Paste the inside of an SVG from e.g. lucide.dev. Scripts and links are removed when saving.</span>
+                <span asp-validation-for="IconSvg"></span>
+            </div>
+        </div>
+    </div>
+</form>

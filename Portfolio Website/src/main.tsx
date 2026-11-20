@@ -10,9 +10,11 @@ import ProjectPage from './pages/ProjectPage';
 import ServicePage from './pages/ServicePage';
 import ServicesPage from './pages/ServicesPage';
 import WorkPage from './pages/WorkPage';
+import { loadLiveContent } from './data/live';
 import './styles.css';
 
-createRoot(document.getElementById('root')!).render(
+// Load content from the admin dashboard first (falls back to built-in content).
+loadLiveContent().finally(() => createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
@@ -30,4 +32,4 @@ createRoot(document.getElementById('root')!).render(
       </Routes>
     </BrowserRouter>
   </StrictMode>,
-);
+));

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { POSTS, PROJECTS } from '../data/content';
+import { site } from '../data/live';
 import { postHref, slug } from '../lib';
 import { ArrowUpRight, Dribbble, GitHub, Grid, Home, LinkedIn, Mail, Menu, Moon, Pen, Search, Send, Services, Sun, User } from './Icons';
 
@@ -45,7 +46,7 @@ export default function Sidebar({ theme, setTheme }: { theme: Theme; setTheme: (
             <Avatar />
             <span><div className="nav-name">Sheikh Md Maruf</div><div className="nav-role">UI/UX &amp; brand designer</div></span>
           </Link>
-          <div className="nav-status-strip"><span className="status"><i />Available for work</span></div>
+          <div className="nav-status-strip"><span className="status"><i />{site('availability', 'Available for work')}</span></div>
         </div>
         <button className="menu-btn" onClick={() => setOpen(o => !o)} aria-label="Menu"><Menu /></button>
       </div>
@@ -64,10 +65,10 @@ export default function Sidebar({ theme, setTheme }: { theme: Theme; setTheme: (
           <div className="nav-label">Connect</div>
           <div className="panel nav-panel">
             <a className="nav-item" href="#contact" onClick={() => setOpen(false)}><Mail />Contact</a>
-            <External href="https://dribbble.com/sheikhmdmaruf" icon={<Dribbble />} label="Dribbble" />
-            <External href="https://github.com/Sheikhmdmaruf" icon={<GitHub />} label="GitHub" />
-            {/* TODO: add your LinkedIn URL */}
-            <a className="nav-item" href="#"><LinkedIn />LinkedIn<ArrowUpRight className="na" /></a>
+            <External href={site('dribbble_url', 'https://dribbble.com/sheikhmdmaruf')} icon={<Dribbble />} label="Dribbble" />
+            <External href={site('github_url', 'https://github.com/Sheikhmdmaruf')} icon={<GitHub />} label="GitHub" />
+            {/* LinkedIn shows once its URL is set in the admin dashboard → Site Settings */}
+            {site('linkedin_url', '') && <External href={site('linkedin_url', '')} icon={<LinkedIn />} label="LinkedIn" />}
           </div>
         </div>
 

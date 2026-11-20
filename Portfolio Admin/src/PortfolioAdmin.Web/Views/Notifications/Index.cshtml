@@ -1,0 +1,28 @@
+@model Paged<Notification>
+@{ ViewData["Title"] = "Notifications"; string? filter = ViewBag.Filter; int unread = ViewBag.UnreadCount; }
+<div class="page-head">
+    <div><span class="eyebrow">Communication</span><h1>Notifications</h1><p>Everything that needs your attention. @unread unread.</p></div>
+    <div class="page-actions">
+        <form method="post" action="/notifications/read-all"><button class="btn btn-ghost"><i data-lucide="check-check"></i>Mark all read</button></form>
+        <form method="post" action="/notifications/clear-read" data-confirm="Delete all notifications you've already read?" data-confirm-label="Delete"><button class="btn btn-ghost"><i data-lucide="trash-2"></i>Clear read</button></form>
+        <a class="btn btn-ghost" href="/account/notifications"><i data-lucide="settings-2"></i>Preferences</a>
+    </div>
+</div>
+<div class="card">
+    <div class="tabs" style="padding:0 12px">
+        <a href="/notifications" class="@(filter is null ? "active" : null)">All <span class="count">@Model.Total</span></a>
+        <a href="/notifications?filter=unread" class="@(filter == "unread" ? "active" : null)">Unread <span class="count">@unread</span></a>
+    </div>
+    @if (Model.Items.Count == 0)
+    {
+        <div class="empty"><div class="empty-icon"><i data-lucide="bell-off"></i></div><h3>No notifications</h3><p>You'll be notified about new inquiries, assignments and notes.</p></div>
+    }
+    @foreach (var n in Model.Items)
+    {
+        <div class="row" style="border-bottom:1px solid var(--border);padding-right:12px">
+            <div class="grow"><partial name="_NotificationItems" model="@(new List<Notification> { n })" /></div>
+            <form method="post" action="/notifications/@n.Id/toggle"><button class="btn btn-text btn-sm" title="@(n.IsRead ? "Mark unread" : "Mark read")"><i data-lucide="@(n.IsRead ? "mail" : "mail-open")"></i></button></form>
+        </div>
+    }
+    <partial name="_Pager" model="@(new PagerModel(Model.Page, Model.Pages, Model.From, Model.To, Model.Total))" />
+</div>

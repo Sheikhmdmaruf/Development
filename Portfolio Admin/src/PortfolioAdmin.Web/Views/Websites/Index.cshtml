@@ -1,0 +1,38 @@
+@model List<Website>
+@{ ViewData["Title"] = "Websites"; var last30 = (Dictionary<int, int>)ViewBag.Last30; }
+<div class="page-head">
+    <div><span class="eyebrow">CRM</span><h1>Websites</h1><p>Each connected website sends its contact form submissions here with its own key.</p></div>
+    @if (User.Has(Permissions.Websites.Manage)) { <div class="page-actions"><a class="btn btn-primary" href="/websites/new"><i data-lucide="plus"></i>Connect website</a></div> }
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="card"><div class="empty">
+        <div class="empty-icon"><i data-lucide="globe"></i></div>
+        <h3>No websites connected</h3>
+        <p>Connect your portfolio and other sites to collect every inquiry in one place.</p>
+        @if (User.Has(Permissions.Websites.Manage)) { <a class="btn btn-primary btn-sm" href="/websites/new">Connect your first website</a> }
+    </div></div>
+}
+<div class="grid cols-3">
+    @foreach (var w in Model)
+    {
+        var state = !w.IsActive ? ("off", "Disabled") : w.LastSubmissionAt is null ? ("warn", "Waiting for first submission") : ("on", "Receiving");
+        <a class="card pad stack" href="/websites/@w.Id">
+            <div class="row between">
+                <div class="row" style="min-width:0">
+                    <span class="stat-icon tone-teal"><i data-lucide="globe"></i></span>
+                    <div style="min-width:0"><h3 class="truncate">@w.Name</h3><div class="small faint truncate">@w.Url</div></div>
+                </div>
+                @if (w.CanReadContent) { <span class="tag tone-violet" title="Can read portfolio content">CMS</span> }
+            </div>
+            <div class="row small"><span class="dot-status @state.Item1"></span><span class="muted">@state.Item2</span></div>
+            <div class="grid cols-3" style="gap:8px">
+                <div><div class="eyebrow">Total</div><b class="stat-value" style="font-size:20px">@w.TotalSubmissions</b></div>
+                <div><div class="eyebrow">30 days</div><b class="stat-value" style="font-size:20px">@last30.GetValueOrDefault(w.Id)</b></div>
+                <div><div class="eyebrow">Blocked</div><b class="stat-value" style="font-size:20px">@w.BlockedSubmissions</b></div>
+            </div>
+            <div class="small faint">Last submission: @(w.LastSubmissionAt is { } d ? Time.Ago(d) : "never")</div>
+        </a>
+    }
+</div>

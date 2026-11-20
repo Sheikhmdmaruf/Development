@@ -1,0 +1,198 @@
+@model ContactDetailsModel
+@{
+    var c = Model.Contact;
+    ViewData["Title"] = c.Name;
+    var canEdit = User.Has(Permissions.Contacts.Edit);
+    var canDelete = User.Has(Permissions.Contacts.Delete);
+    var latest = c.Submissions.OrderByDescending(s => s.CreatedAt).FirstOrDefault();
+    var replySubject = Uri.EscapeDataString("Re: " + (latest?.Subject ?? latest?.InquiryType ?? "your message"));
+}
+<div class="crumbs"><a href="/contacts">Contacts</a><i data-lucide="chevron-right" class="sm"></i><span>@c.Name</span></div>
+<div class="page-head">
+    <div class="row" style="gap:16px">
+        <span class="avatar xl" style="@Ui.AvatarStyle(c.Email)">@Ui.Initials(c.Name)</span>
+        <div>
+            <h1>@c.Name</h1>
+            <div class="row wrap" style="margin-top:6px;gap:8px">
+                <span class="badge status-@c.Status">@c.Status.Label()</span>
+                @if (c.IsArchived) { <span class="badge tone-slate">Archived</span> }
+                <span class="small muted">@c.Submissions.Count message@(c.Submissions.Count == 1 ? "" : "s") · first contact @c.CreatedAt.ToLocalTime().ToString("d MMM yyyy")</span>
+            </div>
+        </div>
+    </div>
+    <div class="page-actions">
+        <a class="btn btn-primary" href="mailto:@c.Email?subject=@replySubject"><i data-lucide="reply"></i>Reply by email</a>
+        @if (canEdit) { <a class="btn btn-ghost" href="/contacts/@c.Id/edit"><i data-lucide="pencil"></i>Edit</a> }
+        <div class="dropdown">
+            <button class="btn btn-ghost btn-icon" data-dropdown-toggle aria-label="More actions"><i data-lucide="ellipsis"></i></button>
+            <div class="menu">
+                <form method="post" action="/contacts/@c.Id/unread"><button><i data-lucide="mail"></i>Mark as unread</button></form>
+                @if (canDelete)
+                {
+                    <div class="sep"></div>
+                    if (c.IsArchived)
+                    {
+                        <form method="post" action="/contacts/@c.Id/restore"><button><i data-lucide="archive-restore"></i>Restore</button></form>
+                        <form method="post" action="/contacts/@c.Id/delete" data-confirm="Permanently delete @c.Name and all their messages and notes? This can't be undone." data-confirm-label="Delete forever"><button class="danger"><i data-lucide="trash-2"></i>Delete permanently</button></form>
+                    }
+                    else { <form method="post" action="/contacts/@c.Id/archive"><button class="danger"><i data-lucide="archive"></i>Archive</button></form> }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid cols-3">
+    <div class="span-2 stack">
+        @if (canEdit)
+        {
+            <form method="post" action="/contacts/@c.Id/notes" class="card" id="notes">
+                <div class="card-body stack-sm">
+                    <label class="label" for="note-body">Add an internal note</label>
+                    <textarea id="note-body" name="body" class="textarea" rows="3" maxlength="4000" required placeholder="Call summary, next steps, budget… Only your team sees notes."></textarea>
+                    <div class="row between"><span class="small faint">Notes are visible to everyone who can view contacts.</span><button class="btn btn-primary btn-sm"><i data-lucide="send"></i>Add note</button></div>
+                </div>
+            </form>
+        }
+
+        <div class="card">
+            <div class="card-head"><div><h2>Communication history</h2><p>Messages, notes and changes, newest first</p></div></div>
+            <div class="card-body">
+                @if (Model.Timeline.Count == 0) { <div class="empty small"><p>No history yet.</p></div> }
+                <div class="timeline">
+                    @foreach (var t in Model.Timeline)
+                    {
+                        switch (t.Item)
+                        {
+                            case ContactSubmission s:
+                                <div class="tl-item">
+                                    <span class="tl-dot tone-coral"><i data-lucide="inbox"></i></span>
+                                    <div class="tl-card">
+                                        <div class="row between wrap">
+                                            <b>@(s.Subject ?? (s.InquiryType is null ? "Message" : "Inquiry: " + s.InquiryType))</b>
+                                            <span class="small faint" title="@s.CreatedAt.ToLocalTime().ToString("f")">@s.CreatedAt.ToLocalTime().ToString("d MMM yyyy, HH:mm")</span>
+                                        </div>
+                                        <div class="small muted" style="margin-top:2px">via @(s.Website?.Name ?? "added manually")@(s.InquiryType is not null && s.Subject is not null ? " · " + s.InquiryType : "")</div>
+                                        <div class="msg">@s.Message</div>
+                                        @if (s.ExtraJson is not null)
+                                        {
+                                            var extra = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(s.ExtraJson) ?? new();
+                                            <dl class="kv small" style="margin-top:10px">@foreach (var kv in extra) { <dt>@kv.Key</dt><dd>@kv.Value</dd> }</dl>
+                                        }
+                                        @if (s.PageUrl is not null || s.IpAddress is not null)
+                                        {
+                                            <div class="small faint" style="margin-top:8px">@if (s.PageUrl is not null) { <span>Page: @s.PageUrl</span> } @if (s.IpAddress is not null) { <span> · IP @s.IpAddress</span> }</div>
+                                        }
+                                    </div>
+                                </div>
+                                break;
+                            case ContactNote n:
+                                <div class="tl-item">
+                                    <span class="tl-dot tone-violet"><i data-lucide="sticky-note"></i></span>
+                                    <div class="tl-card" style="background:var(--violet-soft)">
+                                        <div class="row between wrap">
+                                            <span class="row" style="gap:8px"><span class="avatar sm" style="@Ui.AvatarStyle(n.Author?.FullName)">@Ui.Initials(n.Author?.FullName)</span><b>@(n.Author?.FullName ?? "Deleted user")</b><span class="small faint">added a note</span></span>
+                                            <span class="row" style="gap:4px">
+                                                <span class="small faint">@Time.Ago(n.CreatedAt)</span>
+                                                @if (canEdit && (n.AuthorId == User.Id() || canDelete))
+                                                {
+                                                    <form method="post" action="/contacts/@c.Id/notes/@n.Id/delete" data-confirm="Delete this note?" data-confirm-label="Delete"><button class="btn btn-text btn-sm btn-icon" aria-label="Delete note"><i data-lucide="trash-2" class="sm"></i></button></form>
+                                                }
+                                            </span>
+                                        </div>
+                                        <div class="msg">@n.Body</div>
+                                    </div>
+                                </div>
+                                break;
+                            case ActivityLog l:
+                                var (icon, tone) = ActivityService.Visual(l.Action);
+                                <div class="tl-item">
+                                    <span class="tl-dot tone-slate"><i data-lucide="@icon"></i></span>
+                                    <div class="small" style="padding-top:2px"><b>@(l.User?.FullName ?? "System")</b> <span class="muted">@l.Summary</span> <span class="faint">· @Time.Ago(l.CreatedAt)</span></div>
+                                </div>
+                                break;
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stack">
+        <div class="card">
+            <div class="card-head"><h2>Details</h2></div>
+            <div class="card-body">
+                <dl class="kv">
+                    <dt>Email</dt><dd><a href="mailto:@c.Email">@c.Email</a> <button class="btn btn-text btn-sm btn-icon" data-copy="@c.Email" aria-label="Copy email"><i data-lucide="copy" class="sm"></i></button></dd>
+                    <dt>Phone</dt><dd>@if (c.Phone is not null) { <a href="tel:@c.Phone">@c.Phone</a> } else { <span class="faint">—</span> }</dd>
+                    <dt>Company</dt><dd>@(c.Company ?? "—")</dd>
+                    <dt>Inquiry type</dt><dd>@(c.InquiryType ?? "—")</dd>
+                    <dt>Source</dt><dd>@(c.FirstWebsite?.Name ?? c.Source ?? "—")</dd>
+                    <dt>Created</dt><dd>@c.CreatedAt.ToLocalTime().ToString("d MMM yyyy, HH:mm")</dd>
+                    <dt>Last activity</dt><dd>@Time.Ago(c.LastActivityAt)</dd>
+                </dl>
+            </div>
+        </div>
+
+        @if (canEdit)
+        {
+            <form method="post" action="/contacts/@c.Id/status" class="card">
+                <div class="card-head"><h2>Lead status</h2></div>
+                <div class="card-body stack-sm">
+                    @foreach (var s in Ui.Statuses)
+                    {
+                        <label class="check" style="padding:6px 8px;border-radius:8px;@(c.Status == s ? "background:var(--surface-2)" : "")">
+                            <input type="radio" name="status" value="@s" checked="@(c.Status == s)" data-autosubmit>
+                            <span class="badge status-@s">@s.Label()</span>
+                        </label>
+                    }
+                    <noscript><button class="btn btn-ghost btn-sm">Save</button></noscript>
+                </div>
+            </form>
+        }
+
+        <div class="card">
+            <div class="card-head"><h2>Assigned to</h2></div>
+            <div class="card-body stack-sm">
+                @if (c.AssignedTo is { } a)
+                {
+                    <div class="row"><span class="avatar" style="@Ui.AvatarStyle(a.FullName)">@a.Initials</span><div><b>@a.FullName</b><div class="small faint">@a.JobTitle</div></div></div>
+                }
+                else { <p class="small faint">Nobody is responsible for this contact yet.</p> }
+                @if (User.Has(Permissions.Contacts.Assign))
+                {
+                    <form method="post" action="/contacts/@c.Id/assign" class="row">
+                        <select name="userId" class="select input-sm grow" aria-label="Assign to">
+                            <option value="">Unassigned</option>
+                            @foreach (var u in Model.Members) { <option value="@u.Id" selected="@(u.Id == c.AssignedToId)">@u.FullName</option> }
+                        </select>
+                        <button class="btn btn-ghost btn-sm">Save</button>
+                    </form>
+                }
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-head"><h2>Tags</h2></div>
+            <div class="card-body stack-sm">
+                <div class="tags">
+                    @if (c.Tags.Count == 0) { <span class="small faint">No tags yet.</span> }
+                    @foreach (var t in c.Tags)
+                    {
+                        <span class="tag tone-@t.Tag.Color">@t.Tag.Name
+                            @if (canEdit) { <form method="post" action="/contacts/@c.Id/tags/@t.TagId/remove" style="display:contents"><button aria-label="Remove tag @t.Tag.Name"><i data-lucide="x" class="sm" style="width:12px;height:12px"></i></button></form> }
+                        </span>
+                    }
+                </div>
+                @if (canEdit)
+                {
+                    <form method="post" action="/contacts/@c.Id/tags" class="row">
+                        <input name="name" class="input input-sm grow" list="tag-list" maxlength="40" placeholder="Add tag, e.g. Hot lead" required aria-label="New tag">
+                        <datalist id="tag-list">@foreach (var t in Model.AllTags) { <option value="@t.Name"></option> }</datalist>
+                        <button class="btn btn-ghost btn-sm"><i data-lucide="plus"></i></button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>

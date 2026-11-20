@@ -1,0 +1,44 @@
+@model ProfileModel
+@{ ViewData["Title"] = "My profile"; }
+<partial name="_SettingsHead" model="@("profile")" />
+<div class="grid cols-3">
+    <form method="post" action="/account/profile" class="card span-2">
+        <div class="card-head"><div><h2>Personal details</h2><p>How you appear to your team.</p></div></div>
+        <div class="card-body stack">
+            <div asp-validation-summary="ModelOnly"></div>
+            <div class="field">
+                <span class="label">Photo</span>
+                <div class="upload" data-upload>
+                    <div class="preview">@if (!string.IsNullOrEmpty(Model.AvatarPath)) { <img src="@Model.AvatarPath" alt=""> } else { <i data-lucide="image"></i> }</div>
+                    <div class="stack-sm grow">
+                        <input type="hidden" asp-for="AvatarPath" data-upload-value>
+                        <div class="row"><label class="btn btn-ghost btn-sm"><i data-lucide="upload"></i>Upload<input type="file" accept="image/*" hidden></label><button type="button" class="btn btn-text btn-sm" data-upload-clear>Remove</button></div>
+                        <span class="hint small faint">JPG, PNG, GIF or WebP, up to 5 MB.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="field"><label asp-for="FullName"></label><input asp-for="FullName" class="input"><span asp-validation-for="FullName"></span></div>
+                <div class="field"><label asp-for="JobTitle"></label><input asp-for="JobTitle" class="input"></div>
+                <div class="field"><label>Email</label><input class="input" value="@Model.Email" disabled><span class="hint">Ask a Super Admin to change your sign-in email.</span></div>
+                <div class="field"><label asp-for="PhoneNumber">Phone</label><input asp-for="PhoneNumber" class="input"></div>
+            </div>
+            <div class="form-actions"><button class="btn btn-primary">Save profile</button></div>
+        </div>
+    </form>
+    <div class="card pad stack">
+        <div class="row">
+            <span class="avatar xl" style="@Ui.AvatarStyle(Model.FullName)">@if (!string.IsNullOrEmpty(Model.AvatarPath)) { <img src="@Model.AvatarPath" alt=""> } else { @Ui.Initials(Model.FullName) }</span>
+            <div><h2>@Model.FullName</h2><p class="muted">@Model.JobTitle</p></div>
+        </div>
+        <div><span class="eyebrow">Roles</span><div class="tags" style="margin-top:8px">@foreach (var r in Model.Roles) { <span class="tag tone-blue">@r</span> }</div></div>
+        <div>
+            <span class="eyebrow">Appearance</span>
+            <div class="seg" style="margin-top:8px">
+                <button type="button" data-theme-set="light"><span class="row" style="gap:6px"><i data-lucide="sun" class="sm"></i>Light</span></button>
+                <button type="button" data-theme-set="dark"><span class="row" style="gap:6px"><i data-lucide="moon" class="sm"></i>Dark</span></button>
+                <button type="button" data-theme-set="system"><span class="row" style="gap:6px"><i data-lucide="monitor" class="sm"></i>System</span></button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,109 @@
+@model Website
+@{
+    ViewData["Title"] = Model.Name;
+    var recent = (List<ContactSubmission>)ViewBag.Recent;
+    string apiBase = ViewBag.ApiBase;
+    string? newSecret = ViewBag.NewSecret;
+    var manage = User.Has(Permissions.Websites.Manage);
+    var htmlSnippet = Snippets.HtmlForm(apiBase, Model.PublicKey);
+    var serverSnippet = Snippets.Server(apiBase);
+    var contentSnippet = Snippets.Content(apiBase, Model.PublicKey);
+}
+<div class="crumbs"><a href="/websites">Websites</a><i data-lucide="chevron-right" class="sm"></i><span>@Model.Name</span></div>
+<div class="page-head">
+    <div class="row" style="gap:14px">
+        <span class="stat-icon tone-teal" style="width:48px;height:48px;border-radius:14px"><i data-lucide="globe"></i></span>
+        <div>
+            <h1>@Model.Name</h1>
+            <div class="row small" style="margin-top:4px"><span class="dot-status @(Model.IsActive ? "on" : "off")"></span><span class="muted">@(Model.IsActive ? "Active" : "Disabled")</span><span class="faint">·</span><a href="@Model.Url" target="_blank" rel="noopener noreferrer">@Model.Url</a></div>
+        </div>
+    </div>
+    @if (manage)
+    {
+        <div class="page-actions">
+            <a class="btn btn-ghost" href="/websites/@Model.Id/edit"><i data-lucide="pencil"></i>Edit</a>
+            <form method="post" action="/websites/@Model.Id/toggle"><button class="btn btn-ghost"><i data-lucide="@(Model.IsActive ? "pause" : "play")"></i>@(Model.IsActive ? "Disable" : "Enable")</button></form>
+            <form method="post" action="/websites/@Model.Id/delete" data-confirm="Delete @Model.Name? Websites with inquiries can only be disabled." data-confirm-label="Delete"><button class="btn btn-danger btn-icon" aria-label="Delete website"><i data-lucide="trash-2"></i></button></form>
+        </div>
+    }
+</div>
+
+@if (newSecret is not null)
+{
+    <div class="card pad stack-sm" style="border-color:var(--warning);margin-bottom:16px">
+        <div class="row"><i data-lucide="key-round" style="color:var(--warning)"></i><b>Your new secret API key — copy it now</b></div>
+        <p class="small muted">For server-to-server calls only (PHP, Node, WordPress backend…). Never put it in browser code. It's stored as a hash and can't be shown again.</p>
+        <div class="keybox"><code id="secret">@newSecret</code><button type="button" class="btn btn-soft btn-sm" data-copy-from="#secret"><i data-lucide="copy"></i>Copy</button></div>
+    </div>
+}
+
+<div class="grid cols-4">
+    <div class="card stat"><span class="eyebrow">Total inquiries</span><div class="stat-value">@Model.TotalSubmissions</div><div class="stat-foot">since connected</div></div>
+    <div class="card stat"><span class="eyebrow">Blocked as spam</span><div class="stat-value">@Model.BlockedSubmissions</div><div class="stat-foot">honeypot or link spam</div></div>
+    <div class="card stat"><span class="eyebrow">Last submission</span><div class="stat-value" style="font-size:22px">@(Model.LastSubmissionAt is { } d ? Time.Ago(d) : "Never")</div><div class="stat-foot">@(Model.LastSubmissionAt?.ToLocalTime().ToString("d MMM yyyy, HH:mm") ?? "Send a test from your site")</div></div>
+    <div class="card stat"><span class="eyebrow">Identifier</span><div class="stat-value mono" style="font-size:20px">@Model.Identifier</div><div class="stat-foot">Content API: @(Model.CanReadContent ? "allowed" : "off")</div></div>
+</div>
+
+<div class="grid cols-3 mt">
+    <div class="span-2 stack">
+        <div class="card">
+            <div class="card-head"><div><h2>Keys</h2><p>How this website proves it's yours</p></div></div>
+            <div class="card-body stack">
+                <div class="field">
+                    <span class="label">Site key (public)</span>
+                    <div class="keybox"><code id="pk">@Model.PublicKey</code><button type="button" class="btn btn-soft btn-sm" data-copy-from="#pk"><i data-lucide="copy"></i>Copy</button>
+                        @if (manage) { <form method="post" action="/websites/@Model.Id/rotate-public" data-confirm="Create a new site key? The current key stops working immediately." data-confirm-label="Regenerate"><button class="btn btn-text btn-sm"><i data-lucide="refresh-cw"></i></button></form> }
+                    </div>
+                    <span class="hint">Safe to use in browser code. Only accepted from the allowed origins below.</span>
+                </div>
+                <div class="field">
+                    <span class="label">Secret API key (server-side)</span>
+                    <div class="keybox">
+                        <code>@(Model.SecretKeyPrefix is null ? "No secret key" : Model.SecretKeyPrefix + "••••••••••••••••••••")</code>
+                        @if (manage)
+                        {
+                            <form method="post" action="/websites/@Model.Id/rotate-secret" data-confirm="Create a new secret key? The current one stops working immediately." data-confirm-label="Regenerate"><button class="btn btn-soft btn-sm"><i data-lucide="refresh-cw"></i>@(Model.SecretKeyPrefix is null ? "Create" : "Regenerate")</button></form>
+                            @if (Model.SecretKeyPrefix is not null) { <form method="post" action="/websites/@Model.Id/revoke-secret" data-confirm="Revoke the secret key? Server-side integrations using it will stop working." data-confirm-label="Revoke"><button class="btn btn-text btn-sm">Revoke</button></form> }
+                        }
+                    </div>
+                    <span class="hint">Send as <code>Authorization: Bearer sk_…</code> from a server. Works from anywhere, so keep it in environment variables.</span>
+                </div>
+                <div class="field">
+                    <span class="label">Allowed origins</span>
+                    <div class="tags">@foreach (var o in Model.OriginList) { <span class="tag tone-slate mono">@o</span> }</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-head"><div><h2>Add the form to your website</h2><p>Plain HTML + JavaScript. Works with any technology.</p></div><button type="button" class="btn btn-ghost btn-sm" data-copy-from="#snippet-html"><i data-lucide="copy"></i>Copy</button></div>
+            <div class="card-body"><pre class="code" id="snippet-html">@htmlSnippet</pre></div>
+        </div>
+        <div class="card">
+            <div class="card-head"><div><h2>From a server (PHP, Node, WordPress…)</h2><p>Use the secret key. Fields: name, email, phone, company, subject, inquiryType, message, pageUrl, extra.</p></div><button type="button" class="btn btn-ghost btn-sm" data-copy-from="#snippet-server"><i data-lucide="copy"></i>Copy</button></div>
+            <div class="card-body"><pre class="code" id="snippet-server">@serverSnippet</pre></div>
+        </div>
+        @if (Model.CanReadContent)
+        {
+            <div class="card">
+                <div class="card-head"><div><h2>Portfolio content API</h2><p>Returns published projects, services, posts, reviews, FAQ and site settings as JSON.</p></div></div>
+                <div class="card-body"><pre class="code">@contentSnippet</pre></div>
+            </div>
+        }
+    </div>
+
+    <div class="card" style="align-self:start">
+        <div class="card-head"><div><h2>Recent inquiries</h2><p>From this website</p></div><a class="btn btn-text btn-sm" href="/contacts?website=@Model.Id">All</a></div>
+        <div class="list">
+            @if (recent.Count == 0) { <div class="empty small"><div class="empty-icon"><i data-lucide="inbox"></i></div><p>No submissions yet. Add the form and send a test message.</p></div> }
+            @foreach (var s in recent)
+            {
+                <a class="list-item" href="/contacts/@s.ContactId">
+                    <span class="avatar sm" style="@Ui.AvatarStyle(s.Email)">@Ui.Initials(s.Name)</span>
+                    <div class="grow"><div class="truncate" style="font-weight:600">@s.Name</div><div class="small faint truncate">@(s.Subject ?? s.Message)</div></div>
+                    <span class="small faint nowrap">@Time.Ago(s.CreatedAt)</span>
+                </a>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,48 @@
+@model ContactFormModel
+@{
+    var isNew = Model.Id is null;
+    ViewData["Title"] = isNew ? "Add contact" : "Edit " + Model.Name;
+    var members = (List<AppUser>)ViewBag.Members;
+    var action = isNew ? "/contacts/new" : $"/contacts/{Model.Id}/edit";
+}
+<div class="crumbs"><a href="/contacts">Contacts</a><i data-lucide="chevron-right" class="sm"></i><span>@(isNew ? "New" : Model.Name)</span></div>
+<div class="page-head"><div><h1>@(isNew ? "Add a contact" : "Edit contact")</h1><p>@(isNew ? "For inquiries that came by phone, email or in person." : "Update this contact's details.")</p></div></div>
+
+<form method="post" action="@action" class="card" style="max-width:860px">
+    <div class="card-body stack">
+        <div asp-validation-summary="ModelOnly"></div>
+        <div class="form-grid">
+            <div class="field"><label asp-for="Name"></label><input asp-for="Name" class="input" autofocus><span asp-validation-for="Name"></span></div>
+            <div class="field"><label asp-for="Email"></label><input asp-for="Email" class="input"><span asp-validation-for="Email"></span></div>
+            <div class="field"><label asp-for="Phone"></label><input asp-for="Phone" class="input"><span asp-validation-for="Phone"></span></div>
+            <div class="field"><label asp-for="Company"></label><input asp-for="Company" class="input"></div>
+            <div class="field">
+                <label asp-for="InquiryType"></label>
+                <input asp-for="InquiryType" class="input" list="types">
+                <datalist id="types">@foreach (var t in Ui.InquiryTypes) { <option value="@t"></option> }</datalist>
+            </div>
+            <div class="field">
+                <label asp-for="Status"></label>
+                <select asp-for="Status" class="select">@foreach (var s in Ui.Statuses) { <option value="@s">@s.Label()</option> }</select>
+            </div>
+            @if (User.Has(Permissions.Contacts.Assign))
+            {
+                <div class="field">
+                    <label asp-for="AssignedToId"></label>
+                    <select asp-for="AssignedToId" class="select"><option value="">Unassigned</option>@foreach (var u in members) { <option value="@u.Id">@u.FullName</option> }</select>
+                </div>
+            }
+            <div class="field"><label asp-for="Source"></label><input asp-for="Source" class="input" placeholder="e.g. Phone call, LinkedIn, Referral"></div>
+            @if (isNew)
+            {
+                <div class="full"><hr style="margin:4px 0"><span class="eyebrow">First message (optional)</span></div>
+                <div class="field full"><label asp-for="Subject"></label><input asp-for="Subject" class="input"></div>
+                <div class="field full"><label asp-for="Message"></label><textarea asp-for="Message" class="textarea" rows="5" placeholder="What did they ask for?"></textarea></div>
+            }
+        </div>
+        <div class="form-actions">
+            <a class="btn btn-ghost" href="@(isNew ? "/contacts" : $"/contacts/{Model.Id}")">Cancel</a>
+            <button class="btn btn-primary">@(isNew ? "Add contact" : "Save changes")</button>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,21 @@
+@model CmsReview
+@{ var isNew = Model.Id == 0; ViewData["Title"] = isNew ? "Add review" : "Edit review"; }
+<div class="crumbs"><a href="/content/reviews">Reviews</a><i data-lucide="chevron-right" class="sm"></i><span>@(isNew ? "New" : Model.Name)</span></div>
+<div class="page-head"><div><h1>@(isNew ? "Add a review" : "Edit review")</h1></div></div>
+<form method="post" action="@(isNew ? "/content/reviews/new" : $"/content/reviews/{Model.Id}")" class="card" style="max-width:760px">
+    <div class="card-body stack">
+        <div asp-validation-summary="ModelOnly"></div>
+        <div class="field"><label asp-for="Quote"></label><textarea asp-for="Quote" class="textarea" rows="4" autofocus></textarea><span asp-validation-for="Quote"></span></div>
+        <div class="form-grid">
+            <div class="field"><label asp-for="Name">Client name</label><input asp-for="Name" class="input"><span asp-validation-for="Name"></span></div>
+            <div class="field"><label asp-for="Role"></label><input asp-for="Role" class="input" placeholder="Founder"></div>
+            <div class="field"><label asp-for="Company"></label><input asp-for="Company" class="input" placeholder="Startup"></div>
+            <div class="row">
+                <label class="field grow"><span class="label">Avatar colour 1</span><input type="color" asp-for="Color1" class="input"></label>
+                <label class="field grow"><span class="label">Avatar colour 2</span><input type="color" asp-for="Color2" class="input"></label>
+            </div>
+            <label class="switch full"><input type="checkbox" asp-for="IsPublished"><span><b>Published</b></span></label>
+        </div>
+        <div class="form-actions"><a class="btn btn-ghost" href="/content/reviews">Cancel</a>@if (User.Has(Permissions.Content.Edit)) { <button class="btn btn-primary">Save review</button> }</div>
+    </div>
+</form>

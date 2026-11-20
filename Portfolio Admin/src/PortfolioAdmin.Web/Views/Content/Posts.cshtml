@@ -1,0 +1,33 @@
+@model List<CmsPost>
+@{ ViewData["Title"] = "Blog posts"; var canEdit = User.Has(Permissions.Content.Edit); }
+<partial name="_Head" model="@(("posts", "Blog posts", "Newest first. The first 3 published posts show on the home page. Drag to reorder.", (string?)"New post"))" />
+<div class="card">
+    @if (Model.Count == 0) { <div class="empty"><div class="empty-icon"><i data-lucide="pen-line"></i></div><h3>No posts yet</h3><p>Write your first article.</p></div> }
+    else
+    {
+        <div class="table-wrap"><table class="table">
+            <thead><tr>@if (canEdit) { <th style="width:32px"></th> }<th>Post</th><th class="hide-sm">Category</th><th class="hide-sm">Date</th><th class="hide-sm">Body</th><th>Status</th><th></th></tr></thead>
+            <tbody data-sortable="@(canEdit ? "/content/posts/reorder" : null)">
+                @foreach (var p in Model)
+                {
+                    <tr data-id="@p.Id" draggable="@(canEdit ? "true" : "false")">
+                        @if (canEdit) { <td><i data-lucide="grip-vertical" class="sortable-handle sm"></i></td> }
+                        <td><a class="row row-link" href="/content/posts/@p.Id">
+                            <span class="thumb" style="--c1:@p.Color1;--c2:@p.Color2">@if (!string.IsNullOrEmpty(p.ImagePath)) { <img src="@p.ImagePath" alt=""> }</span>
+                            <span style="min-width:0"><b class="truncate" style="display:block;max-width:420px">@p.Title</b><span class="small faint">@p.ReadTime read</span></span>
+                        </a></td>
+                        <td class="hide-sm"><span class="tag tone-blue">@p.Category</span></td>
+                        <td class="hide-sm small muted nowrap">@p.PublishDate.ToString("d MMM yyyy")</td>
+                        <td class="hide-sm small">
+                            @if (p.ExternalUrl is not null) { <span class="muted"><i data-lucide="external-link" class="sm"></i> External</span> }
+                            else if (!string.IsNullOrWhiteSpace(p.Body)) { <span style="color:var(--success)">@(p.Body.Split((char[])[' ', '\n'], StringSplitOptions.RemoveEmptyEntries).Length) words</span> }
+                            else { <span class="faint">Coming soon</span> }
+                        </td>
+                        <td>@if (p.IsPublished) { <span class="badge tone-green">Live</span> } else { <span class="badge tone-slate">Draft</span> }</td>
+                        <td class="actions"><partial name="_RowActions" model="@(("posts", p.Id, p.IsPublished, p.Title))" /></td>
+                    </tr>
+                }
+            </tbody>
+        </table></div>
+    }
+</div>

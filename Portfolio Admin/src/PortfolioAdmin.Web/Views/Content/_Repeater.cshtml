@@ -1,0 +1,12 @@
+@*
+    A list editor stored as JSON in a hidden input.
+    Model: (Name, Value, Shape: object|tuple|string, FieldsJson, AddLabel)
+*@
+@model (string Name, string? Value, string Shape, string FieldsJson, string AddLabel)
+@{ var id = "rep-" + Model.Name.ToLowerInvariant(); }
+<input type="hidden" name="@Model.Name" id="@id" value="@Model.Value" data-repeater-value>
+<div data-repeater data-target="@id" data-shape="@Model.Shape" data-fields="@Model.FieldsJson">
+    <div class="repeater"></div>
+    <button type="button" class="btn btn-soft btn-sm" data-rep-add style="margin-top:10px"><i data-lucide="plus"></i>@Model.AddLabel</button>
+</div>
+<span class="field-validation-error">@Html.ValidationMessage(Model.Name)</span>
