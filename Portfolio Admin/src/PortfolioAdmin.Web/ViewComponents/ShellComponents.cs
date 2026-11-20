@@ -12,7 +12,8 @@ public record NavGroup(string Label, List<NavItem> Items);
 /// <summary>Sidebar navigation. Only shows modules the user has permission for (and modules that exist).</summary>
 public class SidebarViewComponent(AppDbContext db) : ViewComponent
 {
-    public async Task<IViewComponentResult> InvokeAsync()
+    /// <param name="variant">"side" (dock / sidebar), "top" (top navigation) or "cmd" (bottom command bar).</param>
+    public async Task<IViewComponentResult> InvokeAsync(string variant = "side")
     {
         var u = UserClaimsPrincipal;
         var groups = new List<NavGroup>();
@@ -60,7 +61,12 @@ public class SidebarViewComponent(AppDbContext db) : ViewComponent
         system.Add(new("Settings", "/account/profile", "settings"));
         groups.Add(new("System", system));
 
-        return View(groups);
+        return variant switch
+        {
+            "top" => View("Top", groups),
+            "cmd" => View("Cmd", groups),
+            _ => View(groups),
+        };
     }
 }
 

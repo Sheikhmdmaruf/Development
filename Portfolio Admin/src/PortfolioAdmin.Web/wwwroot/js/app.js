@@ -45,6 +45,25 @@
   });
   document.addEventListener('themechange', () => { syncThemeButtons(); renderCharts(); });
 
+  // ---------------------------------------------------------------- navigation layout (dock / sidebar / top)
+  function syncLayoutButtons() {
+    const cur = ['dock', 'sidebar', 'topnav'].find(l => document.documentElement.classList.contains('layout-' + l));
+    $$('[data-layout-set]').forEach(b => b.classList.toggle('active', b.dataset.layoutSet === cur));
+  }
+  document.addEventListener('click', e => { const b = e.target.closest('[data-layout-set]'); if (b) window.__setLayout(b.dataset.layoutSet); });
+  document.addEventListener('layoutchange', () => { syncLayoutButtons(); setTimeout(renderCharts, 300); });
+  document.addEventListener('DOMContentLoaded', syncLayoutButtons);
+  if (document.readyState !== 'loading') syncLayoutButtons();
+
+  // ---------------------------------------------------------------- glass spotlight follows the pointer
+  document.addEventListener('pointermove', e => {
+    const card = e.target.closest?.('.card');
+    if (!card) return;
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+    card.style.setProperty('--my', `${e.clientY - r.top}px`);
+  }, { passive: true });
+
   // ---------------------------------------------------------------- sidebar
   document.addEventListener('click', e => {
     if (e.target.closest('[data-sidebar-collapse]')) {

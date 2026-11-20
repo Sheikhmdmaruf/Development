@@ -15,6 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/app.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/shell.css" asp-append-version="true">
     <link rel="icon" href="~/favicon.svg" type="image/svg+xml">
 </head>
 <body>
@@ -23,8 +24,11 @@
     <div class="scrim"></div>
 
     <div class="main">
+        <div class="shell-head">
         <header class="topbar">
             <button class="icon-btn mobile-only" data-sidebar-open aria-label="Open menu"><i data-lucide="menu"></i></button>
+            <a class="topbar-brand" href="/"><span class="brand-mark">M</span><span class="brand-name">Maruf Admin</span></a>
+            <div class="topbar-title"><span class="eyebrow">Maruf Admin</span><b class="truncate">@title</b></div>
             <button class="icon-btn desktop-only" data-sidebar-collapse aria-label="Collapse sidebar"><i data-lucide="panel-left"></i></button>
             <button class="search-trigger" data-palette-open type="button" aria-label="Search">
                 <i data-lucide="search"></i><span>Search contacts, content, websites…</span><kbd>Ctrl K</kbd>
@@ -84,14 +88,24 @@
                         </div>
                     </div>
                     <div class="sep"></div>
+                    <div class="menu-head small faint" style="padding-bottom:4px">Navigation layout</div>
+                    <div class="layout-switch">
+                        <button type="button" data-layout-set="dock"><i data-lucide="panel-left-dashed"></i>Dock</button>
+                        <button type="button" data-layout-set="sidebar"><i data-lucide="panel-left"></i>Sidebar</button>
+                        <button type="button" data-layout-set="topnav"><i data-lucide="panel-top"></i>Top</button>
+                    </div>
+                    <div class="sep"></div>
                     <form method="post" action="/logout"><button class="danger"><i data-lucide="log-out"></i>Sign out</button></form>
                 </div>
             </div>
         </header>
+        @await Component.InvokeAsync("Sidebar", new { variant = "top" })
+        </div>
 
         <main class="page" id="content">
             @RenderBody()
         </main>
+        @await Component.InvokeAsync("Sidebar", new { variant = "cmd" })
     </div>
 </div>
 
