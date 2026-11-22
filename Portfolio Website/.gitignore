@@ -6,3 +6,4 @@ dist
 # local env (dashboard URL + site key)
 .env.local
 .env.*.local
+.vercel
