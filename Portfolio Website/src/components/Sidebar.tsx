@@ -42,7 +42,7 @@ export default function Sidebar({ theme, setTheme }: { theme: Theme; setTheme: (
         <div className="nav-group">
           <Link to="/" className="panel nav-profile">
             <Avatar />
-            <span><div className="nav-name">Sheikh Md Maruf</div><div className="nav-role">UI/UX &amp; brand designer</div></span>
+            <span><div className="nav-name">Sheikh Md Maruf</div><div className="nav-role">Senior Product Designer</div></span>
           </Link>
           <div className="nav-status-strip"><span className="status"><i />{site('availability', 'Available for work')}</span></div>
         </div>
