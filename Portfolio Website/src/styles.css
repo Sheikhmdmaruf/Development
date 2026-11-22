@@ -168,8 +168,8 @@ h1 .m{display:block;color:var(--muted)}
 .stags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
 .stags span{font-size:14px;color:var(--text-2);background:var(--raised);padding:3px 9px;border-radius:var(--r-round)}
 .sstrip{position:absolute;left:0;right:0;bottom:0;height:48px;padding:0 24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-size:15px}
-.sstrip .v{display:flex;align-items:center;gap:6px;color:var(--text-2);transition:color .2s}
-.scard:hover .sstrip .v{color:var(--text)}
+.sstrip .v{height:32px;padding:0 12px;display:inline-flex;align-items:center;gap:6px;flex:none;border-radius:var(--r-round);background:var(--raised);outline:1px solid var(--border);outline-offset:-1px;color:var(--text);font-size:15px;white-space:nowrap;transition:background .2s,color .2s}
+.scard:hover .sstrip .v{background:var(--btn);color:var(--btn-text);outline-color:transparent}
 
 /* ================= PROCESS ================= */
 .step{padding:24px;display:flex;flex-direction:column;gap:10px;min-height:220px}
