@@ -1,9 +1,0 @@
-@model string
-<div class="page-head">
-    <div><span class="eyebrow">Settings</span><h1>Account settings</h1><p>Your profile, password and notifications.</p></div>
-</div>
-<div class="tabs" style="margin-bottom:20px">
-    <a href="/account/profile" class="@(Model == "profile" ? "active" : null)"><i data-lucide="user-round" class="sm"></i>Profile</a>
-    <a href="/account/password" class="@(Model == "password" ? "active" : null)"><i data-lucide="key-round" class="sm"></i>Security</a>
-    <a href="/account/notifications" class="@(Model == "notifications" ? "active" : null)"><i data-lucide="bell-ring" class="sm"></i>Notifications</a>
-</div>

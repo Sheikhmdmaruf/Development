@@ -1,8 +1,0 @@
-@model (string Kind, string Title, string Text, string? NewLabel)
-<div class="page-head">
-    <div><span class="eyebrow">Portfolio content</span><h1>@Model.Title</h1><p>@Model.Text</p></div>
-    @if (Model.NewLabel is not null && User.Has(Permissions.Content.Edit))
-    {
-        <div class="page-actions"><a class="btn btn-primary" href="/content/@Model.Kind/new"><i data-lucide="plus"></i>@Model.NewLabel</a></div>
-    }
-</div>
