@@ -1,9 +1,7 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { POSTS, PROJECTS } from '../data/content';
+import { useEffect, useState, type ReactNode } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { site } from '../data/live';
-import { postHref, slug } from '../lib';
-import { ArrowUpRight, Dribbble, GitHub, Grid, Home, LinkedIn, Mail, Menu, Moon, Pen, Search, Send, Services, Sun, User } from './Icons';
+import { ArrowUpRight, Dribbble, GitHub, Grid, Home, LinkedIn, Mail, Menu, Moon, Pen, Send, Services, Sun, User } from './Icons';
 
 export type Theme = 'dark' | 'light';
 
@@ -81,7 +79,6 @@ export default function Sidebar({ theme, setTheme }: { theme: Theme; setTheme: (
             </div>
           </div>
           <div className="panel nav-panel nav-bottom">
-            <NavSearch />
             <a href="#contact" className="btn btn-full" onClick={() => setOpen(false)}><Send />Start a project</a>
           </div>
         </div>
@@ -93,63 +90,4 @@ export default function Sidebar({ theme, setTheme }: { theme: Theme; setTheme: (
 function Avatar() {
   const [failed, setFailed] = useState(false);
   return <span className="avatar">{failed ? 'SM' : <img src={AVATAR} alt="Sheikh Md Maruf" onError={() => setFailed(true)} />}</span>;
-}
-
-interface Hit { t: string; s: string; h: string; k?: string }
-
-/** Sidebar search over pages, projects and blog posts. */
-function NavSearch() {
-  const navigate = useNavigate();
-  const formRef = useRef<HTMLFormElement>(null);
-  const [q, setQ] = useState('');
-  const [sel, setSel] = useState(0);
-  const [visible, setVisible] = useState(false);
-
-  const all = useMemo<Hit[]>(() => [
-    { t: 'Home', s: 'Page', h: '/' }, { t: 'About', s: 'Page', h: '/about' },
-    { t: 'Work', s: 'Page', h: '/work' }, { t: 'Blog', s: 'Page', h: '/blog' },
-    { t: 'Services', s: 'Page', h: '/services' }, { t: 'FAQ', s: 'Page', h: '/#faq' },
-    ...PROJECTS.map(p => ({ t: p.t, s: 'Project · ' + p.cat, h: '/project/' + slug(p), k: p.sum + ' ' + p.hl })),
-    ...POSTS.map(b => ({ t: b.t, s: 'Blog · ' + b.cat, h: postHref(b) })),
-  ], []);
-
-  const query = q.trim().toLowerCase();
-  const found = query ? all.filter(i => `${i.t} ${i.s} ${i.k || ''}`.toLowerCase().includes(query)).slice(0, 8) : [];
-
-  useEffect(() => {
-    const close = (e: MouseEvent) => { if (!formRef.current?.contains(e.target as Node)) setVisible(false); };
-    document.addEventListener('click', close);
-    return () => document.removeEventListener('click', close);
-  }, []);
-
-  const go = (h: string) => {
-    setVisible(false); setQ('');
-    if (h.startsWith('http')) window.open(h, '_blank', 'noopener'); else navigate(h);
-  };
-
-  return (
-    <form className="nav-search" role="search" autoComplete="off" ref={formRef}
-      onSubmit={e => { e.preventDefault(); if (found[sel]) go(found[sel].h); }}>
-      <Search />
-      <label className="visually-hidden" htmlFor="navSearchInput">Search</label>
-      <input className="nav-search-input" id="navSearchInput" type="search" placeholder="Search" value={q}
-        onChange={e => { setQ(e.target.value); setSel(0); setVisible(true); }}
-        onKeyDown={e => {
-          if (e.key === 'Escape') { setVisible(false); e.currentTarget.blur(); return; }
-          if (!found.length) return;
-          if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-            e.preventDefault();
-            setSel(s => (s + (e.key === 'ArrowDown' ? 1 : -1) + found.length) % found.length);
-          }
-        }} />
-      <div className="search-results" hidden={!visible || !query}>
-        {found.length
-          ? found.map((i, n) => (
-            <a key={i.h + i.t} href={i.h} className={n === sel ? 'on' : undefined}
-              onClick={e => { e.preventDefault(); go(i.h); }}>{i.t}<span>{i.s}</span></a>
-          ))
-          : <div className="none">No results</div>}
-      </div>
-    </form>
-  );
 }
