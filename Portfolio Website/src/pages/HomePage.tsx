@@ -18,11 +18,11 @@ function Counter({ end, suffix = '' }: { end: number; suffix?: string }) {
   return <>{n}{suffix}</>;
 }
 
-function Stat({ label, icon, end, suffix, cap }: { label: string; icon: ReactNode; end: number; suffix?: string; cap: string }) {
+function Stat({ label, icon, end, suffix }: { label: string; icon: ReactNode; end: number; suffix?: string }) {
   return (
     <div className="panel metric">
       <div className="metric-top">{label} {icon}</div>
-      <div><div className="metric-val"><Counter end={end} suffix={suffix} /></div><div className="metric-cap">{cap}</div></div>
+      <div><div className="metric-val"><Counter end={end} suffix={suffix} /></div></div>
     </div>
   );
 }
@@ -69,9 +69,9 @@ export default function HomePage() {
             <Portrait><span className="pill"><span className="status"><i />Sirajganj, Bangladesh</span></span></Portrait>
           </div>
           <div className="stats">
-            <Stat label="Experience" icon={<RawIcon markup={METRIC_ICONS.clock} size={18} />} end={4} suffix="+ yrs" cap="Designing for real clients" />
-            <Stat label="Portfolio" icon={<Grid size={18} strokeWidth={1.6} />} end={16} suffix="+" cap="Projects shared on Dribbble" />
-            <Stat label="Services" icon={<RawIcon markup={METRIC_ICONS.star} size={18} />} end={4} cap="Web, app, dashboard & brand" />
+            <Stat label="Experience" icon={<RawIcon markup={METRIC_ICONS.clock} size={18} />} end={4} suffix="+ yrs" />
+            <Stat label="Portfolio" icon={<Grid size={18} strokeWidth={1.6} />} end={16} suffix="+" />
+            <Stat label="Services" icon={<RawIcon markup={METRIC_ICONS.star} size={18} />} end={4} />
           </div>
           <div className="panel logos">
             <div className="logos-label">Tools I design with</div>
