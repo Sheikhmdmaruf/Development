@@ -65,8 +65,7 @@ export default function Sidebar({ theme, setTheme }: { theme: Theme; setTheme: (
             <a className="nav-item" href="#contact" onClick={() => setOpen(false)}><Mail />Contact</a>
             <External href={site('dribbble_url', 'https://dribbble.com/sheikhmdmaruf')} icon={<Dribbble />} label="Dribbble" />
             <External href={site('github_url', 'https://github.com/Sheikhmdmaruf')} icon={<GitHub />} label="GitHub" />
-            {/* LinkedIn shows once its URL is set in the admin dashboard → Site Settings */}
-            {site('linkedin_url', '') && <External href={site('linkedin_url', '')} icon={<LinkedIn />} label="LinkedIn" />}
+            <External href={site('linkedin_url', 'https://www.linkedin.com/in/sheikhmdmaruf/')} icon={<LinkedIn />} label="LinkedIn" />
           </div>
         </div>
 
