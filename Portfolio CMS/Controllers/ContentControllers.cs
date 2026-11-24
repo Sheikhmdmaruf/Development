@@ -7,6 +7,7 @@ namespace PortfolioCms.Controllers;
 public class ProjectsController(CmsDbContext db) : CrudController<Project>(db)
 {
     protected override string Describe(Project p) => p.Title;
+    protected override string Noun => "Project";
 
     protected override IQueryable<Project> WithChildren(IQueryable<Project> q) =>
         q.Include(p => p.Metrics.OrderBy(m => m.SortOrder))
@@ -32,6 +33,7 @@ public class ProjectsController(CmsDbContext db) : CrudController<Project>(db)
 public class ServicesController(CmsDbContext db) : CrudController<Service>(db)
 {
     protected override string Describe(Service s) => s.Title;
+    protected override string Noun => "Service";
 
     protected override IQueryable<Service> WithChildren(IQueryable<Service> q) =>
         q.Include(s => s.Metrics.OrderBy(m => m.SortOrder))
@@ -57,6 +59,7 @@ public class ServicesController(CmsDbContext db) : CrudController<Service>(db)
 public class PostsController(CmsDbContext db) : CrudController<Post>(db)
 {
     protected override string Describe(Post p) => p.Title;
+    protected override string Noun => "Blog post";
 
     // Newest first, like the blog.
     protected override IQueryable<Post> Ordered(IQueryable<Post> q) => q.OrderByDescending(p => p.PublishedOn).ThenBy(p => p.SortOrder);
@@ -76,14 +79,17 @@ public class PostsController(CmsDbContext db) : CrudController<Post>(db)
 public class ReviewsController(CmsDbContext db) : CrudController<Review>(db)
 {
     protected override string Describe(Review r) => r.Name;
+    protected override string Noun => "Review";
 }
 
 public class FaqController(CmsDbContext db) : CrudController<Faq>(db)
 {
     protected override string Describe(Faq f) => f.Question;
+    protected override string Noun => "Question";
 }
 
 public class ToolsController(CmsDbContext db) : CrudController<Tool>(db)
 {
     protected override string Describe(Tool t) => t.Name;
+    protected override string Noun => "Tool";
 }

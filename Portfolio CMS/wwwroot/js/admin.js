@@ -88,6 +88,13 @@
     navigator.clipboard.writeText(b.dataset.copy).then(() => { const t = b.textContent; b.textContent = 'Copied'; setTimeout(() => b.textContent = t, 1200); });
   });
 
+  // ── Toasts: close on ×, success toasts fade out after 4 seconds ──
+  const closeToast = t => { t.classList.add('hide'); setTimeout(() => t.remove(), 300); };
+  document.querySelectorAll('.toast').forEach(t => {
+    t.querySelector('.toast-close')?.addEventListener('click', () => closeToast(t));
+    if (t.classList.contains('ok')) setTimeout(() => closeToast(t), 4000);
+  });
+
   // ── Mobile menu ──
   document.querySelector('[data-menu]')?.addEventListener('click', () => document.querySelector('.side').classList.toggle('open'));
 })();

@@ -18,6 +18,8 @@ public abstract class CrudController<T>(CmsDbContext db) : Controller where T : 
     /// <summary>Swap the stored child rows for the posted ones.</summary>
     protected virtual void ReplaceChildren(T existing, T posted) { }
     protected abstract string Describe(T item);
+    /// <summary>Name used in toast messages, e.g. "Project".</summary>
+    protected virtual string Noun => "Item";
 
     public virtual async Task<IActionResult> Index() => View(await Ordered(Db.Set<T>().AsNoTracking()).ToListAsync());
 
@@ -35,8 +37,8 @@ public abstract class CrudController<T>(CmsDbContext db) : Controller where T : 
         model.UpdatedAt = DateTime.UtcNow;
         Db.Add(model);
         await Db.SaveChangesAsync();
-        TempData["ok"] = $"Created “{Describe(model)}”.";
-        return RedirectToAction(nameof(Edit), new { id = model.Id });
+        TempData["ok"] = $"{Noun} “{Describe(model)}” created successfully.";
+        return RedirectToAction(nameof(Index));
     }
 
     public async Task<IActionResult> Edit(int id)
@@ -58,8 +60,8 @@ public abstract class CrudController<T>(CmsDbContext db) : Controller where T : 
         existing.UpdatedAt = DateTime.UtcNow;
         ReplaceChildren(existing, model);
         await Db.SaveChangesAsync();
-        TempData["ok"] = $"Saved “{Describe(existing)}”. The website shows it on its next page load.";
-        return RedirectToAction(nameof(Edit), new { id });
+        TempData["ok"] = $"{Noun} “{Describe(existing)}” updated successfully.";
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]

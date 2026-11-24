@@ -45,10 +45,26 @@
             </div>
         </aside>
         <main class="main">
-            @if (TempData["ok"] is string ok) { <div class="flash ok">@ok</div> }
-            @if (TempData["err"] is string err) { <div class="flash err">@err</div> }
             @RenderBody()
         </main>
+    </div>
+    <div class="toasts" aria-live="polite">
+        @if (TempData["ok"] is string ok)
+        {
+            <div class="toast ok" role="status">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>
+                <span>@ok</span>
+                <button type="button" class="toast-close" aria-label="Close">×</button>
+            </div>
+        }
+        @if (TempData["err"] is string err)
+        {
+            <div class="toast err" role="alert">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+                <span>@err</span>
+                <button type="button" class="toast-close" aria-label="Close">×</button>
+            </div>
+        }
     </div>
     @Html.AntiForgeryToken()
     <script src="~/js/admin.js" asp-append-version="true"></script>
