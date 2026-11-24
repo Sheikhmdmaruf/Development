@@ -177,7 +177,7 @@ public class InboxController(CmsDbContext db) : Controller
     public async Task<IActionResult> Delete(int id)
     {
         var s = await db.Submissions.FindAsync(id);
-        if (s is not null) { db.Submissions.Remove(s); await db.SaveChangesAsync(); TempData["ok"] = "Message deleted."; }
+        if (s is not null) { db.Submissions.Remove(s); await db.SaveChangesAsync(); TempData["ok"] = "Message deleted successfully."; }
         return RedirectToAction(nameof(Index));
     }
 }
@@ -299,7 +299,7 @@ public class MediaController(IWebHostEnvironment env) : Controller
     {
         var safe = Path.GetFileName(name);
         var path = Path.Combine(Folder, safe);
-        if (System.IO.File.Exists(path)) { System.IO.File.Delete(path); TempData["ok"] = $"Deleted {safe}."; }
+        if (System.IO.File.Exists(path)) { System.IO.File.Delete(path); TempData["ok"] = $"Image “{safe}” deleted successfully."; }
         return RedirectToAction(nameof(Index));
     }
 }

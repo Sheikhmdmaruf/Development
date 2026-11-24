@@ -71,7 +71,7 @@ public abstract class CrudController<T>(CmsDbContext db) : Controller where T : 
         if (item is null) return NotFound();
         Db.Remove(item);
         await Db.SaveChangesAsync();
-        TempData["ok"] = $"Deleted “{Describe(item)}”.";
+        TempData["ok"] = $"{Noun} “{Describe(item)}” deleted successfully.";
         return RedirectToAction(nameof(Index));
     }
 

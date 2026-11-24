@@ -66,11 +66,74 @@
   document.querySelectorAll('.img-field').forEach(bindImage);
   new MutationObserver(() => document.querySelectorAll('.img-field').forEach(bindImage)).observe(document.body, { childList: true, subtree: true });
 
-  // ── Confirm before deleting ──
-  document.addEventListener('submit', e => {
-    const msg = e.target.dataset.confirm;
-    if (msg && !confirm(msg)) e.preventDefault();
-  });
+  // ── Confirm popup before deleting (any form with data-confirm) ──
+  // Shows a summary of the item (picture, type, name, details, status) taken from the row/card that was clicked.
+  const modal = document.querySelector('[data-confirm-modal]');
+  const KINDS = { projects: 'Project', services: 'Service', posts: 'Blog post', reviews: 'Review', faq: 'FAQ question',
+    tools: 'Tool', experience: 'Experience', social: 'Social link', inbox: 'Message', media: 'Image' };
+  let pendingForm = null, lastFocus = null;
+  const $ = s => modal.querySelector(s);
+
+  function openConfirm(form) {
+    pendingForm = form; lastFocus = document.activeElement;
+    const isDelete = /\/delete/i.test(form.getAttribute('action') || '');
+    const ctrl = (form.getAttribute('action') || '').split('/').filter(Boolean)[0]?.toLowerCase() ?? '';
+    const kind = form.dataset.kind || KINDS[ctrl] || 'Item';
+    const name = form.dataset.name || '';
+    const host = form.closest('tr, .card, .media-item');
+
+    $('[data-confirm-title]').textContent = isDelete ? `Delete this ${kind.toLowerCase()}?` : (form.dataset.confirmTitle || 'Are you sure?');
+    $('[data-confirm-text]').textContent = isDelete
+      ? (form.dataset.confirmText || "It will be removed from the dashboard and your website. This can't be undone.")
+      : form.dataset.confirm;
+    const ok = $('[data-confirm-ok]');
+    ok.disabled = false;
+    ok.textContent = form.dataset.confirmOk || (isDelete ? `Delete ${kind.toLowerCase()}` : 'Continue');
+    ok.className = 'btn ' + (isDelete || form.dataset.danger !== undefined ? 'btn-danger-solid' : 'btn-accent-solid');
+    $('.modal-ico').style.display = isDelete ? '' : 'none';
+
+    // Summary card
+    const summary = $('[data-confirm-summary]');
+    summary.hidden = !name;
+    $('[data-confirm-kind]').textContent = kind;
+    $('[data-confirm-name]').textContent = name;
+    const sub = host?.querySelector('.sub, .card-meta, .card-text, .quote, code')?.textContent.trim() || form.dataset.sub || '';
+    $('[data-confirm-sub]').textContent = sub.length > 90 ? sub.slice(0, 88) + '…' : sub;
+    const media = $('[data-confirm-media]');
+    media.innerHTML = ''; media.style.backgroundImage = '';
+    const pic = host?.querySelector('.thumb, .avatar, .tool-logo, .social-ico, .card-media, .media-item img, .initial');
+    if (pic) {
+      if (pic.classList.contains('card-media')) media.setAttribute('style', pic.getAttribute('style') || '');
+      else media.appendChild(pic.cloneNode(true));
+    }
+    const status = host?.querySelector('.pill.ok, .pill.off');
+    const st = $('[data-confirm-status]'); st.innerHTML = '';
+    if (status) st.appendChild(status.cloneNode(true));
+
+    modal.hidden = false;
+    $('[data-confirm-cancel]').focus(); // safer default
+  }
+  function closeConfirm() {
+    if (!modal) return;
+    modal.hidden = true; pendingForm = null;
+    lastFocus?.focus?.();
+  }
+  if (modal) {
+    document.addEventListener('submit', e => {
+      const form = e.target;
+      if (!form.matches('form[data-confirm]')) return;
+      e.preventDefault();
+      openConfirm(form);
+    });
+    $('[data-confirm-cancel]').addEventListener('click', closeConfirm);
+    $('[data-confirm-ok]').addEventListener('click', () => {
+      const f = pendingForm; if (!f) return;
+      const ok = $('[data-confirm-ok]'); ok.disabled = true; ok.textContent = 'Deleting…';
+      f.submit(); // submit() skips the submit event, so the popup doesn't open again
+    });
+    modal.addEventListener('click', e => { if (e.target === modal) closeConfirm(); });
+    document.addEventListener('keydown', e => { if (!modal.hidden && e.key === 'Escape') closeConfirm(); });
+  }
 
   // ── Slug preview from title ──
   const title = document.querySelector('[data-slug-from]'), slug = document.querySelector('[data-slug]');

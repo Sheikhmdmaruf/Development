@@ -8,7 +8,7 @@
     <div class="actions">
         <a class="btn primary" href="@reply">Reply by email</a>
         <form asp-antiforgery="true" class="inline" method="post" action="/inbox/markunread/@Model.Id"><button class="btn">Mark unread</button></form>
-        <form asp-antiforgery="true" class="inline" method="post" action="/inbox/delete/@Model.Id" data-confirm="Delete this message?"><button class="btn danger">Delete</button></form>
+        <form asp-antiforgery="true" class="inline" method="post" action="/inbox/delete/@Model.Id" data-confirm="Delete this message?" data-name="Message from @Model.Name" data-sub="@Model.Email"><button class="btn danger">Delete</button></form>
     </div>
 </div>
 <div class="panel"><div class="panel-body">

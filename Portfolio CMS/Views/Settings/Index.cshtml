@@ -45,7 +45,7 @@
         <code class="key">VITE_ADMIN_API_URL=@apiUrl<br />VITE_SITE_KEY=@ViewBag.SiteKey</code>
         <div class="actions" style="justify-content:flex-start">
             <button type="button" class="btn sm" data-copy="VITE_ADMIN_API_URL=@apiUrl&#10;VITE_SITE_KEY=@ViewBag.SiteKey">Copy</button>
-            <form asp-antiforgery="true" class="inline" method="post" action="/settings/regeneratekey" data-confirm="Make a new key? The website stops loading content until you update VITE_SITE_KEY."><button class="btn sm danger">Make a new key</button></form>
+            <form asp-antiforgery="true" class="inline" method="post" action="/settings/regeneratekey" data-confirm="Make a new key? The website stops loading content until you update VITE_SITE_KEY." data-confirm-title="Make a new site key?" data-confirm-ok="Make new key" data-danger><button class="btn sm danger">Make a new key</button></form>
         </div>
         <p class="muted small">Websites allowed to use the API (set in <code>appsettings.json</code> → Cms:AllowedOrigins): @string.Join(", ", origins)</p>
     </div>

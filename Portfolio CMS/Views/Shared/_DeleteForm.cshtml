@@ -2,7 +2,7 @@
 @{ var c = ViewContext.RouteData.Values["controller"]; }
 @if (Model.Id != 0)
 {
-    <form asp-antiforgery="true" method="post" action="/@c/delete/@Model.Id" data-confirm="Delete “@Model.Name”? This can't be undone." style="margin-top:14px;text-align:right">
+    <form asp-antiforgery="true" method="post" action="/@c/delete/@Model.Id" data-confirm="Delete “@Model.Name”? This can't be undone." data-name="@Model.Name" style="margin-top:14px;text-align:right">
         <button class="btn danger">Delete this item</button>
     </form>
 }

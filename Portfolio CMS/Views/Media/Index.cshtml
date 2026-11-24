@@ -20,7 +20,7 @@
                 <span class="muted small">@(f.Length / 1024) KB · @f.CreationTime.ToString("d MMM yyyy")</span>
                 <div class="actions" style="justify-content:flex-start">
                     <button type="button" class="btn sm" data-copy="@path">Copy path</button>
-                    <form asp-antiforgery="true" class="inline" method="post" action="/media/delete?name=@Uri.EscapeDataString(f.Name)" data-confirm="Delete @f.Name? Pages using it will lose the image."><button class="btn sm danger">Delete</button></form>
+                    <form asp-antiforgery="true" class="inline" method="post" action="/media/delete?name=@Uri.EscapeDataString(f.Name)" data-confirm="Delete @f.Name? Pages using it will lose the image." data-name="@f.Name" data-confirm-text="Pages that use this image will lose it. This can't be undone."><button class="btn sm danger">Delete</button></form>
                 </div>
             </div>
         </div>
