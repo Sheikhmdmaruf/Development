@@ -11,22 +11,60 @@ using PortfolioCms.Models;
 
 namespace PortfolioCms.Controllers;
 
+/// <summary>Everything the dashboard home page shows.</summary>
+public record DashboardVm(
+    (int Total, int Hidden) Projects, (int Total, int Hidden) Services, (int Total, int Hidden) Posts,
+    (int Total, int Hidden) Reviews, int Unread, int Messages, DateTime? LatestPost,
+    List<(string Tone, string Title, string Detail, string Href, string Go)> Attention,
+    List<Submission> Latest,
+    List<(string Kind, int Id, string Title, DateTime UpdatedAt, string Ctrl)> Recent);
+
 public class HomeController(CmsDbContext db) : Controller
 {
     public async Task<IActionResult> Index()
     {
-        ViewBag.Projects = await db.Projects.CountAsync();
-        ViewBag.Services = await db.Services.CountAsync();
-        ViewBag.Posts = await db.Posts.CountAsync();
-        ViewBag.Reviews = await db.Reviews.CountAsync();
-        ViewBag.Unread = await db.Submissions.CountAsync(s => !s.IsRead);
-        ViewBag.Latest = await db.Submissions.AsNoTracking().OrderByDescending(s => s.CreatedAt).Take(5).ToListAsync();
-        ViewBag.Recent = (await db.Projects.AsNoTracking().Select(p => new { Kind = "Project", Id = p.Id, Title = p.Title, p.UpdatedAt, Ctrl = "Projects" }).ToListAsync())
-            .Concat(await db.Posts.AsNoTracking().Select(p => new { Kind = "Blog post", Id = p.Id, Title = p.Title, p.UpdatedAt, Ctrl = "Posts" }).ToListAsync())
-            .Concat(await db.Services.AsNoTracking().Select(p => new { Kind = "Service", Id = p.Id, Title = p.Title, p.UpdatedAt, Ctrl = "Services" }).ToListAsync())
+        async Task<(int, int)> Count<T>(IQueryable<T> q) where T : Orderable =>
+            (await q.CountAsync(), await q.CountAsync(x => !x.IsPublished));
+
+        var unread = await db.Submissions.CountAsync(s => !s.IsRead);
+        var settings = await db.SiteSettings.AsNoTracking().ToDictionaryAsync(s => s.Key, s => s.Value);
+        string Setting(string k) => settings.TryGetValue(k, out var v) ? v : "";
+
+        // Things worth fixing, most important first.
+        var todo = new List<(string, string, string, string, string)>();
+        if (unread > 0)
+            todo.Add(("warm", $"{unread} unread message{(unread == 1 ? "" : "s")}", "Someone contacted you from the website.", "/inbox", "Open inbox"));
+        var placeholderJobs = await db.Experiences.CountAsync(e => e.When.Contains("XX"));
+        if (placeholderJobs > 0)
+            todo.Add(("warn", $"{placeholderJobs} experience date{(placeholderJobs == 1 ? "" : "s")} still “20XX”", "Add the real years to your About page timeline.", "/experience", "Fix dates"));
+        var sampleReviews = await db.Reviews.CountAsync(r => r.Name == "Client name");
+        if (sampleReviews > 0)
+            todo.Add(("warn", $"{sampleReviews} sample review{(sampleReviews == 1 ? "" : "s")}", "Replace “Client name” reviews with real ones.", "/reviews", "Edit reviews"));
+        var email = Setting("contact_email");
+        if (string.IsNullOrWhiteSpace(email) || email.Contains("yourdomain"))
+            todo.Add(("accent", "Contact email not set", "The website still shows a placeholder email.", "/settings", "Set email"));
+        if (string.IsNullOrWhiteSpace(Setting("hero_photo")))
+            todo.Add(("accent", "No profile photo uploaded", "Upload one on the Home page settings.", "/hero", "Upload photo"));
+        var toolsNoLogo = await db.Tools.CountAsync(t => t.ImageUrl == null || t.ImageUrl == "");
+        if (toolsNoLogo > 0)
+            todo.Add(("accent", $"{toolsNoLogo} tool{(toolsNoLogo == 1 ? "" : "s")} without a logo", "Logos show on the Home and About pages.", "/tools", "Add logos"));
+        if (todo.Count == 0)
+            todo.Add(("ok", "All caught up", "Nothing needs your attention right now.", "/", "—"));
+
+        var recent = (await db.Projects.AsNoTracking().Select(p => new { Kind = "Project", p.Id, p.Title, p.UpdatedAt, Ctrl = "projects" }).ToListAsync())
+            .Concat(await db.Posts.AsNoTracking().Select(p => new { Kind = "Blog post", p.Id, p.Title, p.UpdatedAt, Ctrl = "posts" }).ToListAsync())
+            .Concat(await db.Services.AsNoTracking().Select(p => new { Kind = "Service", p.Id, p.Title, p.UpdatedAt, Ctrl = "services" }).ToListAsync())
+            .Concat(await db.Experiences.AsNoTracking().Select(p => new { Kind = "Experience", p.Id, p.Title, p.UpdatedAt, Ctrl = "experience" }).ToListAsync())
             .OrderByDescending(x => x.UpdatedAt).Take(6)
             .Select(x => (x.Kind, x.Id, x.Title, x.UpdatedAt, x.Ctrl)).ToList();
-        return View();
+
+        return View(new DashboardVm(
+            await Count(db.Projects), await Count(db.Services), await Count(db.Posts), await Count(db.Reviews),
+            unread, await db.Submissions.CountAsync(),
+            await db.Posts.Where(p => p.IsPublished).MaxAsync(p => (DateTime?)p.PublishedOn),
+            todo,
+            await db.Submissions.AsNoTracking().OrderByDescending(s => s.CreatedAt).Take(5).ToListAsync(),
+            recent));
     }
 
     [AllowAnonymous]
