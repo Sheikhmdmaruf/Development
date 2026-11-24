@@ -30,13 +30,14 @@ public static class Seeder
     /// <summary>One editable field of a hero section. Kind: text, area or image. Default = the website's current text.</summary>
     public record HeroField(string Key, string Label, string Kind, string Default, string Hint = "");
 
-    /// <summary>Fields on the dashboard's Hero section page, grouped by page. Stored as site settings.</summary>
-    public static readonly (string Group, HeroField[] Fields)[] HeroGroups =
+    private static readonly HeroField Photo =
+        new("hero_photo", "Profile photo", "image", "", "Shown on both the Home and About page. Empty = the photo in the website's public/images/maruf.jpg");
+
+    /// <summary>Fields on the dashboard's "Home page" (Page = home) and "About page" (Page = about) menus. Stored as site settings.</summary>
+    public static readonly (string Page, string Group, HeroField[] Fields)[] HeroGroups =
     [
-        ("Photo", [
-            new("hero_photo", "Profile photo", "image", "", "Used on the Home and About page. Empty = the photo in the website's public/images/maruf.jpg"),
-        ]),
-        ("Home page hero", [
+        ("home", "Profile photo", [Photo]),
+        ("home", "Hero section", [
             new("home_hero_badge", "Announcement badge", "text", "New"),
             new("home_hero_announce", "Announcement text", "text", "", "Empty = \"Latest: <your newest project> design\""),
             new("home_hero_title", "Headline", "text", "I design digital experiences"),
@@ -48,7 +49,7 @@ public static class Seeder
             new("home_hero_btn2_link", "Second button link", "text", "#work"),
             new("home_hero_location", "Location on the photo", "text", "Sirajganj, Bangladesh"),
         ]),
-        ("Home page numbers", [
+        ("home", "Numbers under the hero", [
             new("stat1_label", "Box 1 — label", "text", "Experience"),
             new("stat1_value", "Box 1 — number", "text", "4"),
             new("stat1_suffix", "Box 1 — after the number", "text", "+ yrs"),
@@ -59,7 +60,8 @@ public static class Seeder
             new("stat3_value", "Box 3 — number", "text", "4"),
             new("stat3_suffix", "Box 3 — after the number", "text", ""),
         ]),
-        ("About page hero", [
+        ("about", "Profile photo", [Photo]),
+        ("about", "Hero section", [
             new("about_hero_badge", "Announcement badge", "text", "Open"),
             new("about_hero_announce", "Announcement text", "text", "Available for new projects"),
             new("about_hero_title", "Headline", "text", "Part designer,"),
@@ -81,7 +83,7 @@ public static class Seeder
                 db.SiteSettings.Add(new SiteSetting { Key = key, Label = label });
 
         // Hero fields start with the website's current text, so the form shows what is live now.
-        foreach (var f in HeroGroups.SelectMany(g => g.Fields))
+        foreach (var f in HeroGroups.SelectMany(g => g.Fields).DistinctBy(f => f.Key))
             if (!await db.SiteSettings.AnyAsync(s => s.Key == f.Key))
                 db.SiteSettings.Add(new SiteSetting { Key = f.Key, Label = f.Label, Value = f.Default });
 

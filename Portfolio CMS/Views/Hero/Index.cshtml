@@ -1,20 +1,25 @@
 @model Dictionary<string, string>
 @using PortfolioCms.Data
 @{
-    ViewData["Title"] = "Hero section";
+    var page = (string)ViewBag.Page;            // "home" or "about"
+    var isHome = page == "home";
+    ViewData["Title"] = isHome ? "Home page" : "About page";
+    var siteUrl = isHome ? "http://localhost:5173/" : "http://localhost:5173/about";
     string V(string key) => Model.TryGetValue(key, out var v) ? v : "";
 }
 <div class="head">
-    <div><div class="crumb">Content</div><h1>Hero section</h1></div>
+    <div><div class="crumb">Pages</div><h1>@ViewData["Title"]</h1></div>
     <div class="actions">
-        <a class="btn" href="http://localhost:5173/" target="_blank" rel="noopener">View Home ↗</a>
-        <a class="btn" href="http://localhost:5173/about" target="_blank" rel="noopener">View About ↗</a>
+        @if (!isHome) { <a class="btn" href="/experience">Edit Experience</a> }
+        <a class="btn" href="@siteUrl" target="_blank" rel="noopener">View on website ↗</a>
     </div>
 </div>
-<p class="muted small" style="margin:-8px 0 14px">The top section of the Home and About pages. Leave a box empty to use the website's built-in text.</p>
+<p class="muted small" style="margin:-8px 0 14px">
+    The top section of the @(isHome ? "Home" : "About") page. Leave a box empty to use the website's built-in text.
+</p>
 
-<form method="post">
-    @foreach (var (group, fields) in Seeder.HeroGroups)
+<form method="post" action="@(isHome ? "/hero" : "/hero/about")" asp-antiforgery="true">
+    @foreach (var (_, group, fields) in Seeder.HeroGroups.Where(g => g.Page == page))
     {
         <div class="panel">
             <div class="panel-head"><h2>@group</h2></div>
@@ -44,6 +49,6 @@
     }
     <div class="sticky-save">
         <span class="muted small">Changes show on the website on its next page load.</span>
-        <button class="btn primary" type="submit">Save hero section</button>
+        <button class="btn primary" type="submit">Save @(isHome ? "Home page" : "About page")</button>
     </div>
 </form>

@@ -177,25 +177,37 @@ public class SettingsController(CmsDbContext db, IConfiguration config) : Contro
     }
 }
 
-/// <summary>Edit the hero sections of the Home and About pages (stored as site settings).</summary>
+/// <summary>Two dashboard menus: "Home page" (/hero) and "About page" (/hero/about). Values are site settings.</summary>
 public class HeroController(CmsDbContext db) : Controller
 {
-    public async Task<IActionResult> Index()
-    {
-        var values = (await db.SiteSettings.AsNoTracking().ToListAsync())
-            .Where(s => Seeder.HeroKeys.Contains(s.Key)).ToDictionary(s => s.Key, s => s.Value);
-        return View(values);
-    }
+    public Task<IActionResult> Index() => Show("home");
+    public Task<IActionResult> About() => Show("about");
 
     [HttpPost]
-    public async Task<IActionResult> Index(Dictionary<string, string> values)
+    public Task<IActionResult> Index(Dictionary<string, string> values) => Save("home", values);
+    [HttpPost]
+    public Task<IActionResult> About(Dictionary<string, string> values) => Save("about", values);
+
+    private static HashSet<string> KeysOf(string page) =>
+        Seeder.HeroGroups.Where(g => g.Page == page).SelectMany(g => g.Fields).Select(f => f.Key).ToHashSet();
+
+    private async Task<IActionResult> Show(string page)
     {
-        var rows = (await db.SiteSettings.ToListAsync()).Where(s => Seeder.HeroKeys.Contains(s.Key));
-        foreach (var s in rows)
+        var keys = KeysOf(page);
+        ViewBag.Page = page;
+        var values = (await db.SiteSettings.AsNoTracking().ToListAsync())
+            .Where(s => keys.Contains(s.Key)).ToDictionary(s => s.Key, s => s.Value);
+        return View("Index", values);
+    }
+
+    private async Task<IActionResult> Save(string page, Dictionary<string, string> values)
+    {
+        var keys = KeysOf(page); // only this page's fields are changed
+        foreach (var s in (await db.SiteSettings.ToListAsync()).Where(s => keys.Contains(s.Key)))
             if (values.TryGetValue(s.Key, out var v)) s.Value = (v ?? "").Trim();
         await db.SaveChangesAsync();
-        TempData["ok"] = "Hero section updated successfully.";
-        return RedirectToAction(nameof(Index));
+        TempData["ok"] = page == "home" ? "Home page updated successfully." : "About page updated successfully.";
+        return RedirectToAction(page == "home" ? nameof(Index) : nameof(About));
     }
 }
 
