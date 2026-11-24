@@ -93,3 +93,9 @@ public class ToolsController(CmsDbContext db) : CrudController<Tool>(db)
     protected override string Describe(Tool t) => t.Name;
     protected override string Noun => "Tool";
 }
+
+public class ExperienceController(CmsDbContext db) : CrudController<Experience>(db)
+{
+    protected override string Describe(Experience e) => e.Title;
+    protected override string Noun => "Experience";
+}

@@ -85,6 +85,13 @@ public static class Seeder
             if (!await db.SiteSettings.AnyAsync(s => s.Key == f.Key))
                 db.SiteSettings.Add(new SiteSetting { Key = f.Key, Label = f.Label, Value = f.Default });
 
+        // Experience timeline (About page) — starts with the entries that were in the website code.
+        if (!await db.Experiences.AnyAsync())
+            db.Experiences.AddRange(
+                new Experience { SortOrder = 0, When = "2024 — Now", Title = "Freelance UI/UX Designer", Subtitle = "Fiverr & direct clients", Location = "Remote", IsCurrent = true },
+                new Experience { SortOrder = 1, When = "20XX — 20XX", Title = "UI/UX Designer", Subtitle = "Netro Systems", Location = "Bangladesh" },
+                new Experience { SortOrder = 2, When = "20XX — 20XX", Title = "Graphic Designer", Subtitle = "Brand, print & social media design", Location = "Bangladesh" });
+
         if (!await db.SiteSettings.AnyAsync(s => s.Key == SiteKeySetting))
             db.SiteSettings.Add(new SiteSetting { Key = SiteKeySetting, Label = "Public site key", Value = NewSiteKey() });
 

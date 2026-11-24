@@ -5,16 +5,11 @@ import Reveal from '../components/Reveal';
 import { SectionHead } from '../components/Sections';
 import { HeroButton, Portrait } from './HomePage';
 import { site, toolLogo } from '../data/live';
+// Experience timeline: edit it in the dashboard → Experience (built-in copy in data/content.ts)
+import { EXPERIENCE } from '../data/content';
 
 // TODO: replace industry names with your client logos: <img className="client-logo-image" src="/images/client-1.svg" alt="Client" />
 const CLIENTS = ['Fintech', 'Food delivery', 'E-commerce', 'Healthcare', 'Travel', 'Gaming', 'AI & SaaS', 'Automotive'];
-
-// TODO: check dates and roles
-const EXPERIENCE = [
-  { when: '2024 — Now', title: 'Freelance UI/UX Designer', sub: 'Fiverr & direct clients', where: 'Remote', current: true },
-  { when: '20XX — 20XX', title: 'UI/UX Designer', sub: 'Netro Systems', where: 'Bangladesh' },
-  { when: '20XX — 20XX', title: 'Graphic Designer', sub: 'Brand, print & social media design', where: 'Bangladesh' },
-];
 
 const TOOLS: [string, string, string][] = [
   ['Figma', 'UI design and prototyping', '<path d="M9 3h3v6H9a3 3 0 0 1 0-6zM12 3h3a3 3 0 0 1 0 6h-3zM9 9h3v6H9a3 3 0 0 1 0-6zM12 12a3 3 0 1 1 6 0 3 3 0 0 1-6 0zM9 15h3v3a3 3 0 1 1-3-3z"/>'],
@@ -65,8 +60,8 @@ export default function AboutPage() {
         <SectionHead title="Experience" text="Freelance work and the teams I have worked with." />
         <Reveal className="timeline-shell">
           <div className="timeline">
-            {EXPERIENCE.map(x => (
-              <div className="timeline-row" key={x.title}>
+            {EXPERIENCE.map((x, i) => (
+              <div className="timeline-row" key={i + x.title}>
                 <div className="timeline-body">
                   <p className="timeline-meta">{x.when}</p>
                   <div className="timeline-text">

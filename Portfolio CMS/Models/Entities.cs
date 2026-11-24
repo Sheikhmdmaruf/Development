@@ -168,6 +168,16 @@ public class Faq : Orderable
     [Required, StringLength(1000)] public string Answer { get; set; } = "";
 }
 
+/// <summary>One row of the Experience timeline on the About page.</summary>
+public class Experience : Orderable
+{
+    [Required, StringLength(40), Display(Name = "Dates (e.g. 2024 — Now)")] public string When { get; set; } = "";
+    [Required, StringLength(120), Display(Name = "Job title")] public string Title { get; set; } = "";
+    [StringLength(200), Display(Name = "Company / details")] public string Subtitle { get; set; } = "";
+    [StringLength(80), Display(Name = "Location (e.g. Remote)")] public string Location { get; set; } = "";
+    [Display(Name = "Current job (shows the “Current” tag)")] public bool IsCurrent { get; set; }
+}
+
 public class Tool : Orderable
 {
     [Required, StringLength(60)] public string Name { get; set; } = "";

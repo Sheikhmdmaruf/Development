@@ -1,0 +1,47 @@
+@model List<Experience>
+@{ ViewData["Title"] = "Experience"; }
+<div class="head">
+    <div><div class="crumb">Content</div><h1>Experience <span class="muted" style="font-weight:400">· @Model.Count</span></h1></div>
+    <div class="actions"><partial name="_ViewToggle" /><a class="btn primary" href="/experience/create">New experience</a></div>
+</div>
+<p class="muted small" style="margin:-8px 0 14px">The timeline on the About page, top to bottom. Use ↑ ↓ to change the order.</p>
+
+<div class="views" data-views="experience" data-view="list">
+    <script>try{if(localStorage.getItem('cms-view-experience')==='grid')document.currentScript.parentElement.dataset.view='grid'}catch(e){}</script>
+    @if (Model.Count == 0) { <div class="panel empty">No experience yet.</div> }
+    else
+    {
+        <div class="view-list panel table-wrap">
+            <table class="table">
+                <thead><tr><th>Role</th><th class="hide-sm">Dates</th><th class="hide-sm">Location</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var e in Model)
+                {
+                    <tr>
+                        <td><a class="title" href="/experience/edit/@e.Id">@e.Title</a>@if (e.IsCurrent) { <span class="pill accent" style="margin-left:6px">Current</span> }<div class="sub">@e.Subtitle</div></td>
+                        <td class="hide-sm" style="white-space:nowrap">@e.When</td>
+                        <td class="hide-sm">@e.Location</td>
+                        <td><partial name="_Status" model="e.IsPublished" /></td>
+                        <td><partial name="_RowActions" model="(e.Id, e.IsPublished, e.Title)" /></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="view-grid cards">
+            @foreach (var e in Model)
+            {
+                <div class="panel card">
+                    <div class="card-body" style="gap:8px">
+                        <span class="card-meta">@e.When@(string.IsNullOrEmpty(e.Location) ? "" : " · " + e.Location)</span>
+                        <a class="card-title" href="/experience/edit/@e.Id">@e.Title</a>
+                        <p class="card-text">@e.Subtitle</p>
+                        @if (e.IsCurrent) { <span style="margin-top:auto"><span class="pill accent">Current</span></span> }
+                    </div>
+                    <div class="card-foot"><partial name="_Status" model="e.IsPublished" /><partial name="_RowActions" model="(e.Id, e.IsPublished, e.Title)" /></div>
+                </div>
+            }
+        </div>
+    }
+</div>

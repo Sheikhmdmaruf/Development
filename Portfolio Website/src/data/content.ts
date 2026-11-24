@@ -1,4 +1,4 @@
-import type { Project, Service, Review, FaqItem, Post } from './types';
+import type { Project, Service, Review, FaqItem, Post, Experience } from './types';
 
 /* ======================================================
    EDIT YOUR CONTENT HERE
@@ -51,6 +51,13 @@ export const FAQ: FaqItem[] = [
 ];
 
 export const TOOLS: string[] = ["Figma","Adobe XD","Photoshop","Illustrator","FigJam","Webflow","Framer","Prototyping","Design systems"];
+
+// Experience timeline on the About page (managed in the dashboard → Experience)
+export const EXPERIENCE: Experience[] = [
+  { when: "2024 — Now", title: "Freelance UI/UX Designer", sub: "Fiverr & direct clients", where: "Remote", current: true },
+  { when: "20XX — 20XX", title: "UI/UX Designer", sub: "Netro Systems", where: "Bangladesh" },
+  { when: "20XX — 20XX", title: "Graphic Designer", sub: "Brand, print & social media design", where: "Bangladesh" }
+];
 /* ====================================================== */
 
 /* ======================================================

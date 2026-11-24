@@ -86,6 +86,9 @@ public class ApiController(CmsDbContext db) : ControllerBase
             tools = tools.Select(t => t.Name),
             // Same tools with their logos (the website's "tools" list stays plain names).
             toolItems = tools.Select(t => new { name = t.Name, img = Media(t.ImageUrl) }),
+            experience = await db.Experiences.AsNoTracking().Where(e => e.IsPublished).OrderBy(e => e.SortOrder).ThenBy(e => e.Id)
+                .Select(e => new { when = e.When, title = e.Title, sub = e.Subtitle, where = e.Location, current = e.IsCurrent ? true : (bool?)null })
+                .ToListAsync(),
             projects = projects.Select(p => new
             {
                 t = p.Title, type = p.Type, cat = p.Category, y = p.Year, hl = p.Highlight, sum = p.Summary, url = p.Url,

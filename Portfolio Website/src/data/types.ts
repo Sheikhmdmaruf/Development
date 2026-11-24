@@ -78,3 +78,12 @@ export interface ServiceDetail {
   /** [title, text] */
   steps?: [string, string][];
 }
+
+/** One row of the Experience timeline on the About page. */
+export interface Experience {
+  when: string;
+  title: string;
+  sub: string;
+  where: string;
+  current?: boolean;
+}

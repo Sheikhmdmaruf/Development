@@ -1,0 +1,20 @@
+@model Experience
+@{ ViewData["Title"] = Model.Id == 0 ? "New experience" : Model.Title; }
+<div class="head">
+    <div><div class="crumb"><a href="/experience">Experience</a> /</div><h1>@ViewData["Title"]</h1></div>
+    <a class="btn" href="http://localhost:5173/about#experience" target="_blank" rel="noopener">View on website ↗</a>
+</div>
+<form method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <div class="panel"><div class="panel-body form-grid">
+        <field for="Title" span="8" placeholder="UI/UX Designer" />
+        <field for="When" span="4" placeholder="2022 — 2024" />
+        <field for="Subtitle" span="8" placeholder="Company name or what you did" />
+        <field for="Location" span="4" placeholder="Remote" />
+        <field for="IsCurrent" span="6" kind="check" />
+        <field for="IsPublished" span="6" kind="check" />
+        <input type="hidden" name="SortOrder" value="@Model.SortOrder" />
+    </div></div>
+    <partial name="_SaveBar" model="Model" />
+</form>
+<partial name="_DeleteForm" model="(Model.Id, Model.Title)" />
