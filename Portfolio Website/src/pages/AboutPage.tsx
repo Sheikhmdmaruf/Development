@@ -3,8 +3,8 @@ import { SITE_TITLE, useTitle } from '../lib';
 import { ArrowRight, RawIcon, Send } from '../components/Icons';
 import Reveal from '../components/Reveal';
 import { SectionHead } from '../components/Sections';
-import { Portrait } from './HomePage';
-import { toolLogo } from '../data/live';
+import { HeroButton, Portrait } from './HomePage';
+import { site, toolLogo } from '../data/live';
 
 // TODO: replace industry names with your client logos: <img className="client-logo-image" src="/images/client-1.svg" alt="Client" />
 const CLIENTS = ['Fintech', 'Food delivery', 'E-commerce', 'Healthcare', 'Travel', 'Gaming', 'AI & SaaS', 'Automotive'];
@@ -40,12 +40,13 @@ export default function AboutPage() {
         <div className="shell">
           <div className="hero-row is-half">
             <div className="panel hero-copy">
-              <Link to="/work" className="announce"><b>Open</b><span>Available for new projects</span><ArrowRight /></Link>
-              <h1>Part designer, <span className="m">part problem solver.</span></h1>
-              <p className="hero-text">I'm Sheikh Md Maruf, a UI/UX and brand designer based in Sirajganj, Bangladesh. For over four years I've helped businesses turn ideas into websites and apps people enjoy using.</p>
+              {/* Texts, links and photo can be changed in the dashboard (Hero section) */}
+              <Link to="/work" className="announce"><b>{site('about_hero_badge', 'Open')}</b><span>{site('about_hero_announce', 'Available for new projects')}</span><ArrowRight /></Link>
+              <h1>{site('about_hero_title', 'Part designer,')} <span className="m">{site('about_hero_title_accent', 'part problem solver.')}</span></h1>
+              <p className="hero-text">{site('about_hero_text', "I'm Sheikh Md Maruf, a UI/UX and brand designer based in Sirajganj, Bangladesh. For over four years I've helped businesses turn ideas into websites and apps people enjoy using.")}</p>
               <div className="actions">
-                <a href="#contact" className="btn"><Send />Start a project</a>
-                <Link to="/work" className="btn btn-sec">View work</Link>
+                <HeroButton href={site('about_hero_btn1_link', '#contact')} className="btn"><Send />{site('about_hero_btn1_text', 'Start a project')}</HeroButton>
+                <HeroButton href={site('about_hero_btn2_link', '/work')} className="btn btn-sec">{site('about_hero_btn2_text', 'View work')}</HeroButton>
               </div>
             </div>
             <Portrait />

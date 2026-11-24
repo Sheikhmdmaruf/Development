@@ -151,7 +151,8 @@ public class SettingsController(CmsDbContext db, IConfiguration config) : Contro
         ViewBag.SiteKey = (await db.SiteSettings.FindAsync(Seeder.SiteKeySetting))?.Value;
         ViewBag.Origins = config.GetSection("Cms:AllowedOrigins").Get<string[]>() ?? [];
         var order = Seeder.SettingKeys.Select(k => k.Key).ToList();
-        var list = await db.SiteSettings.AsNoTracking().Where(s => !s.Key.StartsWith("__")).ToListAsync();
+        var list = (await db.SiteSettings.AsNoTracking().Where(s => !s.Key.StartsWith("__")).ToListAsync())
+            .Where(s => !Seeder.HeroKeys.Contains(s.Key)); // hero fields have their own page
         return View(list.OrderBy(s => order.IndexOf(s.Key) is var i && i < 0 ? 999 : i).ToList());
     }
 
@@ -159,7 +160,7 @@ public class SettingsController(CmsDbContext db, IConfiguration config) : Contro
     public async Task<IActionResult> Index(Dictionary<string, string> values)
     {
         foreach (var s in await db.SiteSettings.Where(s => !s.Key.StartsWith("__")).ToListAsync())
-            if (values.TryGetValue(s.Key, out var v)) s.Value = (v ?? "").Trim();
+            if (!Seeder.HeroKeys.Contains(s.Key) && values.TryGetValue(s.Key, out var v)) s.Value = (v ?? "").Trim();
         await db.SaveChangesAsync();
         TempData["ok"] = "Settings saved.";
         return RedirectToAction(nameof(Index));
@@ -172,6 +173,28 @@ public class SettingsController(CmsDbContext db, IConfiguration config) : Contro
         s!.Value = Seeder.NewSiteKey();
         await db.SaveChangesAsync();
         TempData["ok"] = "New site key created. Put it in the website's .env.local (VITE_SITE_KEY) and restart the website.";
+        return RedirectToAction(nameof(Index));
+    }
+}
+
+/// <summary>Edit the hero sections of the Home and About pages (stored as site settings).</summary>
+public class HeroController(CmsDbContext db) : Controller
+{
+    public async Task<IActionResult> Index()
+    {
+        var values = (await db.SiteSettings.AsNoTracking().ToListAsync())
+            .Where(s => Seeder.HeroKeys.Contains(s.Key)).ToDictionary(s => s.Key, s => s.Value);
+        return View(values);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Index(Dictionary<string, string> values)
+    {
+        var rows = (await db.SiteSettings.ToListAsync()).Where(s => Seeder.HeroKeys.Contains(s.Key));
+        foreach (var s in rows)
+            if (values.TryGetValue(s.Key, out var v)) s.Value = (v ?? "").Trim();
+        await db.SaveChangesAsync();
+        TempData["ok"] = "Hero section updated successfully.";
         return RedirectToAction(nameof(Index));
     }
 }

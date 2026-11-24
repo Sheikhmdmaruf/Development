@@ -1,0 +1,49 @@
+@model Dictionary<string, string>
+@using PortfolioCms.Data
+@{
+    ViewData["Title"] = "Hero section";
+    string V(string key) => Model.TryGetValue(key, out var v) ? v : "";
+}
+<div class="head">
+    <div><div class="crumb">Content</div><h1>Hero section</h1></div>
+    <div class="actions">
+        <a class="btn" href="http://localhost:5173/" target="_blank" rel="noopener">View Home ↗</a>
+        <a class="btn" href="http://localhost:5173/about" target="_blank" rel="noopener">View About ↗</a>
+    </div>
+</div>
+<p class="muted small" style="margin:-8px 0 14px">The top section of the Home and About pages. Leave a box empty to use the website's built-in text.</p>
+
+<form method="post">
+    @foreach (var (group, fields) in Seeder.HeroGroups)
+    {
+        <div class="panel">
+            <div class="panel-head"><h2>@group</h2></div>
+            <div class="panel-body form-grid">
+                @foreach (var f in fields)
+                {
+                    var name = $"values[{f.Key}]";
+                    var span = f.Kind == "area" || f.Kind == "image" ? "f" : (f.Key.StartsWith("stat") ? "f s4" : "f s6");
+                    <div class="@span">
+                        <label for="@f.Key">@f.Label @if (!string.IsNullOrEmpty(f.Hint)) { <span class="hint">— @f.Hint</span> }</label>
+                        @if (f.Kind == "image")
+                        {
+                            @Html.Raw(Ui.Image(name, V(f.Key), "/uploads/… — click Upload"))
+                        }
+                        else if (f.Kind == "area")
+                        {
+                            <textarea id="@f.Key" name="@name" rows="3" maxlength="1000">@V(f.Key)</textarea>
+                        }
+                        else
+                        {
+                            <input type="text" id="@f.Key" name="@name" value="@V(f.Key)" maxlength="1000" placeholder="@f.Default" />
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    <div class="sticky-save">
+        <span class="muted small">Changes show on the website on its next page load.</span>
+        <button class="btn primary" type="submit">Save hero section</button>
+    </div>
+</form>

@@ -24,6 +24,7 @@
                 <a class="@On("Inbox")" href="/inbox">@Html.Raw($"<svg {svg}><path d=\"M3 13h5l1.5 3h5L16 13h5\"/><path d=\"M5 5h14l2 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z\"/></svg>")Inbox @if (unread > 0) { <span class="count">@unread</span> }</a>
 
                 <div class="nav-label">Content</div>
+                <a class="@On("Hero")" href="/hero">@Html.Raw($"<svg {svg}><rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M7 9h6M7 12.5h10M7 16h4\"/></svg>")Hero section</a>
                 <a class="@On("Projects")" href="/projects">@Html.Raw($"<svg {svg}><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1.5\"/></svg>")Work</a>
                 <a class="@On("Services")" href="/services">@Html.Raw($"<svg {svg}><path d=\"M12 3l2.6 5.6L20 9.5l-4 4 1 5.8-5-2.8-5 2.8 1-5.8-4-4 5.4-.9z\"/></svg>")Services</a>
                 <a class="@On("Posts")" href="/posts">@Html.Raw($"<svg {svg}><path d=\"M4 20h4L19 9l-4-4L4 16z\"/><path d=\"M13.5 6.5l4 4\"/></svg>")Blog</a>

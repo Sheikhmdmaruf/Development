@@ -27,11 +27,63 @@ public static class Seeder
         ("linkedin_url", "LinkedIn link"),
     ];
 
+    /// <summary>One editable field of a hero section. Kind: text, area or image. Default = the website's current text.</summary>
+    public record HeroField(string Key, string Label, string Kind, string Default, string Hint = "");
+
+    /// <summary>Fields on the dashboard's Hero section page, grouped by page. Stored as site settings.</summary>
+    public static readonly (string Group, HeroField[] Fields)[] HeroGroups =
+    [
+        ("Photo", [
+            new("hero_photo", "Profile photo", "image", "", "Used on the Home and About page. Empty = the photo in the website's public/images/maruf.jpg"),
+        ]),
+        ("Home page hero", [
+            new("home_hero_badge", "Announcement badge", "text", "New"),
+            new("home_hero_announce", "Announcement text", "text", "", "Empty = \"Latest: <your newest project> design\""),
+            new("home_hero_title", "Headline", "text", "I design digital experiences"),
+            new("home_hero_title_accent", "Headline — highlighted part", "text", "that make complex things feel simple."),
+            new("home_hero_text", "Paragraph", "area", "I'm Maruf, a UI/UX and brand designer from Bangladesh. I design websites, mobile apps and dashboards that look sharp and help businesses grow."),
+            new("home_hero_btn1_text", "Main button text", "text", "Start a project"),
+            new("home_hero_btn1_link", "Main button link", "text", "#contact", "#contact, /work or a full URL"),
+            new("home_hero_btn2_text", "Second button text", "text", "View work"),
+            new("home_hero_btn2_link", "Second button link", "text", "#work"),
+            new("home_hero_location", "Location on the photo", "text", "Sirajganj, Bangladesh"),
+        ]),
+        ("Home page numbers", [
+            new("stat1_label", "Box 1 — label", "text", "Experience"),
+            new("stat1_value", "Box 1 — number", "text", "4"),
+            new("stat1_suffix", "Box 1 — after the number", "text", "+ yrs"),
+            new("stat2_label", "Box 2 — label", "text", "Portfolio"),
+            new("stat2_value", "Box 2 — number", "text", "16"),
+            new("stat2_suffix", "Box 2 — after the number", "text", "+"),
+            new("stat3_label", "Box 3 — label", "text", "Services"),
+            new("stat3_value", "Box 3 — number", "text", "4"),
+            new("stat3_suffix", "Box 3 — after the number", "text", ""),
+        ]),
+        ("About page hero", [
+            new("about_hero_badge", "Announcement badge", "text", "Open"),
+            new("about_hero_announce", "Announcement text", "text", "Available for new projects"),
+            new("about_hero_title", "Headline", "text", "Part designer,"),
+            new("about_hero_title_accent", "Headline — highlighted part", "text", "part problem solver."),
+            new("about_hero_text", "Paragraph", "area", "I'm Sheikh Md Maruf, a UI/UX and brand designer based in Sirajganj, Bangladesh. For over four years I've helped businesses turn ideas into websites and apps people enjoy using."),
+            new("about_hero_btn1_text", "Main button text", "text", "Start a project"),
+            new("about_hero_btn1_link", "Main button link", "text", "#contact"),
+            new("about_hero_btn2_text", "Second button text", "text", "View work"),
+            new("about_hero_btn2_link", "Second button link", "text", "/work"),
+        ]),
+    ];
+
+    public static readonly HashSet<string> HeroKeys = HeroGroups.SelectMany(g => g.Fields).Select(f => f.Key).ToHashSet();
+
     public static async Task RunAsync(CmsDbContext db, string contentRoot)
     {
         foreach (var (key, label) in SettingKeys)
             if (!await db.SiteSettings.AnyAsync(s => s.Key == key))
                 db.SiteSettings.Add(new SiteSetting { Key = key, Label = label });
+
+        // Hero fields start with the website's current text, so the form shows what is live now.
+        foreach (var f in HeroGroups.SelectMany(g => g.Fields))
+            if (!await db.SiteSettings.AnyAsync(s => s.Key == f.Key))
+                db.SiteSettings.Add(new SiteSetting { Key = f.Key, Label = f.Label, Value = f.Default });
 
         if (!await db.SiteSettings.AnyAsync(s => s.Key == SiteKeySetting))
             db.SiteSettings.Add(new SiteSetting { Key = SiteKeySetting, Label = "Public site key", Value = NewSiteKey() });

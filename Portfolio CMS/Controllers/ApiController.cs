@@ -80,7 +80,8 @@ public class ApiController(CmsDbContext db) : ControllerBase
 
         return Ok(new
         {
-            settings = settings.Where(s => s.Key != "contact_email").ToDictionary(s => s.Key, s => s.Value),
+            // Uploaded images (e.g. the hero photo) are sent as full URLs.
+            settings = settings.Where(s => s.Key != "contact_email").ToDictionary(s => s.Key, s => s.Value.StartsWith("/uploads/") ? Media(s.Value)! : s.Value),
             contactEmail = Opt(settings.FirstOrDefault(s => s.Key == "contact_email")?.Value),
             tools = tools.Select(t => t.Name),
             // Same tools with their logos (the website's "tools" list stays plain names).

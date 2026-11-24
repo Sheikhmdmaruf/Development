@@ -5,7 +5,7 @@ import { SITE_TITLE, useTitle } from '../lib';
 import { BlogProductCard, ProjectCard, ServiceCard } from '../components/Cards';
 import { ArrowRight, Grid, RawIcon, METRIC_ICONS, Sparkle } from '../components/Icons';
 import Reveal from '../components/Reveal';
-import { toolLogo } from '../data/live';
+import { site, toolLogo } from '../data/live';
 import { FaqList, Reviews, SectionHead } from '../components/Sections';
 
 /** Counts up from 0 to `end` once. */
@@ -37,14 +37,31 @@ const STEPS: [string, string][] = [
 
 export function Portrait({ children }: { children?: ReactNode }) {
   const [hasPhoto, setHasPhoto] = useState(true);
+  // Profile photo: uploaded in the dashboard (Hero section), otherwise public/images/maruf.jpg
+  const photo = site('hero_photo', '/images/maruf.jpg');
   return (
     <div className="panel portrait">
       <span className="ph" aria-hidden="true">M.</span>
-      {/* Profile photo: public/images/maruf.jpg */}
-      {hasPhoto && <img className="photo" src="/images/maruf.jpg" alt="Sheikh Md Maruf" onError={() => setHasPhoto(false)} />}
+      {hasPhoto && <img className="photo" src={photo} alt="Sheikh Md Maruf" onError={() => setHasPhoto(false)} />}
       {children}
     </div>
   );
+}
+
+/** A hero button: "/work" opens a page, "#contact" scrolls, a full URL opens in a new tab. */
+export function HeroButton({ href, className, children }: { href: string; className: string; children: ReactNode }) {
+  if (href.startsWith('/')) return <Link to={href} className={className}>{children}</Link>;
+  if (href.startsWith('http')) return <a href={href} className={className} target="_blank" rel="noopener">{children}</a>;
+  return <a href={href} className={className}>{children}</a>;
+}
+
+/** A number box under the Home hero (texts from the dashboard). Counts up when the value is a whole number. */
+function StatBox({ n, icon, label, value, suffix }: { n: number; icon: ReactNode; label: string; value: string; suffix: string }) {
+  const l = site(`stat${n}_label`, label), v = site(`stat${n}_value`, value), s = site(`stat${n}_suffix`, suffix);
+  const num = Number(v);
+  return Number.isInteger(num) && num > 0
+    ? <Stat label={l} icon={icon} end={num} suffix={s} />
+    : <div className="panel metric"><div className="metric-top">{l} {icon}</div><div><div className="metric-val">{v}{s}</div></div></div>;
 }
 
 export default function HomePage() {
@@ -57,25 +74,25 @@ export default function HomePage() {
 
   return (
     <>
-      {/* HERO */}
+      {/* HERO — every text, link and the photo can be changed in the dashboard (Hero section) */}
       <section id="home">
         <div className="shell">
           <div className="hero-row">
             <div className="panel hero-copy">
-              <a href="#work" className="announce"><b>New</b><span>Latest: {PROJECTS[0].t} design</span><ArrowRight /></a>
-              <h1>I design digital experiences <span className="m">that make complex things feel simple.</span></h1>
-              <p className="hero-text">I'm Maruf, a UI/UX and brand designer from Bangladesh. I design websites, mobile apps and dashboards that look sharp and help businesses grow.</p>
+              <a href="#work" className="announce"><b>{site('home_hero_badge', 'New')}</b><span>{site('home_hero_announce', `Latest: ${PROJECTS[0]?.t ?? 'new'} design`)}</span><ArrowRight /></a>
+              <h1>{site('home_hero_title', 'I design digital experiences')} <span className="m">{site('home_hero_title_accent', 'that make complex things feel simple.')}</span></h1>
+              <p className="hero-text">{site('home_hero_text', "I'm Maruf, a UI/UX and brand designer from Bangladesh. I design websites, mobile apps and dashboards that look sharp and help businesses grow.")}</p>
               <div className="actions">
-                <a href="#contact" className="btn">Start a project <span className="arr">→</span></a>
-                <a href="#work" className="btn btn-sec">View work</a>
+                <HeroButton href={site('home_hero_btn1_link', '#contact')} className="btn">{site('home_hero_btn1_text', 'Start a project')} <span className="arr">→</span></HeroButton>
+                <HeroButton href={site('home_hero_btn2_link', '#work')} className="btn btn-sec">{site('home_hero_btn2_text', 'View work')}</HeroButton>
               </div>
             </div>
-            <Portrait><span className="pill"><span className="status"><i />Sirajganj, Bangladesh</span></span></Portrait>
+            <Portrait><span className="pill"><span className="status"><i />{site('home_hero_location', 'Sirajganj, Bangladesh')}</span></span></Portrait>
           </div>
           <div className="stats">
-            <Stat label="Experience" icon={<RawIcon markup={METRIC_ICONS.clock} size={18} />} end={4} suffix="+ yrs" />
-            <Stat label="Portfolio" icon={<Grid size={18} strokeWidth={1.6} />} end={16} suffix="+" />
-            <Stat label="Services" icon={<RawIcon markup={METRIC_ICONS.star} size={18} />} end={4} />
+            <StatBox n={1} icon={<RawIcon markup={METRIC_ICONS.clock} size={18} />} label="Experience" value="4" suffix="+ yrs" />
+            <StatBox n={2} icon={<Grid size={18} strokeWidth={1.6} />} label="Portfolio" value="16" suffix="+" />
+            <StatBox n={3} icon={<RawIcon markup={METRIC_ICONS.star} size={18} />} label="Services" value="4" suffix="" />
           </div>
           <div className="panel logos">
             <div className="logos-label">Tools I design with</div>
