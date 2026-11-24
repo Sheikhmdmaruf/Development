@@ -19,9 +19,9 @@ function activeKey(path: string): string {
 
 const MAIN: { key: string; to: string; label: string; icon: ReactNode }[] = [
   { key: 'home', to: '/', label: 'Home', icon: <Home /> },
-  { key: 'about', to: '/about', label: 'About', icon: <User /> },
   { key: 'work', to: '/work', label: 'Work', icon: <Grid /> },
   { key: 'services', to: '/services', label: 'Services', icon: <Services /> },
+  { key: 'about', to: '/about', label: 'About', icon: <User /> },
   { key: 'blog', to: '/blog', label: 'Blog', icon: <Pen /> },
 ];
 
