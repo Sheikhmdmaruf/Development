@@ -1,6 +1,6 @@
 # Portfolio CMS
 
-Admin dashboard for the **Portfolio Website**, built with **ASP.NET Core 9 MVC** and **Entity Framework Core**,
+Admin dashboard for the **Portfolio Website**, built with **ASP.NET Core 8 MVC** (LTS) and **Entity Framework Core 8**,
 using **SQL Server** (database `PortfolioCms` on `.\SQLEXPRESS`).
 
 From the dashboard you manage everything on the website:
@@ -21,7 +21,7 @@ You can hide or publish items, and change their order. Changes appear on the web
 
 ## Run it
 
-You need the [.NET 9 SDK](https://dotnet.microsoft.com/download) and SQL Server (Express is fine).
+You need the [.NET 8 SDK or newer](https://dotnet.microsoft.com/download) (with the .NET 8 runtime) and SQL Server (Express is fine).
 
 ```bash
 dotnet run          # opens http://localhost:5180
