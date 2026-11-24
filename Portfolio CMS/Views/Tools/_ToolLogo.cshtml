@@ -1,0 +1,16 @@
+@model (Tool Tool, int Size)
+@* The tool's uploaded logo, or its first letter when it has none. *@
+@{
+    var t = Model.Tool;
+    var url = t.ImageUrl ?? "";
+    var showImg = url.StartsWith("/uploads/") || url.StartsWith("http");
+    var size = $"width:{Model.Size}px;height:{Model.Size}px";
+}
+@if (showImg)
+{
+    <span class="tool-logo" style="@size"><img src="@url" alt="@t.Name logo" loading="lazy" /></span>
+}
+else
+{
+    <span class="tool-logo letter" style="@size;font-size:@(Model.Size * 0.4)px">@(t.Name.Length > 0 ? t.Name[..1].ToUpperInvariant() : "?")</span>
+}

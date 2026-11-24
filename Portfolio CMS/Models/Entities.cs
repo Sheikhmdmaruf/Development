@@ -171,6 +171,7 @@ public class Faq : Orderable
 public class Tool : Orderable
 {
     [Required, StringLength(60)] public string Name { get; set; } = "";
+    [StringLength(500), Display(Name = "Logo / image")] public string? ImageUrl { get; set; }
 }
 
 public class SiteSetting

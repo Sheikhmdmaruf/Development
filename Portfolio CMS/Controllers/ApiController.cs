@@ -50,6 +50,8 @@ public class ApiController(CmsDbContext db) : ControllerBase
         var posts = await db.Posts.AsNoTracking().Where(p => p.IsPublished).OrderByDescending(p => p.PublishedOn).ThenBy(p => p.SortOrder)
             .Include(p => p.Blocks).ToListAsync();
 
+        var tools = await db.Tools.AsNoTracking().Where(t => t.IsPublished).OrderBy(t => t.SortOrder).ToListAsync();
+
         var cases = new Dictionary<string, object>();
         foreach (var p in projects)
         {
@@ -80,7 +82,9 @@ public class ApiController(CmsDbContext db) : ControllerBase
         {
             settings = settings.Where(s => s.Key != "contact_email").ToDictionary(s => s.Key, s => s.Value),
             contactEmail = Opt(settings.FirstOrDefault(s => s.Key == "contact_email")?.Value),
-            tools = await db.Tools.AsNoTracking().Where(t => t.IsPublished).OrderBy(t => t.SortOrder).Select(t => t.Name).ToListAsync(),
+            tools = tools.Select(t => t.Name),
+            // Same tools with their logos (the website's "tools" list stays plain names).
+            toolItems = tools.Select(t => new { name = t.Name, img = Media(t.ImageUrl) }),
             projects = projects.Select(p => new
             {
                 t = p.Title, type = p.Type, cat = p.Category, y = p.Year, hl = p.Highlight, sum = p.Summary, url = p.Url,

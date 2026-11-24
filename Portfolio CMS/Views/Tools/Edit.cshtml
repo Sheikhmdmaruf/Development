@@ -4,8 +4,9 @@
 <form method="post">
     <div asp-validation-summary="ModelOnly"></div>
     <div class="panel"><div class="panel-body form-grid">
-        <field for="Name" span="8" />
-        <field for="IsPublished" span="4" kind="check" />
+        <field for="Name" span="6" />
+        <field for="ImageUrl" span="6" kind="image" hint="PNG, JPG or WebP — a square logo works best" />
+        <field for="IsPublished" kind="check" />
         <input type="hidden" name="SortOrder" value="@Model.SortOrder" />
     </div></div>
     <partial name="_SaveBar" model="Model" />
