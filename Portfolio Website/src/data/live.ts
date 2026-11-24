@@ -22,6 +22,8 @@ interface LivePayload {
   settings: Record<string, string>;
   contactEmail?: string;
   tools: string[];
+  /** The same tools with the logo uploaded in the dashboard (img is a full URL). */
+  toolItems?: { name: string; img?: string }[];
   projects: Project[];
   services: Service[];
   reviews: Review[];
@@ -36,6 +38,11 @@ const settings: Record<string, string> = {};
 
 /** A text or link managed under Site Settings in the dashboard, with the built-in value as fallback. */
 export const site = (key: string, fallback: string): string => settings[key]?.trim() || fallback;
+
+const toolLogos: Record<string, string> = {};
+
+/** The logo uploaded for a tool in the dashboard (matched by name, ignoring case), or undefined. */
+export const toolLogo = (name: string): string | undefined => toolLogos[name.trim().toLowerCase()];
 
 function replaceArray<T>(target: T[], next: T[] | undefined) {
   if (Array.isArray(next)) target.splice(0, target.length, ...next);
@@ -61,6 +68,7 @@ export async function loadLiveContent(timeoutMs = 3500): Promise<void> {
     replaceArray(FAQ, data.faq);
     replaceArray(POSTS, data.posts);
     replaceArray(TOOLS, data.tools);
+    for (const t of data.toolItems ?? []) if (t.img) toolLogos[t.name.trim().toLowerCase()] = t.img;
     replaceRecord(CASES, data.cases);
     replaceRecord(ARTICLES, data.articles);
     replaceRecord(SERVICE_DETAILS, data.serviceDetails);

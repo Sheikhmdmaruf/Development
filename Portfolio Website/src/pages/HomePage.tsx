@@ -5,6 +5,7 @@ import { SITE_TITLE, useTitle } from '../lib';
 import { BlogProductCard, ProjectCard, ServiceCard } from '../components/Cards';
 import { ArrowRight, Grid, RawIcon, METRIC_ICONS, Sparkle } from '../components/Icons';
 import Reveal from '../components/Reveal';
+import { toolLogo } from '../data/live';
 import { FaqList, Reviews, SectionHead } from '../components/Sections';
 
 /** Counts up from 0 to `end` once. */
@@ -49,7 +50,10 @@ export function Portrait({ children }: { children?: ReactNode }) {
 export default function HomePage() {
   useTitle(`${SITE_TITLE} — UI/UX & Brand Designer`);
   const [first, ...rest] = PROJECTS.slice(0, 3);
-  const tools = (copy: string) => TOOLS.map(t => <span key={copy + t}><Sparkle />{t}</span>);
+  const tools = (copy: string) => TOOLS.map(t => {
+    const logo = toolLogo(t);
+    return <span key={copy + t}>{logo ? <img className="track-logo" src={logo} alt="" loading="lazy" /> : <Sparkle />}{t}</span>;
+  });
 
   return (
     <>

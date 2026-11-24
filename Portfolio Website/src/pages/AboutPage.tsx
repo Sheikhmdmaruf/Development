@@ -4,6 +4,7 @@ import { ArrowRight, RawIcon, Send } from '../components/Icons';
 import Reveal from '../components/Reveal';
 import { SectionHead } from '../components/Sections';
 import { Portrait } from './HomePage';
+import { toolLogo } from '../data/live';
 
 // TODO: replace industry names with your client logos: <img className="client-logo-image" src="/images/client-1.svg" alt="Client" />
 const CLIENTS = ['Fintech', 'Food delivery', 'E-commerce', 'Healthcare', 'Travel', 'Gaming', 'AI & SaaS', 'Automotive'];
@@ -82,12 +83,18 @@ export default function AboutPage() {
       <section id="toolkit">
         <SectionHead title="Tools I use" text="The small stack behind every project." />
         <Reveal className="tools-grid">
-          {TOOLS.map(([name, use, icon]) => (
-            <div className="tool-card" key={name}>
-              <div className="tool-card-icon-box"><RawIcon markup={icon} size={20} /></div>
-              <div className="tool-card-text"><h3 className="tool-card-name">{name}</h3><p className="tool-card-use">{use}</p></div>
-            </div>
-          ))}
+          {TOOLS.map(([name, use, icon]) => {
+            // Logo uploaded in the dashboard; "Framer & Webflow" uses the Framer or Webflow logo.
+            const logo = toolLogo(name) ?? name.split('&').map(part => toolLogo(part)).find(Boolean);
+            return (
+              <div className="tool-card" key={name}>
+                <div className="tool-card-icon-box">
+                  {logo ? <img className="tool-card-logo" src={logo} alt={`${name} logo`} loading="lazy" /> : <RawIcon markup={icon} size={20} />}
+                </div>
+                <div className="tool-card-text"><h3 className="tool-card-name">{name}</h3><p className="tool-card-use">{use}</p></div>
+              </div>
+            );
+          })}
         </Reveal>
       </section>
 
