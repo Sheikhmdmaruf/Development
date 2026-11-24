@@ -21,6 +21,10 @@ You can hide or publish items, and change their order. Changes appear on the web
 
 ## Run it
 
+**Visual Studio:** double-click `PortfolioCms.sln`, then press **F5** (or **Ctrl+F5**).
+
+**Command line:**
+
 You need the [.NET 8 SDK or newer](https://dotnet.microsoft.com/download) (with the .NET 8 runtime) and SQL Server (Express is fine).
 
 ```bash
