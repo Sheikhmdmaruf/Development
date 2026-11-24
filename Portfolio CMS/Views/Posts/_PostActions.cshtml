@@ -1,7 +1,5 @@
 @model Post
 @* Blog posts are ordered by date, so there are no ↑ ↓ buttons. *@
 <div class="actions">
-    <form asp-antiforgery="true" class="inline" method="post" action="/posts/togglepublish/@Model.Id"><button class="btn sm">@(Model.IsPublished ? "Hide" : "Publish")</button></form>
-    <a class="btn sm" href="/posts/edit/@Model.Id">Edit</a>
-    <form asp-antiforgery="true" class="inline" method="post" action="/posts/delete/@Model.Id" data-confirm="Delete “@Model.Title”? This can't be undone."><button class="btn sm danger">Delete</button></form>
+    <partial name="_EditActions" model='("posts", Model.Id, Model.IsPublished, Model.Title)' />
 </div>

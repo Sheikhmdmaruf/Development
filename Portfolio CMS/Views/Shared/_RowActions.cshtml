@@ -1,9 +1,7 @@
 @model (int Id, bool Published, string Name)
 @{ var c = ViewContext.RouteData.Values["controller"]; }
 <div class="actions">
-    <form asp-antiforgery="true" class="inline" method="post" action="/@c/move/@Model.Id?dir=-1"><button class="btn sm icon" title="Move up">↑</button></form>
-    <form asp-antiforgery="true" class="inline" method="post" action="/@c/move/@Model.Id?dir=1"><button class="btn sm icon" title="Move down">↓</button></form>
-    <form asp-antiforgery="true" class="inline" method="post" action="/@c/togglepublish/@Model.Id"><button class="btn sm">@(Model.Published ? "Hide" : "Publish")</button></form>
-    <a class="btn sm" href="/@c/edit/@Model.Id">Edit</a>
-    <form asp-antiforgery="true" class="inline" method="post" action="/@c/delete/@Model.Id" data-confirm="Delete “@Model.Name”? This can't be undone."><button class="btn sm danger">Delete</button></form>
+    <form asp-antiforgery="true" class="inline" method="post" action="/@c/move/@Model.Id?dir=-1"><button class="btn sm icon" title="Move up" aria-label="Move up">↑</button></form>
+    <form asp-antiforgery="true" class="inline" method="post" action="/@c/move/@Model.Id?dir=1"><button class="btn sm icon" title="Move down" aria-label="Move down">↓</button></form>
+    <partial name="_EditActions" model="(c?.ToString() ?? string.Empty, Model.Id, Model.Published, Model.Name)" />
 </div>
