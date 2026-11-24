@@ -88,6 +88,21 @@
     navigator.clipboard.writeText(b.dataset.copy).then(() => { const t = b.textContent; b.textContent = 'Copied'; setTimeout(() => b.textContent = t, 1200); });
   });
 
+  // ── List / Grid view switch (remembered per page) ──
+  document.querySelectorAll('[data-views]').forEach(box => {
+    const key = 'cms-view-' + box.dataset.views;
+    const buttons = document.querySelectorAll('[data-view-set]');
+    const set = (view, save) => {
+      box.dataset.view = view;
+      buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.viewSet === view)));
+      if (save) try { localStorage.setItem(key, view); } catch { }
+    };
+    let saved = null;
+    try { saved = localStorage.getItem(key); } catch { }
+    set(saved === 'grid' ? 'grid' : 'list', false);
+    buttons.forEach(b => b.addEventListener('click', () => set(b.dataset.viewSet, true)));
+  });
+
   // ── Toasts: close on ×, success toasts fade out after 4 seconds ──
   const closeToast = t => { t.classList.add('hide'); setTimeout(() => t.remove(), 300); };
   document.querySelectorAll('.toast').forEach(t => {

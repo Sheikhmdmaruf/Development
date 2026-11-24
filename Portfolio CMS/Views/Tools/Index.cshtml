@@ -2,21 +2,41 @@
 @{ ViewData["Title"] = "Tools"; }
 <div class="head">
     <div><div class="crumb">Content</div><h1>Tools &amp; skills <span class="muted" style="font-weight:400">· @Model.Count</span></h1></div>
-    <a class="btn primary" href="/tools/create">New tool</a>
+    <div class="actions"><partial name="_ViewToggle" /><a class="btn primary" href="/tools/create">New tool</a></div>
 </div>
-<div class="panel table-wrap">
-    <table class="table">
-        <thead><tr><th>Name</th><th>Status</th><th></th></tr></thead>
-        <tbody>
-        @foreach (var t in Model)
-        {
-            <tr>
-                <td><a class="title" href="/tools/edit/@t.Id">@t.Name</a></td>
-                <td><partial name="_Status" model="t.IsPublished" /></td>
-                <td><partial name="_RowActions" model="(t.Id, t.IsPublished, t.Name)" /></td>
-            </tr>
-        }
-        </tbody>
-    </table>
-    @if (Model.Count == 0) { <div class="empty">No tools yet.</div> }
+
+<div class="views" data-views="tools" data-view="list">
+    <script>try{if(localStorage.getItem('cms-view-tools')==='grid')document.currentScript.parentElement.dataset.view='grid'}catch(e){}</script>
+    @if (Model.Count == 0) { <div class="panel empty">No tools yet.</div> }
+    else
+    {
+        <div class="view-list panel table-wrap">
+            <table class="table">
+                <thead><tr><th>Name</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var t in Model)
+                {
+                    <tr>
+                        <td><a class="title" href="/tools/edit/@t.Id">@t.Name</a></td>
+                        <td><partial name="_Status" model="t.IsPublished" /></td>
+                        <td><partial name="_RowActions" model="(t.Id, t.IsPublished, t.Name)" /></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="view-grid cards sm">
+            @foreach (var t in Model)
+            {
+                <div class="panel card">
+                    <div class="card-body" style="flex-direction:row;align-items:center;gap:12px">
+                        <div class="card-icon" style="font-weight:700;font-size:16px">@(t.Name.Length > 0 ? t.Name[..1].ToUpperInvariant() : "?")</div>
+                        <a class="card-title" href="/tools/edit/@t.Id">@t.Name</a>
+                    </div>
+                    <div class="card-foot"><partial name="_Status" model="t.IsPublished" /><partial name="_RowActions" model="(t.Id, t.IsPublished, t.Name)" /></div>
+                </div>
+            }
+        </div>
+    }
 </div>

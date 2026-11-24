@@ -2,22 +2,45 @@
 @{ ViewData["Title"] = "Services"; }
 <div class="head">
     <div><div class="crumb">Content</div><h1>Services <span class="muted" style="font-weight:400">· @Model.Count</span></h1></div>
-    <a class="btn primary" href="/services/create">New service</a>
+    <div class="actions"><partial name="_ViewToggle" /><a class="btn primary" href="/services/create">New service</a></div>
 </div>
-<div class="panel table-wrap">
-    <table class="table">
-        <thead><tr><th>Service</th><th class="hide-sm">Price</th><th>Status</th><th></th></tr></thead>
-        <tbody>
-        @foreach (var s in Model)
-        {
-            <tr>
-                <td><a class="title" href="/services/edit/@s.Id">@s.Title</a><div class="sub">@s.Summary</div></td>
-                <td class="hide-sm">@(string.IsNullOrEmpty(s.Price) ? "Custom quote" : s.Price)</td>
-                <td><partial name="_Status" model="s.IsPublished" /></td>
-                <td><partial name="_RowActions" model="(s.Id, s.IsPublished, s.Title)" /></td>
-            </tr>
-        }
-        </tbody>
-    </table>
-    @if (Model.Count == 0) { <div class="empty">No services yet.</div> }
+
+<div class="views" data-views="services" data-view="list">
+    <script>try{if(localStorage.getItem('cms-view-services')==='grid')document.currentScript.parentElement.dataset.view='grid'}catch(e){}</script>
+    @if (Model.Count == 0) { <div class="panel empty">No services yet.</div> }
+    else
+    {
+        <div class="view-list panel table-wrap">
+            <table class="table">
+                <thead><tr><th>Service</th><th class="hide-sm">Price</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td><a class="title" href="/services/edit/@s.Id">@s.Title</a><div class="sub">@s.Summary</div></td>
+                        <td class="hide-sm">@(string.IsNullOrEmpty(s.Price) ? "Custom quote" : s.Price)</td>
+                        <td><partial name="_Status" model="s.IsPublished" /></td>
+                        <td><partial name="_RowActions" model="(s.Id, s.IsPublished, s.Title)" /></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="view-grid cards">
+            @foreach (var s in Model)
+            {
+                <div class="panel card">
+                    <div class="card-body" style="gap:10px">
+                        <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">@Html.Raw(s.Icon)</svg></div>
+                        <a class="card-title" href="/services/edit/@s.Id">@s.Title</a>
+                        <p class="card-text">@s.Summary</p>
+                        <div class="tags">@foreach (var t in s.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)) { <span>@t</span> }</div>
+                        <span class="card-meta" style="margin-top:auto;font-weight:600;color:var(--text)">@(string.IsNullOrEmpty(s.Price) ? "Custom quote" : s.Price)</span>
+                    </div>
+                    <div class="card-foot"><partial name="_Status" model="s.IsPublished" /><partial name="_RowActions" model="(s.Id, s.IsPublished, s.Title)" /></div>
+                </div>
+            }
+        </div>
+    }
 </div>
