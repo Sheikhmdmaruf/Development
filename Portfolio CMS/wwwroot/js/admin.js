@@ -97,15 +97,29 @@
     summary.hidden = !name;
     $('[data-confirm-kind]').textContent = kind;
     $('[data-confirm-name]').textContent = name;
-    const sub = host?.querySelector('.sub, .card-meta, .card-text, .quote, code')?.textContent.trim() || form.dataset.sub || '';
-    $('[data-confirm-sub]').textContent = sub.length > 90 ? sub.slice(0, 88) + '…' : sub;
+    // Subtitle: the longest description available (card text / quote first, then the list row's sub line).
+    const sub = (host?.querySelector('.card-text, .quote, .sub, .card-meta, code')?.textContent || form.dataset.sub || '').trim().replace(/\s+/g, ' ');
+    $('[data-confirm-sub]').textContent = sub.length > 220 ? sub.slice(0, 218) + '…' : sub;
+
+    // Big picture on top: photos fill the box; logos, icons and avatars are shown large in the middle.
     const media = $('[data-confirm-media]');
-    media.innerHTML = ''; media.style.backgroundImage = '';
-    const pic = host?.querySelector('.thumb, .avatar, .tool-logo, .social-ico, .card-media, .media-item img, .initial');
-    if (pic) {
-      if (pic.classList.contains('card-media')) media.setAttribute('style', pic.getAttribute('style') || '');
-      else media.appendChild(pic.cloneNode(true));
+    media.innerHTML = ''; media.removeAttribute('style'); media.classList.remove('icon');
+    const pic = host?.querySelector('.thumb, .card-media, .media-item img, .avatar, .tool-logo, .social-ico, .initial');
+    if (pic?.matches('.thumb, .card-media')) {
+      media.setAttribute('style', pic.getAttribute('style') || '');          // image or colour gradient
+      media.style.backgroundSize = 'cover'; media.style.backgroundPosition = 'center';
+    } else if (pic?.tagName === 'IMG') {
+      media.appendChild(pic.cloneNode(true));
+    } else if (pic) {
+      media.classList.add('icon');
+      media.appendChild(pic.cloneNode(true));
+    } else {
+      // Edit page: use the image shown in the form, if any.
+      const preview = document.querySelector('.img-preview.show');
+      if (preview) { const i = document.createElement('img'); i.src = preview.src; i.alt = ''; media.appendChild(i); }
     }
+    // Hide the picture area only when there is no picture (a background-only image counts too).
+    media.hidden = !media.firstChild && !media.getAttribute('style');
     const status = host?.querySelector('.pill.ok, .pill.off');
     const st = $('[data-confirm-status]'); st.innerHTML = '';
     if (status) st.appendChild(status.cloneNode(true));
