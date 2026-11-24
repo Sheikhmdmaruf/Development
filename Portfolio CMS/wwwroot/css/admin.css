@@ -132,13 +132,16 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .vt-btn[aria-pressed=true]{background:var(--panel);color:var(--text);box-shadow:0 1px 2px rgba(16,16,24,.08)}
 .views[data-view=list] .view-grid{display:none}
 .views[data-view=grid] .view-list{display:none}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+/* grid-auto-rows:1fr = every row as tall as the tallest card, so all cards are the same height */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));grid-auto-rows:1fr;gap:16px}
 .cards.sm{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
-.card{display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.card{display:flex;flex-direction:column;overflow:hidden;min-width:0;height:100%}
+.card-media{flex:none}
+.card-foot{margin-top:auto}
 .card-media{aspect-ratio:16/10;background-size:cover;background-position:center;position:relative;border-bottom:1px solid var(--border)}
 .card-media .pill{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.45);color:#fff;backdrop-filter:blur(4px)}
 .card-body{padding:14px 16px;display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
-.card-title{font-weight:650;font-size:15px;color:var(--text);line-height:1.35}
+.card-title{font-weight:650;font-size:15px;color:var(--text);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card-title:hover{color:var(--accent);text-decoration:none}
 .card-meta{font-size:12px;color:var(--muted)}
 .card-text{color:var(--muted);font-size:13px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
@@ -149,7 +152,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
 .tags span{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--raised);color:var(--muted)}
 .avatar{width:38px;height:38px;border-radius:50%;flex:none}
-.quote{font-size:14px;line-height:1.55;color:var(--text)}
+.quote{font-size:14px;line-height:1.55;color:var(--text);display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
 .views .empty.panel{margin:0}
 
 /* toast */
