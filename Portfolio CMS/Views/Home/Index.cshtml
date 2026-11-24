@@ -16,7 +16,7 @@
 }
 <div class="head">
     <div>
-        <div class="crumb">@DateTime.Now.ToString("dddd, d MMMM") · @hello, @User.Identity?.Name</div>
+        <div class="crumb">@DateTime.Now.ToString("dddd, d MMMM") · <time class="clock" data-clock>@DateTime.Now.ToString("h:mm:ss tt")</time> · @hello, @User.Identity?.Name</div>
         <h1>Your portfolio, <span class="accent-word">today</span></h1>
         <p class="muted" style="margin-top:6px">Everything on your website in one place. Edit content, check messages and fix what needs attention.</p>
     </div>

@@ -116,6 +116,17 @@
     if (t.classList.contains('ok')) setTimeout(() => closeToast(t), 4000);
   });
 
+  // ── Live clock on the dashboard (your computer's time, updates every second) ──
+  document.querySelectorAll('[data-clock]').forEach(el => {
+    const tick = () => {
+      const now = new Date();
+      el.textContent = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit' });
+      el.dateTime = now.toISOString();
+    };
+    tick();
+    setInterval(tick, 1000);
+  });
+
   // ── Light / dark theme (remembered in this browser) ──
   document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
     const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
