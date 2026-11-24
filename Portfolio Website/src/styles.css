@@ -134,9 +134,11 @@ h1 .m{display:block;color:var(--muted)}
 .ptitle{display:flex;align-items:center;gap:8px;flex-wrap:wrap;letter-spacing:-.005em}
 .ptitle .cat{color:var(--muted)}
 .psum{font-size:15px;color:var(--text-2);margin-top:4px}
-.pmeta{display:flex;align-items:center;gap:8px;font-size:15px;color:var(--muted)}
-.pmeta svg{transition:transform .2s}
-.pcard:hover .pmeta svg{transform:translate(2px,-2px)}
+.pmeta{height:32px;padding:0 12px;display:inline-flex;align-items:center;flex:none;gap:4px;border-radius:var(--r-round);background:var(--raised);outline:1px solid var(--border);outline-offset:-1px;font-size:15px;color:var(--muted);white-space:nowrap;transition:background .2s,color .2s}
+.pmeta .view{display:none;align-items:center;gap:4px}
+.pcard:hover .pmeta{background:var(--btn);color:var(--btn-text);outline-color:transparent}
+.pcard:hover .pmeta .yr{display:none}
+.pcard:hover .pmeta .view{display:inline-flex}
 
 /* generated cover art (shows until you add a real image) */
 .art{position:absolute;inset:0;transition:transform .6s cubic-bezier(.2,.7,.2,1);background:radial-gradient(120% 90% at 50% 110%,var(--c1),transparent 70%)}

@@ -24,7 +24,7 @@ export function ProjectCard({ p }: { p: Project }) {
           <div className="ptitle">{p.t}<span className="dot-sep" /><span className="cat">{p.cat}</span></div>
           <div className="psum">{p.sum}</div>
         </div>
-        <div className="pmeta">{p.y}<ArrowUpRight size={14} /></div>
+        <div className="pmeta"><span className="yr">{p.y}</span><span className="view">View<ArrowUpRight size={14} /></span></div>
       </div>
     </Link>
   );
