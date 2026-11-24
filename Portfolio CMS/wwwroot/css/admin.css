@@ -42,6 +42,8 @@ p{margin:0}
 /* panels */
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow)}
 .panel + .panel{margin-top:16px}
+/* panels laid out side by side (grids) use the grid gap, not the stacking margin */
+.cards > .panel,.stats > .panel,.grid2 > .panel,.media-grid > .panel{margin-top:0}
 .panel-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px}
 .panel-body{padding:20px}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:18px}
@@ -133,7 +135,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .views[data-view=list] .view-grid{display:none}
 .views[data-view=grid] .view-list{display:none}
 /* grid-auto-rows:1fr = every row as tall as the tallest card, so all cards are the same height */
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));grid-auto-rows:1fr;gap:16px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));grid-auto-rows:1fr;gap:16px;align-items:stretch}
 .cards.sm{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
 .card{display:flex;flex-direction:column;overflow:hidden;min-width:0;height:100%}
 .card-media{flex:none}
