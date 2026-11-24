@@ -31,7 +31,7 @@ public static class Ui
 
     /// <summary>Up / down / remove buttons for a repeater row.</summary>
     public const string RowTools =
-        """<div class="rep-tools"><span class="muted small" style="margin-right:auto">#<span data-rep-num></span></span><button type="button" class="btn sm icon" data-rep-act="up" title="Move up">↑</button><button type="button" class="btn sm icon" data-rep-act="down" title="Move down">↓</button><button type="button" class="btn sm danger" data-rep-act="del">Remove</button></div>""";
+        """<div class="rep-tools"><span class="muted small" style="margin-right:auto">#<span data-rep-num></span></span><button type="button" class="btn sm icon" data-rep-act="up" title="Move up" aria-label="Move up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button><button type="button" class="btn sm icon" data-rep-act="down" title="Move down" aria-label="Move down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button><button type="button" class="btn sm danger" data-rep-act="del">Remove</button></div>""";
 }
 
 /// <summary>&lt;field for="Title" span="6" hint="…"&gt; — label + input/textarea + validation, from the model property.</summary>

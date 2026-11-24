@@ -142,6 +142,7 @@ kbd{font:500 11px var(--font-mono);padding:2px 6px;border-radius:6px;border:1px 
 .btn.danger:hover{background:var(--danger-soft);border-color:color-mix(in srgb,var(--danger) 35%,transparent)}
 .btn.sm{height:28px;padding:0 10px;font-size:12.5px;border-radius:8px}
 .btn.icon{width:28px;padding:0;justify-content:center}
+.btn.icon svg{width:15px;height:15px}
 .btn svg{width:15px;height:15px}
 .actions{display:flex;gap:6px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
 form.inline{display:inline}
@@ -169,7 +170,9 @@ form.inline{display:inline}
 .pill.ok{background:var(--ok-soft);color:var(--ok);border-color:transparent}
 .pill.off{background:var(--warn-soft);color:var(--warn);border-color:transparent}
 .pill.accent{background:var(--accent-soft);color:var(--accent);border-color:transparent}
-.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;display:none}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;display:none;margin-top:-1px}
+/* same font nudge for tags, and line them up with the middle of table rows */
+.pill{line-height:1;padding-top:1px;vertical-align:middle}
 .pill.ok::before,.pill.off::before{display:block}
 
 /* ───────── forms ───────── */
@@ -239,7 +242,7 @@ input[type=file]{font:inherit;color:var(--muted)}
 @container (max-width:340px){
   .card .card-foot .bl{display:none}
   .card .card-foot .bi{display:block}
-  .card .card-foot .btn.sm{width:28px;padding:0;justify-content:center}
+  .card .card-foot .btn.sm{width:28px;padding:0!important;justify-content:center}
 }
 .card{display:flex;flex-direction:column;overflow:hidden;min-width:0;height:100%;transition:border-color .15s,transform .15s}
 .card:hover{border-color:var(--border-strong);transform:translateY(-2px)}
@@ -389,3 +392,9 @@ code.key{font:12.5px/1.6 var(--font-mono);background:var(--raised);border:1px so
   .toasts{top:auto;bottom:16px;right:16px;left:16px;max-width:none}
 }
 @media (max-width:480px){.kpis{grid-template-columns:1fr}}
+
+/* ───────── text centring ─────────
+   Inter's letters sit about 1px high in their line box. Buttons with text get 2px extra top padding
+   so the words sit in the true middle; icon-only buttons keep 0 so their icons stay exactly centred. */
+.btn{line-height:1}
+.btn:not(.icon){padding-top:2px!important}
