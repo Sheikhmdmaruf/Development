@@ -178,6 +178,17 @@ public class Experience : Orderable
     [Display(Name = "Current job (shows the “Current” tag)")] public bool IsCurrent { get; set; }
 }
 
+/// <summary>A "Connect" link (Dribbble, GitHub, LinkedIn…) shown in the website's sidebar and/or footer.</summary>
+public class SocialLink : Orderable
+{
+    [Required, StringLength(60)] public string Name { get; set; } = "";
+    [Required, StringLength(500), Display(Name = "Link (https://… or mailto:…)")] public string Url { get; set; } = "";
+    [StringLength(20), Display(Name = "Built-in icon")] public string Icon { get; set; } = "link";
+    [StringLength(500), Display(Name = "Or upload your own icon")] public string? IconUrl { get; set; }
+    [Display(Name = "Show in the sidebar (Connect)")] public bool ShowInSidebar { get; set; } = true;
+    [Display(Name = "Show in the footer")] public bool ShowInFooter { get; set; } = true;
+}
+
 public class Tool : Orderable
 {
     [Required, StringLength(60)] public string Name { get; set; } = "";

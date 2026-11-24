@@ -1,0 +1,19 @@
+@model (SocialLink Link, int Size)
+@* The link's uploaded icon, or its built-in icon. *@
+@{
+    var l = Model.Link;
+    var img = l.IconUrl ?? "";
+    var showImg = img.StartsWith("/uploads/") || img.StartsWith("http");
+    var box = $"width:{Model.Size}px;height:{Model.Size}px";
+    var inner = (int)(Model.Size * 0.5);
+}
+<span class="social-ico" style="@box">
+    @if (showImg)
+    {
+        <img src="@img" alt="" loading="lazy" />
+    }
+    else
+    {
+        <svg width="@inner" height="@inner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">@Html.Raw(SocialIcons.Svg(l.Icon))</svg>
+    }
+</span>

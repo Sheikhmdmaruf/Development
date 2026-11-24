@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { site, submitContact } from '../data/live';
-import { ArrowUp, Dribbble, GitHub } from './Icons';
+import { ArrowUp, SocialIcon } from './Icons';
+import { SOCIALS } from '../data/content';
 import Reveal from './Reveal';
 
 type FormState = 'idle' | 'sending' | 'sent' | 'error' | 'mailto';
@@ -73,8 +74,10 @@ export default function Footer() {
             <Link to="/work">Work</Link><Link to="/services">Services</Link><Link to="/#faq">FAQ</Link><a href="#contact">Contact</a>
           </nav>
           <div className="socials">
-            <a className="icon-btn" href={site('dribbble_url', 'https://dribbble.com/sheikhmdmaruf')} target="_blank" rel="noopener" aria-label="Dribbble"><Dribbble /></a>
-            <a className="icon-btn" href={site('github_url', 'https://github.com/Sheikhmdmaruf')} target="_blank" rel="noopener" aria-label="GitHub"><GitHub /></a>
+            {/* Footer icons: dashboard → Social links */}
+            {SOCIALS.filter(s => s.footer).map((s, i) => (
+              <a key={i + s.name} className="icon-btn" href={s.url} target="_blank" rel="noopener" aria-label={s.name} title={s.name}><SocialIcon icon={s.icon} img={s.img} /></a>
+            ))}
             <a className="icon-btn" href="#top" onClick={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} aria-label="Back to top"><ArrowUp /></a>
           </div>
         </div>

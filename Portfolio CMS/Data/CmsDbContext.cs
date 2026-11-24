@@ -19,6 +19,7 @@ public class CmsDbContext(DbContextOptions<CmsDbContext> options) : DbContext(op
     public DbSet<Faq> Faqs => Set<Faq>();
     public DbSet<Tool> Tools => Set<Tool>();
     public DbSet<Experience> Experiences => Set<Experience>();
+    public DbSet<SocialLink> SocialLinks => Set<SocialLink>();
     public DbSet<SiteSetting> SiteSettings => Set<SiteSetting>();
     public DbSet<Submission> Submissions => Set<Submission>();
     public DbSet<AdminUser> AdminUsers => Set<AdminUser>();

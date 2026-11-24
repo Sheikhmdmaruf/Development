@@ -264,6 +264,19 @@ input[type=file]{font:inherit;color:var(--muted)}
 .tool-logo img{width:100%;height:100%;object-fit:contain;padding:12%}
 .tool-logo.letter{background:var(--accent-soft);color:var(--accent);font-family:var(--font-head);font-weight:700;border-color:transparent}
 .tool-card-media{display:grid;place-items:center;padding:22px 0 6px}
+/* social links */
+.social-ico{display:grid;place-items:center;flex:none;border-radius:12px;overflow:hidden;background:var(--accent-soft);color:var(--accent)}
+.social-ico img{width:100%;height:100%;object-fit:contain;padding:14%;background:var(--raised)}
+.icon-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.icon-opt{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;border:1px solid var(--border);border-radius:var(--r-s);background:var(--raised);cursor:pointer;font-weight:500;color:var(--text-2)}
+.icon-opt:hover{border-color:var(--border-strong)}
+.icon-opt input{position:absolute;opacity:0;pointer-events:none}
+.icon-opt-box{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--panel);color:var(--text-2)}
+.icon-opt-box svg{width:19px;height:19px}
+.icon-opt-name{font-size:11.5px;text-align:center;line-height:1.2}
+.icon-opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft);color:var(--text)}
+.icon-opt:has(input:checked) .icon-opt-box{background:var(--accent);color:#fff}
+.icon-opt:has(input:focus-visible){box-shadow:0 0 0 3px var(--accent-soft)}
 .quote{font-size:14px;line-height:1.55;color:var(--text);display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
 .views .empty.panel{margin:0}
 

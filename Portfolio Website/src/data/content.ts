@@ -1,4 +1,4 @@
-import type { Project, Service, Review, FaqItem, Post, Experience } from './types';
+import type { Project, Service, Review, FaqItem, Post, Experience, Social } from './types';
 
 /* ======================================================
    EDIT YOUR CONTENT HERE
@@ -51,6 +51,13 @@ export const FAQ: FaqItem[] = [
 ];
 
 export const TOOLS: string[] = ["Figma","Adobe XD","Photoshop","Illustrator","FigJam","Webflow","Framer","Prototyping","Design systems"];
+
+// Connect links in the sidebar and footer (managed in the dashboard → Social links)
+export const SOCIALS: Social[] = [
+  { name: "Dribbble", url: "https://dribbble.com/sheikhmdmaruf", icon: "dribbble", sidebar: true, footer: true },
+  { name: "GitHub", url: "https://github.com/Sheikhmdmaruf", icon: "github", sidebar: true, footer: true },
+  { name: "LinkedIn", url: "https://www.linkedin.com/in/sheikhmdmaruf/", icon: "linkedin", sidebar: true, footer: false }
+];
 
 // Experience timeline on the About page (managed in the dashboard → Experience)
 export const EXPERIENCE: Experience[] = [

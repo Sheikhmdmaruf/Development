@@ -1,0 +1,35 @@
+@model SocialLink
+@{ ViewData["Title"] = Model.Id == 0 ? "New link" : Model.Name; }
+<div class="head">
+    <div><div class="crumb"><a href="/social">Social links</a> /</div><h1>@ViewData["Title"]</h1></div>
+    @if (Model.Id != 0 && !string.IsNullOrEmpty(Model.Url)) { <a class="btn" href="@Model.Url" target="_blank" rel="noopener">Open link ↗</a> }
+</div>
+<form method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <div class="panel"><div class="panel-body form-grid">
+        <field for="Name" span="4" placeholder="Behance" />
+        <field for="Url" span="8" kind="url" placeholder="https://www.behance.net/yourname" />
+
+        <div class="f">
+            <label>Built-in icon <span class="hint">— pick one, or upload your own below</span></label>
+            <div class="icon-pick" role="radiogroup" aria-label="Built-in icon">
+                @foreach (var (key, label, svgInner) in SocialIcons.All)
+                {
+                    <label class="icon-opt" title="@label">
+                        <input type="radio" name="Icon" value="@key" checked="@(Model.Icon == key)" />
+                        <span class="icon-opt-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">@Html.Raw(svgInner)</svg></span>
+                        <span class="icon-opt-name">@label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <field for="IconUrl" kind="image" hint="optional — PNG, JPG or WebP; replaces the built-in icon" />
+        <field for="ShowInSidebar" span="4" kind="check" />
+        <field for="ShowInFooter" span="4" kind="check" />
+        <field for="IsPublished" span="4" kind="check" />
+        <input type="hidden" name="SortOrder" value="@Model.SortOrder" />
+    </div></div>
+    <partial name="_SaveBar" model="Model" />
+</form>
+<partial name="_DeleteForm" model="(Model.Id, Model.Name)" />

@@ -51,6 +51,7 @@ public class ApiController(CmsDbContext db) : ControllerBase
             .Include(p => p.Blocks).ToListAsync();
 
         var tools = await db.Tools.AsNoTracking().Where(t => t.IsPublished).OrderBy(t => t.SortOrder).ToListAsync();
+        var socials = await db.SocialLinks.AsNoTracking().Where(s => s.IsPublished).OrderBy(s => s.SortOrder).ThenBy(s => s.Id).ToListAsync();
 
         var cases = new Dictionary<string, object>();
         foreach (var p in projects)
@@ -86,6 +87,7 @@ public class ApiController(CmsDbContext db) : ControllerBase
             tools = tools.Select(t => t.Name),
             // Same tools with their logos (the website's "tools" list stays plain names).
             toolItems = tools.Select(t => new { name = t.Name, img = Media(t.ImageUrl) }),
+            socials = socials.Select(s => new { name = s.Name, url = s.Url, icon = s.Icon, img = Media(s.IconUrl), sidebar = s.ShowInSidebar, footer = s.ShowInFooter }),
             experience = await db.Experiences.AsNoTracking().Where(e => e.IsPublished).OrderBy(e => e.SortOrder).ThenBy(e => e.Id)
                 .Select(e => new { when = e.When, title = e.Title, sub = e.Subtitle, where = e.Location, current = e.IsCurrent ? true : (bool?)null })
                 .ToListAsync(),

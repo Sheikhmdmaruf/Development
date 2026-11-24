@@ -87,3 +87,15 @@ export interface Experience {
   where: string;
   current?: boolean;
 }
+
+/** A "Connect" link shown in the sidebar and/or footer (managed in the dashboard → Social links). */
+export interface Social {
+  name: string;
+  url: string;
+  /** Built-in icon key: dribbble, github, linkedin, behance, instagram, x, facebook, youtube, website, email, link */
+  icon: string;
+  /** Uploaded icon (full URL); replaces the built-in icon. */
+  img?: string;
+  sidebar: boolean;
+  footer: boolean;
+}

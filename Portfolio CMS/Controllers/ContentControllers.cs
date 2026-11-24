@@ -99,3 +99,19 @@ public class ExperienceController(CmsDbContext db) : CrudController<Experience>(
     protected override string Describe(Experience e) => e.Title;
     protected override string Noun => "Experience";
 }
+
+/// <summary>"Connect" links (Dribbble, GitHub, LinkedIn…) for the website's sidebar and footer.</summary>
+public class SocialController(CmsDbContext db) : CrudController<SocialLink>(db)
+{
+    protected override string Describe(SocialLink s) => s.Name;
+    protected override string Noun => "Link";
+
+    protected override Task PrepareAsync(SocialLink m)
+    {
+        m.Url = m.Url.Trim();
+        var ok = Uri.TryCreate(m.Url, UriKind.Absolute, out var u) && (u.Scheme is "https" or "http" or "mailto");
+        if (!ok) ModelState.AddModelError(nameof(SocialLink.Url), "Use a full link starting with https:// (or mailto: for email).");
+        if (!PortfolioCms.Infrastructure.SocialIcons.All.Any(i => i.Key == m.Icon)) m.Icon = "link";
+        return Task.CompletedTask;
+    }
+}

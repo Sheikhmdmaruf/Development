@@ -1,0 +1,52 @@
+@model List<SocialLink>
+@{
+    ViewData["Title"] = "Social links";
+    string Where(SocialLink s) => (s.ShowInSidebar, s.ShowInFooter) switch
+    {
+        (true, true) => "Sidebar + footer", (true, false) => "Sidebar", (false, true) => "Footer", _ => "Nowhere",
+    };
+}
+<div class="head">
+    <div><div class="crumb">Site</div><h1>Social links <span class="muted" style="font-weight:400">· @Model.Count</span></h1></div>
+    <div class="actions"><partial name="_ViewToggle" /><a class="btn primary" href="/social/create">New link</a></div>
+</div>
+<p class="muted small" style="margin:-8px 0 14px">The “Connect” links in your website's sidebar and the icons in its footer. Use ↑ ↓ to change the order.</p>
+
+<div class="views" data-views="social" data-view="list">
+    <script>try{if(localStorage.getItem('cms-view-social')==='grid')document.currentScript.parentElement.dataset.view='grid'}catch(e){}</script>
+    @if (Model.Count == 0) { <div class="panel empty">No links yet. Click “New link” to add Dribbble, GitHub, LinkedIn or any other profile.</div> }
+    else
+    {
+        <div class="view-list panel table-wrap">
+            <table class="table">
+                <thead><tr><th>Link</th><th class="hide-sm">Shown in</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td><div class="cell-flex"><partial name="_SocialIcon" model="(s, 36)" /><div><a class="title" href="/social/edit/@s.Id">@s.Name</a><div class="sub">@s.Url</div></div></div></td>
+                        <td class="hide-sm"><span class="pill">@Where(s)</span></td>
+                        <td><partial name="_Status" model="s.IsPublished" /></td>
+                        <td><partial name="_RowActions" model="(s.Id, s.IsPublished, s.Name)" /></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="view-grid cards">
+            @foreach (var s in Model)
+            {
+                <div class="panel card">
+                    <a class="tool-card-media" href="/social/edit/@s.Id"><partial name="_SocialIcon" model="(s, 56)" /></a>
+                    <div class="card-body" style="align-items:center;text-align:center">
+                        <a class="card-title" href="/social/edit/@s.Id">@s.Name</a>
+                        <span class="card-meta" style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">@s.Url</span>
+                        <span class="pill" style="margin-top:4px">@Where(s)</span>
+                    </div>
+                    <div class="card-foot"><partial name="_Status" model="s.IsPublished" /><partial name="_RowActions" model="(s.Id, s.IsPublished, s.Name)" /></div>
+                </div>
+            }
+        </div>
+    }
+</div>

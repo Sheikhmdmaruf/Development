@@ -1,7 +1,8 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { site } from '../data/live';
-import { ArrowUpRight, Dribbble, GitHub, Grid, Home, LinkedIn, Mail, Menu, Moon, Pen, Send, Services, Sun, User } from './Icons';
+import { SOCIALS } from '../data/content';
+import { ArrowUpRight, Grid, Home, Mail, Menu, Moon, Pen, Send, Services, SocialIcon, Sun, User } from './Icons';
 
 export type Theme = 'dark' | 'light';
 
@@ -63,9 +64,10 @@ export default function Sidebar({ theme, setTheme }: { theme: Theme; setTheme: (
           <div className="nav-label">Connect</div>
           <div className="panel nav-panel">
             <a className="nav-item" href="#contact" onClick={() => setOpen(false)}><Mail />Contact</a>
-            <External href={site('dribbble_url', 'https://dribbble.com/sheikhmdmaruf')} icon={<Dribbble />} label="Dribbble" />
-            <External href={site('github_url', 'https://github.com/Sheikhmdmaruf')} icon={<GitHub />} label="GitHub" />
-            <External href={site('linkedin_url', 'https://www.linkedin.com/in/sheikhmdmaruf/')} icon={<LinkedIn />} label="LinkedIn" />
+            {/* Connect links: dashboard → Social links */}
+            {SOCIALS.filter(s => s.sidebar).map((s, i) => (
+              <External key={i + s.name} href={s.url} icon={<SocialIcon icon={s.icon} img={s.img} />} label={s.name} />
+            ))}
           </div>
         </div>
 

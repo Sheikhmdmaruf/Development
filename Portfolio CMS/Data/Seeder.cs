@@ -21,10 +21,15 @@ public static class Seeder
         ("availability", "Availability badge — default \"Available for new projects\""),
         ("reply_time", "Reply time — default \"Replies within 24 hours\""),
         ("location_note", "Location note — default \"Working worldwide · GMT+6\""),
-        ("fiverr_url", "Fiverr link"),
-        ("dribbble_url", "Dribbble link"),
-        ("github_url", "GitHub link"),
-        ("linkedin_url", "LinkedIn link"),
+        ("fiverr_url", "Fiverr link (the “Hire on Fiverr” button)"),
+    ];
+
+    /// <summary>Old fixed link settings, now managed as Social links (moved over once, then removed).</summary>
+    private static readonly (string Key, string Name, string Icon, string Default, bool Footer)[] OldSocialSettings =
+    [
+        ("dribbble_url", "Dribbble", "dribbble", "https://dribbble.com/sheikhmdmaruf", true),
+        ("github_url", "GitHub", "github", "https://github.com/Sheikhmdmaruf", true),
+        ("linkedin_url", "LinkedIn", "linkedin", "https://www.linkedin.com/in/sheikhmdmaruf/", false),
     ];
 
     /// <summary>One editable field of a hero section. Kind: text, area or image. Default = the website's current text.</summary>
@@ -86,6 +91,23 @@ public static class Seeder
         foreach (var f in HeroGroups.SelectMany(g => g.Fields).DistinctBy(f => f.Key))
             if (!await db.SiteSettings.AnyAsync(s => s.Key == f.Key))
                 db.SiteSettings.Add(new SiteSetting { Key = f.Key, Label = f.Label, Value = f.Default });
+
+        // Social links: start with Dribbble, GitHub and LinkedIn, keeping any link already saved in Site settings.
+        if (!await db.SocialLinks.AnyAsync())
+        {
+            var order = 0;
+            foreach (var (key, name, icon, def, footer) in OldSocialSettings)
+            {
+                var saved = (await db.SiteSettings.FindAsync(key))?.Value;
+                db.SocialLinks.Add(new SocialLink
+                {
+                    Name = name, Icon = icon, Url = string.IsNullOrWhiteSpace(saved) ? def : saved.Trim(),
+                    ShowInSidebar = true, ShowInFooter = footer, SortOrder = order++,
+                });
+            }
+        }
+        db.SiteSettings.RemoveRange(await db.SiteSettings
+            .Where(s => s.Key == "dribbble_url" || s.Key == "github_url" || s.Key == "linkedin_url").ToListAsync());
 
         // Experience timeline (About page) — starts with the entries that were in the website code.
         if (!await db.Experiences.AnyAsync())

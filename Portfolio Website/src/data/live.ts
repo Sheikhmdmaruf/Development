@@ -7,11 +7,11 @@
    Without them — or if the dashboard can't be reached — the site
    uses the content in this folder, so it never breaks.
    ====================================================== */
-import { POSTS, PROJECTS, REVIEWS, SERVICES, FAQ, TOOLS, EXPERIENCE, setContactEmail, CONTACT_EMAIL } from './content';
+import { POSTS, PROJECTS, REVIEWS, SERVICES, FAQ, TOOLS, EXPERIENCE, SOCIALS, setContactEmail, CONTACT_EMAIL } from './content';
 import { CASES } from './cases';
 import { ARTICLES } from './articles';
 import { SERVICE_DETAILS } from './serviceDetails';
-import type { Article, CaseStudy, Experience, FaqItem, Post, Project, Review, Service, ServiceDetail } from './types';
+import type { Article, CaseStudy, Experience, FaqItem, Social, Post, Project, Review, Service, ServiceDetail } from './types';
 
 const API = (import.meta.env.VITE_ADMIN_API_URL as string | undefined)?.replace(/\/$/, '');
 const KEY = import.meta.env.VITE_SITE_KEY as string | undefined;
@@ -25,6 +25,7 @@ interface LivePayload {
   /** The same tools with the logo uploaded in the dashboard (img is a full URL). */
   toolItems?: { name: string; img?: string }[];
   experience?: Experience[];
+  socials?: Social[];
   projects: Project[];
   services: Service[];
   reviews: Review[];
@@ -70,6 +71,7 @@ export async function loadLiveContent(timeoutMs = 3500): Promise<void> {
     replaceArray(POSTS, data.posts);
     replaceArray(TOOLS, data.tools);
     replaceArray(EXPERIENCE, data.experience);
+    replaceArray(SOCIALS, data.socials);
     for (const t of data.toolItems ?? []) if (t.img) toolLogos[t.name.trim().toLowerCase()] = t.img;
     replaceRecord(CASES, data.cases);
     replaceRecord(ARTICLES, data.articles);
