@@ -148,7 +148,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .card-meta{font-size:12px;color:var(--muted)}
 .card-text{color:var(--muted);font-size:13px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .card-foot{padding:10px 12px 10px 16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.card-foot .actions{gap:4px}
+/* the buttons always stay together on one row; only the status pill may move above them on narrow cards */
+.card-foot{padding:10px 12px}
+.card-foot .actions{gap:4px;flex-wrap:nowrap;margin-left:auto}
+.card-foot .btn.sm{padding:0 8px}
+.card-foot .btn.sm.icon{width:26px;padding:0}
 .card-icon{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
 .card-icon svg{width:21px;height:21px}
 .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
