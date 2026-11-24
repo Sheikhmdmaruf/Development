@@ -11,6 +11,24 @@
     <div class="panel-body form-grid">
         @foreach (var s in Model)
         {
+            if (s.Key == "location_note")
+            {
+                // Time zone dropdown. Empty value = the website's default (GMT+6).
+                var zones = TimeZones.Options();
+                var current = string.IsNullOrWhiteSpace(s.Value) ? TimeZones.Prefix + "GMT+6" : s.Value;
+                var known = zones.Any(z => z.Value == current);
+                <div class="f s6">
+                    <label for="@s.Key">Time zone <span class="hint">— shown as “@current”</span></label>
+                    <select id="@s.Key" name="values[@s.Key]" data-tz>
+                        @if (!known) { <option value="@current" selected>@current (current text)</option> }
+                        @foreach (var z in zones)
+                        {
+                            <option value="@z.Value" selected="@(z.Value == current)">@z.Label</option>
+                        }
+                    </select>
+                </div>
+                continue;
+            }
             <div class="f s6">
                 <label for="@s.Key">@s.Label</label>
                 <input type="text" id="@s.Key" name="values[@s.Key]" value="@s.Value" maxlength="1000" />

@@ -103,6 +103,12 @@
     buttons.forEach(b => b.addEventListener('click', () => set(b.dataset.viewSet, true)));
   });
 
+  // ── Time zone dropdown: keep the "shown as …" hint in step with the choice ──
+  document.querySelectorAll('select[data-tz]').forEach(sel => {
+    const hint = sel.closest('.f')?.querySelector('.hint');
+    sel.addEventListener('change', () => { if (hint) hint.textContent = `— shown as “${sel.value}”`; });
+  });
+
   // ── Toasts: close on ×, success toasts fade out after 4 seconds ──
   const closeToast = t => { t.classList.add('hide'); setTimeout(() => t.remove(), 300); };
   document.querySelectorAll('.toast').forEach(t => {
