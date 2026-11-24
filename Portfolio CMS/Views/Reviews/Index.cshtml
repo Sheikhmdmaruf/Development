@@ -1,0 +1,23 @@
+@model List<Review>
+@{ ViewData["Title"] = "Reviews"; }
+<div class="head">
+    <div><div class="crumb">Content</div><h1>Reviews <span class="muted" style="font-weight:400">· @Model.Count</span></h1></div>
+    <a class="btn primary" href="/reviews/create">New review</a>
+</div>
+<div class="panel table-wrap">
+    <table class="table">
+        <thead><tr><th>Client</th><th class="hide-sm">Quote</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td><div class="cell-flex"><span class="thumb" style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,@r.ColorA,@r.ColorB)"></span><div><a class="title" href="/reviews/edit/@r.Id">@r.Name</a><div class="sub">@r.Role · @r.Company</div></div></div></td>
+                <td class="hide-sm"><div class="sub">“@r.Quote”</div></td>
+                <td><partial name="_Status" model="r.IsPublished" /></td>
+                <td><partial name="_RowActions" model="(r.Id, r.IsPublished, r.Name)" /></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    @if (Model.Count == 0) { <div class="empty">No reviews yet.</div> }
+</div>

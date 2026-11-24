@@ -1,0 +1,65 @@
+@model Project
+@{
+    ViewData["Title"] = Model.Id == 0 ? "New project" : Model.Title;
+
+}
+<div class="head">
+    <div><div class="crumb"><a href="/projects">Work</a> /</div><h1>@ViewData["Title"]</h1></div>
+    @if (Model.Id != 0) { <a class="btn" href="http://localhost:5173/project/@Model.Slug" target="_blank" rel="noopener">View on website ↗</a> }
+</div>
+
+<form method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <div class="panel"><div class="panel-head"><h2>Card</h2><span class="muted small">What shows on the Work page and home page</span></div>
+    <div class="panel-body form-grid">
+        <field for="Title" span="8" slug-from="true" />
+        <field for="Badge" span="4" hint="e.g. Featured — optional" />
+        <div class="f s4"><label for="Type">Type <span class="hint">— Work page filter</span></label><select id="Type" name="Type">@Html.Raw(Ui.Options(Ui.ProjectTypes, Model.Type))</select></div>
+        <field for="Category" span="4" hint="label, e.g. Website" />
+        <field for="Year" span="4" />
+        <field for="Highlight" span="6" hint="the ✦ pill on the image" />
+        <field for="Url" span="6" kind="url" />
+        <field for="Summary" kind="area" rows="2" hint="one line" />
+        <field for="ImageUrl" span="6" kind="image" />
+        <field for="CoverUrl" span="6" kind="image" hint="project page header (optional)" />
+        <field for="Color1" span="3" kind="color" hint="used when there is no image" />
+        <field for="Color2" span="3" kind="color" />
+        <field for="Slug" span="6" slug="true" hint="auto from title" />
+        <field for="IsPublished" span="6" kind="check" />
+        <input type="hidden" name="SortOrder" value="@Model.SortOrder" />
+    </div></div>
+
+    <div class="panel"><div class="panel-head"><h2>Case study</h2><span class="muted small">Shown on the project page — all optional</span></div>
+    <div class="panel-body form-grid">
+        <field for="Client" span="6" />
+        <field for="Role" span="6" />
+        <field for="Duration" span="4" />
+        <field for="Tools" span="4" />
+        <field for="Team" span="4" />
+
+        <div class="section-title"><h2>Metrics</h2><p class="muted small">Usually 3 cards under the header.</p></div>
+        <div class="rep" data-rep>
+            <template>@Html.Raw(Rows.ProjectMetric("__i__", null))</template>
+            @for (var i = 0; i < Model.Metrics.Count; i++) { @Html.Raw(Rows.ProjectMetric(i.ToString(), Model.Metrics[i])) }
+            <button type="button" class="btn rep-add" data-rep-add>+ Add metric</button>
+        </div>
+
+        <div class="section-title"><h2>Story steps</h2><p class="muted small">Numbered panels, e.g. Challenge, Process, Result.</p></div>
+        <div class="rep" data-rep>
+            <template>@Html.Raw(Rows.ProjectStep("__i__", null))</template>
+            @for (var i = 0; i < Model.Steps.Count; i++) { @Html.Raw(Rows.ProjectStep(i.ToString(), Model.Steps[i])) }
+            <button type="button" class="btn rep-add" data-rep-add>+ Add step</button>
+        </div>
+
+        <div class="section-title"><h2>Gallery</h2><p class="muted small">Images at the end: the first is wide, the next two are half width.</p></div>
+        <div class="rep" data-rep>
+            <template>@Html.Raw(Rows.ProjectImage("__i__", null))</template>
+            @for (var i = 0; i < Model.Gallery.Count; i++) { @Html.Raw(Rows.ProjectImage(i.ToString(), Model.Gallery[i])) }
+            <button type="button" class="btn rep-add" data-rep-add>+ Add image</button>
+        </div>
+    </div></div>
+
+    <partial name="_SaveBar" model="Model" />
+</form>
+<partial name="_DeleteForm" model="(Model.Id, Model.Title)" />

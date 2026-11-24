@@ -1,0 +1,51 @@
+@model Service
+@{
+    ViewData["Title"] = Model.Id == 0 ? "New service" : Model.Title;
+}
+<div class="head">
+    <div><div class="crumb"><a href="/services">Services</a> /</div><h1>@ViewData["Title"]</h1></div>
+    @if (Model.Id != 0) { <a class="btn" href="http://localhost:5173/service/@Model.Slug" target="_blank" rel="noopener">View on website ↗</a> }
+</div>
+<form method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <div class="panel"><div class="panel-head"><h2>Card</h2><span class="muted small">Shown on the home and Services pages</span></div>
+    <div class="panel-body form-grid">
+        <field for="Title" span="8" slug-from="true" />
+        <field for="Price" span="4" hint="empty = Custom quote" />
+        <field for="Summary" kind="area" rows="2" />
+        <field for="Tags" />
+        <field for="Icon" kind="code" rows="3" hint="SVG inner markup, 24×24 viewBox" />
+        <field for="Slug" span="6" slug="true" hint="auto from title" />
+        <field for="IsPublished" span="6" kind="check" />
+        <input type="hidden" name="SortOrder" value="@Model.SortOrder" />
+    </div></div>
+
+    <div class="panel"><div class="panel-head"><h2>Detail page</h2><span class="muted small">/service/@(Model.Slug ?? "…")</span></div>
+    <div class="panel-body form-grid">
+        <div class="f s4"><label for="DetailType">Related work <span class="hint">— which projects to show</span></label><select id="DetailType" name="DetailType"><option value="">None</option>@Html.Raw(Ui.Options(Ui.ProjectTypes, Model.DetailType))</select></div>
+        <field for="DetailSummary" span="8" kind="area" rows="3" />
+
+        <div class="section-title"><h2>Metrics</h2><p class="muted small">Cards next to the price, e.g. Duration, Deliverables, Revisions.</p></div>
+        <div class="rep" data-rep>
+            <template>@Html.Raw(Rows.ServiceMetric("__i__", null))</template>
+            @for (var i = 0; i < Model.Metrics.Count; i++) { @Html.Raw(Rows.ServiceMetric(i.ToString(), Model.Metrics[i])) }
+            <button type="button" class="btn rep-add" data-rep-add>+ Add metric</button>
+        </div>
+
+        <div class="section-title"><h2>What's included</h2></div>
+        <div class="rep" data-rep>
+            <template>@Html.Raw(Rows.ServiceIncluded("__i__", null))</template>
+            @for (var i = 0; i < Model.Included.Count; i++) { @Html.Raw(Rows.ServiceIncluded(i.ToString(), Model.Included[i])) }
+            <button type="button" class="btn rep-add" data-rep-add>+ Add item</button>
+        </div>
+
+        <div class="section-title"><h2>How it works</h2><p class="muted small">Usually 4 steps.</p></div>
+        <div class="rep" data-rep>
+            <template>@Html.Raw(Rows.ServiceStep("__i__", null))</template>
+            @for (var i = 0; i < Model.Steps.Count; i++) { @Html.Raw(Rows.ServiceStep(i.ToString(), Model.Steps[i])) }
+            <button type="button" class="btn rep-add" data-rep-add>+ Add step</button>
+        </div>
+    </div></div>
+    <partial name="_SaveBar" model="Model" />
+</form>
+<partial name="_DeleteForm" model="(Model.Id, Model.Title)" />

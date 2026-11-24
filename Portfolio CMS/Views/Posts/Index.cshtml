@@ -1,0 +1,30 @@
+@model List<Post>
+@{ ViewData["Title"] = "Blog"; }
+<div class="head">
+    <div><div class="crumb">Content</div><h1>Blog <span class="muted" style="font-weight:400">· @Model.Count posts</span></h1></div>
+    <a class="btn primary" href="/posts/create">New post</a>
+</div>
+<p class="muted small" style="margin:-8px 0 14px">Posts are sorted by date, newest first. The newest 3 show on the home page.</p>
+<div class="panel table-wrap">
+    <table class="table">
+        <thead><tr><th>Post</th><th class="hide-sm">Category</th><th class="hide-sm">Date</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var p in Model)
+        {
+            var bg = p.ImageUrl?.StartsWith("/uploads/") == true ? $"background-image:url('{p.ImageUrl}')" : $"background:linear-gradient(135deg,{p.Color1},{p.Color2})";
+            <tr>
+                <td><div class="cell-flex"><span class="thumb" style="@bg"></span><div><a class="title" href="/posts/edit/@p.Id">@p.Title</a><div class="sub">@(string.IsNullOrEmpty(p.ExternalUrl) ? p.ReadTime + " read" : "Outside link ↗")</div></div></div></td>
+                <td class="hide-sm">@p.Category</td>
+                <td class="hide-sm" style="white-space:nowrap">@p.PublishedOn.ToString("d MMM yyyy")</td>
+                <td><partial name="_Status" model="p.IsPublished" /></td>
+                <td><div class="actions">
+                    <form asp-antiforgery="true" class="inline" method="post" action="/posts/togglepublish/@p.Id"><button class="btn sm">@(p.IsPublished ? "Hide" : "Publish")</button></form>
+                    <a class="btn sm" href="/posts/edit/@p.Id">Edit</a>
+                    <form asp-antiforgery="true" class="inline" method="post" action="/posts/delete/@p.Id" data-confirm="Delete “@p.Title”? This can't be undone."><button class="btn sm danger">Delete</button></form>
+                </div></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    @if (Model.Count == 0) { <div class="empty">No posts yet.</div> }
+</div>

@@ -1,0 +1,42 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    var latest = (List<Submission>)ViewBag.Latest;
+    var recent = (List<(string Kind, int Id, string Title, DateTime UpdatedAt, string Ctrl)>)ViewBag.Recent;
+}
+<div class="head">
+    <div><div class="crumb">Welcome back, @User.Identity?.Name</div><h1>Dashboard</h1></div>
+    <div class="actions">
+        <a class="btn" href="/posts/create">New blog post</a>
+        <a class="btn primary" href="/projects/create">New project</a>
+    </div>
+</div>
+<div class="stats">
+    <a class="panel stat" href="/projects"><span class="muted">Projects</span><b>@ViewBag.Projects</b></a>
+    <a class="panel stat" href="/services"><span class="muted">Services</span><b>@ViewBag.Services</b></a>
+    <a class="panel stat" href="/posts"><span class="muted">Blog posts</span><b>@ViewBag.Posts</b></a>
+    <a class="panel stat" href="/reviews"><span class="muted">Reviews</span><b>@ViewBag.Reviews</b></a>
+    <a class="panel stat" href="/inbox"><span class="muted">Unread messages</span><b>@ViewBag.Unread</b></a>
+</div>
+<div class="grid2">
+    <div class="panel">
+        <div class="panel-head"><h2>Latest messages</h2><a href="/inbox" class="small">View all</a></div>
+        @if (latest.Count == 0) { <div class="empty">No messages yet. They arrive here from the contact form on your website.</div> }
+        else {
+        <table class="table">
+            @foreach (var s in latest)
+            {
+                <tr class="@(s.IsRead ? "" : "unread")"><td><a class="title" href="/inbox/open/@s.Id">@s.Name</a><div class="sub">@s.Message</div></td><td class="muted small" style="text-align:right;white-space:nowrap">@s.CreatedAt.ToLocalTime().ToString("d MMM")</td></tr>
+            }
+        </table>
+        }
+    </div>
+    <div class="panel">
+        <div class="panel-head"><h2>Recently edited</h2></div>
+        <table class="table">
+            @foreach (var r in recent)
+            {
+                <tr><td><a class="title" href="/@r.Ctrl/edit/@r.Id">@r.Title</a><div class="sub">@r.Kind</div></td><td class="muted small" style="text-align:right;white-space:nowrap">@r.UpdatedAt.ToLocalTime().ToString("d MMM, HH:mm")</td></tr>
+            }
+        </table>
+    </div>
+</div>

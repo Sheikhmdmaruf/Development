@@ -1,0 +1,10 @@
+@{ Layout = "_AuthLayout"; ViewData["Title"] = "Create your account"; }
+<h1>Welcome 👋</h1>
+<p class="muted">Create the admin account for your dashboard. You only do this once.</p>
+<form asp-antiforgery="true" method="post" action="/account/setup">
+    @if (ViewBag.Error is string e) { <div class="flash err" style="margin:0">@e</div> }
+    <div class="f"><label for="u">Username</label><input id="u" type="text" name="UserName" required autofocus autocomplete="username" maxlength="60" /></div>
+    <div class="f"><label for="p">Password <span class="hint">— at least 8 characters</span></label><input id="p" type="password" name="Password" required minlength="8" autocomplete="new-password" /></div>
+    <div class="f"><label for="c">Confirm password</label><input id="c" type="password" name="ConfirmPassword" required minlength="8" autocomplete="new-password" /></div>
+    <button class="btn primary" style="justify-content:center">Create account</button>
+</form>

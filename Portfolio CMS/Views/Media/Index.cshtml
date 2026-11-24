@@ -1,0 +1,28 @@
+@model List<FileInfo>
+@{ ViewData["Title"] = "Media"; }
+<div class="head">
+    <div><div class="crumb">Site</div><h1>Media <span class="muted" style="font-weight:400">· @Model.Count images</span></h1></div>
+    <form asp-antiforgery="true" method="post" action="/media/upload" enctype="multipart/form-data" class="actions">
+        <input type="file" name="file" accept="image/*" required style="max-width:240px" />
+        <button class="btn primary">Upload</button>
+    </form>
+</div>
+<p class="muted small" style="margin:-8px 0 14px">Copy an image's path into any image box. You can also upload straight from the image boxes on each edit page. Max 10 MB.</p>
+@if (Model.Count == 0) { <div class="panel empty">No images yet.</div> }
+<div class="media-grid">
+    @foreach (var f in Model)
+    {
+        var path = "/uploads/" + f.Name;
+        <div class="panel media-item">
+            <img src="@path" alt="@f.Name" loading="lazy" />
+            <div class="meta">
+                <code>@path</code>
+                <span class="muted small">@(f.Length / 1024) KB · @f.CreationTime.ToString("d MMM yyyy")</span>
+                <div class="actions" style="justify-content:flex-start">
+                    <button type="button" class="btn sm" data-copy="@path">Copy path</button>
+                    <form asp-antiforgery="true" class="inline" method="post" action="/media/delete?name=@Uri.EscapeDataString(f.Name)" data-confirm="Delete @f.Name? Pages using it will lose the image."><button class="btn sm danger">Delete</button></form>
+                </div>
+            </div>
+        </div>
+    }
+</div>

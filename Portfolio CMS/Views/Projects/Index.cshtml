@@ -1,0 +1,26 @@
+@model List<Project>
+@{ ViewData["Title"] = "Work"; }
+<div class="head">
+    <div><div class="crumb">Content</div><h1>Work <span class="muted" style="font-weight:400">· @Model.Count projects</span></h1></div>
+    <a class="btn primary" href="/projects/create">New project</a>
+</div>
+<p class="muted small" style="margin:-8px 0 14px">The first 3 published projects show on the home page. Use ↑ ↓ to change the order.</p>
+<div class="panel table-wrap">
+    <table class="table">
+        <thead><tr><th>Project</th><th class="hide-sm">Type</th><th class="hide-sm">Year</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var p in Model)
+        {
+            var bg = !string.IsNullOrEmpty(p.ImageUrl) && p.ImageUrl.StartsWith("/uploads/") ? $"background-image:url('{p.ImageUrl}')" : $"background:linear-gradient(135deg,{p.Color1},{p.Color2})";
+            <tr>
+                <td><div class="cell-flex"><span class="thumb" style="@bg"></span><div><a class="title" href="/projects/edit/@p.Id">@p.Title</a>@if (!string.IsNullOrEmpty(p.Badge)) { <span class="pill accent" style="margin-left:6px">@p.Badge</span> }<div class="sub">@p.Summary</div></div></div></td>
+                <td class="hide-sm">@p.Category</td>
+                <td class="hide-sm">@p.Year</td>
+                <td><partial name="_Status" model="p.IsPublished" /></td>
+                <td><partial name="_RowActions" model="(p.Id, p.IsPublished, p.Title)" /></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    @if (Model.Count == 0) { <div class="empty">No projects yet.</div> }
+</div>

@@ -1,0 +1,9 @@
+@model Orderable
+@{ var c = ViewContext.RouteData.Values["controller"]; }
+<div class="sticky-save">
+    <span class="muted small">@(Model.Id == 0 ? "New — not saved yet" : $"Last saved {Model.UpdatedAt.ToLocalTime():d MMM yyyy, HH:mm}")</span>
+    <div class="actions">
+        <a class="btn" href="/@c">Back to list</a>
+        <button class="btn primary" type="submit">@(Model.Id == 0 ? "Create" : "Save changes")</button>
+    </div>
+</div>

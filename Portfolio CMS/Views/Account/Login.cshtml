@@ -1,0 +1,10 @@
+@{ Layout = "_AuthLayout"; ViewData["Title"] = "Log in"; }
+<h1>Log in</h1>
+<p class="muted">Manage everything on your portfolio website.</p>
+<form asp-antiforgery="true" method="post" action="/account/login">
+    @if (ViewBag.Error is string e) { <div class="flash err" style="margin:0">@e</div> }
+    <input type="hidden" name="ReturnUrl" value="@ViewBag.ReturnUrl" />
+    <div class="f"><label for="u">Username</label><input id="u" type="text" name="UserName" required autofocus autocomplete="username" /></div>
+    <div class="f"><label for="p">Password</label><input id="p" type="password" name="Password" required autocomplete="current-password" /></div>
+    <button class="btn primary" style="justify-content:center">Log in</button>
+</form>

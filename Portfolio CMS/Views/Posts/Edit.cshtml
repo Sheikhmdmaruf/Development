@@ -1,0 +1,42 @@
+@model Post
+@{
+    ViewData["Title"] = Model.Id == 0 ? "New blog post" : Model.Title;
+    var categories = Ui.BlogCategories.ToList();
+    if (!string.IsNullOrEmpty(Model.Category) && !categories.Any(c => c.Item1 == Model.Category)) categories.Add((Model.Category, Model.Category));
+    var viewUrl = string.IsNullOrEmpty(Model.ExternalUrl) ? $"http://localhost:5173/blog/{Model.Slug}" : Model.ExternalUrl;
+}
+<div class="head">
+    <div><div class="crumb"><a href="/posts">Blog</a> /</div><h1>@ViewData["Title"]</h1></div>
+    @if (Model.Id != 0) { <a class="btn" href="@viewUrl" target="_blank" rel="noopener">View on website ↗</a> }
+</div>
+<form method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <div class="panel"><div class="panel-head"><h2>Post</h2></div>
+    <div class="panel-body form-grid">
+        <field for="Title" slug-from="true" />
+        <div class="f s4"><label for="Category">Category <span class="hint">— Blog page filter</span></label><select id="Category" name="Category">@Html.Raw(Ui.Options(categories, Model.Category))</select></div>
+        <field for="PublishedOn" span="4" kind="date" />
+        <field for="ReadTime" span="4" />
+        <field for="ImageUrl" span="6" kind="image" />
+        <div class="f s6"><label for="Type">Placeholder art <span class="hint">— used when there is no cover</span></label><select id="Type" name="Type">@Html.Raw(Ui.Options(Ui.ProjectTypes, Model.Type))</select></div>
+        <field for="Color1" span="3" kind="color" />
+        <field for="Color2" span="3" kind="color" />
+        <field for="ExternalUrl" span="6" kind="url" hint="leave empty to use the article below" />
+        <field for="Slug" span="6" slug="true" hint="auto from title" />
+        <field for="IsPublished" span="6" kind="check" />
+        <input type="hidden" name="SortOrder" value="@Model.SortOrder" />
+    </div></div>
+
+    <div class="panel"><div class="panel-head"><h2>Article</h2><span class="muted small">Shown on /blog/@(Model.Slug ?? "…")</span></div>
+    <div class="panel-body form-grid">
+        <field for="ArticleSummary" kind="area" rows="2" hint="one line under the title" />
+        <div class="section-title"><h2>Content blocks</h2><p class="muted small">Paragraphs, headings, quotes and bullet lists, in order.</p></div>
+        <div class="rep" data-rep>
+            <template>@Html.Raw(Rows.PostBlock("__i__", null))</template>
+            @for (var i = 0; i < Model.Blocks.Count; i++) { @Html.Raw(Rows.PostBlock(i.ToString(), Model.Blocks[i])) }
+            <button type="button" class="btn rep-add" data-rep-add>+ Add block</button>
+        </div>
+    </div></div>
+    <partial name="_SaveBar" model="Model" />
+</form>
+<partial name="_DeleteForm" model="(Model.Id, Model.Title)" />

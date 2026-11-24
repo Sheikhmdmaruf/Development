@@ -1,0 +1,34 @@
+@model List<SiteSetting>
+@{
+    ViewData["Title"] = "Site settings";
+    var origins = (string[])ViewBag.Origins;
+    var apiUrl = $"{Context.Request.Scheme}://{Context.Request.Host}";
+}
+<div class="head"><div><div class="crumb">Site</div><h1>Site settings</h1></div></div>
+
+<form method="post">
+    <div class="panel"><div class="panel-head"><h2>Texts &amp; links</h2><span class="muted small">Leave a box empty to use the website's built-in text.</span></div>
+    <div class="panel-body form-grid">
+        @foreach (var s in Model)
+        {
+            <div class="f s6">
+                <label for="@s.Key">@s.Label</label>
+                <input type="text" id="@s.Key" name="values[@s.Key]" value="@s.Value" maxlength="1000" />
+            </div>
+        }
+    </div></div>
+    <div class="sticky-save"><span class="muted small">Changes show on the website on its next page load.</span><button class="btn primary">Save settings</button></div>
+</form>
+
+<div class="panel" style="margin-top:16px">
+    <div class="panel-head"><h2>Connect your website</h2></div>
+    <div class="panel-body" style="display:flex;flex-direction:column;gap:14px">
+        <p>Put these two lines in <code>Portfolio Website/.env.local</code>, then restart the website (<code>npm run dev</code>):</p>
+        <code class="key">VITE_ADMIN_API_URL=@apiUrl<br />VITE_SITE_KEY=@ViewBag.SiteKey</code>
+        <div class="actions" style="justify-content:flex-start">
+            <button type="button" class="btn sm" data-copy="VITE_ADMIN_API_URL=@apiUrl&#10;VITE_SITE_KEY=@ViewBag.SiteKey">Copy</button>
+            <form asp-antiforgery="true" class="inline" method="post" action="/settings/regeneratekey" data-confirm="Make a new key? The website stops loading content until you update VITE_SITE_KEY."><button class="btn sm danger">Make a new key</button></form>
+        </div>
+        <p class="muted small">Websites allowed to use the API (set in <code>appsettings.json</code> → Cms:AllowedOrigins): @string.Join(", ", origins)</p>
+    </div>
+</div>

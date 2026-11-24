@@ -1,0 +1,13 @@
+@model Tool
+@{ ViewData["Title"] = Model.Id == 0 ? "New tool" : Model.Name; }
+<div class="head"><div><div class="crumb"><a href="/tools">Tools</a> /</div><h1>@ViewData["Title"]</h1></div></div>
+<form method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <div class="panel"><div class="panel-body form-grid">
+        <field for="Name" span="8" />
+        <field for="IsPublished" span="4" kind="check" />
+        <input type="hidden" name="SortOrder" value="@Model.SortOrder" />
+    </div></div>
+    <partial name="_SaveBar" model="Model" />
+</form>
+<partial name="_DeleteForm" model="(Model.Id, Model.Name)" />

@@ -1,0 +1,22 @@
+@model List<Faq>
+@{ ViewData["Title"] = "FAQ"; }
+<div class="head">
+    <div><div class="crumb">Content</div><h1>FAQ <span class="muted" style="font-weight:400">· @Model.Count</span></h1></div>
+    <a class="btn primary" href="/faq/create">New question</a>
+</div>
+<div class="panel table-wrap">
+    <table class="table">
+        <thead><tr><th>Question</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var f in Model)
+        {
+            <tr>
+                <td><span class="pill accent">@f.Pill</span> <a class="title" href="/faq/edit/@f.Id">@f.Question</a><div class="sub">@f.Answer</div></td>
+                <td><partial name="_Status" model="f.IsPublished" /></td>
+                <td><partial name="_RowActions" model="(f.Id, f.IsPublished, f.Question)" /></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    @if (Model.Count == 0) { <div class="empty">No questions yet.</div> }
+</div>

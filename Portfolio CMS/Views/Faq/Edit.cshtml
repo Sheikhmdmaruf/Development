@@ -1,0 +1,15 @@
+@model Faq
+@{ ViewData["Title"] = Model.Id == 0 ? "New question" : "Edit question"; }
+<div class="head"><div><div class="crumb"><a href="/faq">FAQ</a> /</div><h1>@ViewData["Title"]</h1></div></div>
+<form method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <div class="panel"><div class="panel-body form-grid">
+        <field for="Pill" span="4" hint="short tag, e.g. Timeline" />
+        <field for="Question" span="8" />
+        <field for="Answer" kind="area" rows="4" />
+        <field for="IsPublished" kind="check" />
+        <input type="hidden" name="SortOrder" value="@Model.SortOrder" />
+    </div></div>
+    <partial name="_SaveBar" model="Model" />
+</form>
+<partial name="_DeleteForm" model="(Model.Id, Model.Question)" />
