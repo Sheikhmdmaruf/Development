@@ -44,7 +44,7 @@ public class HomeController(CmsDbContext db) : Controller
         if (string.IsNullOrWhiteSpace(email) || email.Contains("yourdomain"))
             todo.Add(("accent", "Contact email not set", "The website still shows a placeholder email.", "/settings", "Set email"));
         if (string.IsNullOrWhiteSpace(Setting("hero_photo")))
-            todo.Add(("accent", "No profile photo uploaded", "Upload one on the Home page settings.", "/hero", "Upload photo"));
+            todo.Add(("accent", "No profile photo uploaded", "Upload one on the Hero page.", "/hero", "Upload photo"));
         var toolsNoLogo = await db.Tools.CountAsync(t => t.ImageUrl == null || t.ImageUrl == "");
         if (toolsNoLogo > 0)
             todo.Add(("accent", $"{toolsNoLogo} tool{(toolsNoLogo == 1 ? "" : "s")} without a logo", "Logos show on the Home and About pages.", "/tools", "Add logos"));
@@ -215,7 +215,7 @@ public class SettingsController(CmsDbContext db, IConfiguration config) : Contro
     }
 }
 
-/// <summary>Two dashboard menus: "Home page" (/hero) and "About page" (/hero/about). Values are site settings.</summary>
+/// <summary>Two dashboard menus: "Hero" (/hero, the Home page hero) and "About" (/hero/about). Values are site settings.</summary>
 public class HeroController(CmsDbContext db) : Controller
 {
     public Task<IActionResult> Index() => Show("home");
@@ -244,7 +244,7 @@ public class HeroController(CmsDbContext db) : Controller
         foreach (var s in (await db.SiteSettings.ToListAsync()).Where(s => keys.Contains(s.Key)))
             if (values.TryGetValue(s.Key, out var v)) s.Value = (v ?? "").Trim();
         await db.SaveChangesAsync();
-        TempData["ok"] = page == "home" ? "Home page updated successfully." : "About page updated successfully.";
+        TempData["ok"] = page == "home" ? "Hero updated successfully." : "About updated successfully.";
         return RedirectToAction(page == "home" ? nameof(Index) : nameof(About));
     }
 }

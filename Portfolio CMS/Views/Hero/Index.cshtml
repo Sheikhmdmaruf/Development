@@ -3,7 +3,7 @@
 @{
     var page = (string)ViewBag.Page;            // "home" or "about"
     var isHome = page == "home";
-    ViewData["Title"] = isHome ? "Home page" : "About page";
+    ViewData["Title"] = isHome ? "Hero" : "About";
     var siteUrl = isHome ? "http://localhost:5173/" : "http://localhost:5173/about";
     string V(string key) => Model.TryGetValue(key, out var v) ? v : "";
 }
@@ -49,6 +49,6 @@
     }
     <div class="sticky-save">
         <span class="muted small">Changes show on the website on its next page load.</span>
-        <button class="btn primary" type="submit">Save @(isHome ? "Home page" : "About page")</button>
+        <button class="btn primary" type="submit">Save @(isHome ? "Hero" : "About")</button>
     </div>
 </form>
