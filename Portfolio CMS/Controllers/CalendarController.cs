@@ -186,7 +186,7 @@ public partial class CalendarController(CmsDbContext db) : Controller
         e.Start.ToString(Fmt, CultureInfo.InvariantCulture), e.End.ToString(Fmt, CultureInfo.InvariantCulture));
 
     /// <summary>The occurrences of an event (one for non-repeating) that overlap [from, to).</summary>
-    static IEnumerable<(DateTime Start, DateTime End)> Occurrences(CalendarEvent e, DateTime from, DateTime to)
+    internal static IEnumerable<(DateTime Start, DateTime End)> Occurrences(CalendarEvent e, DateTime from, DateTime to)
     {
         var len = e.End - e.Start;
         if (e.Repeat == "none")

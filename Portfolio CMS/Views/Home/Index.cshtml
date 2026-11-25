@@ -54,6 +54,90 @@
     </a>
 </div>
 
+@{
+    var cal = Model.Calendar;
+    var now = DateTime.Now;
+    var nextIdx = cal.Today.FindIndex(a => !a.AllDay && a.Start > now);
+    string When(PortfolioCms.Controllers.AgendaItem a, DateTime day)
+    {
+        if (a.AllDay || (a.Start <= day && a.End >= day.AddDays(1))) return "All day";
+        if (a.Start < day) return "Until " + a.End.ToString("h:mm tt");
+        if (a.End > day.AddDays(1)) return a.Start.ToString("h:mm tt") + " →";
+        return $"{a.Start:h:mm} – {a.End:h:mm tt}";
+    }
+    string In(DateTime start)
+    {
+        var d = start - now;
+        return d.TotalMinutes < 60 ? $"In {(int)Math.Ceiling(d.TotalMinutes)} min" : d.Minutes == 0 ? $"In {(int)d.TotalHours} h" : $"In {(int)d.TotalHours} h {d.Minutes} min";
+    }
+    string DayLink(DateTime d) => "/calendar#/day/" + d.ToString("yyyy-MM-dd");
+}
+<div class="panel cal-sum">
+    <div class="panel-head">
+        <h2>Calendar <span class="pill" style="margin-left:6px">@cal.WeekCount event@(cal.WeekCount == 1 ? "" : "s") in the next 7 days</span></h2>
+        <div style="display:flex;gap:12px;align-items:center">
+            <a class="btn sm" href="/calendar?new=1">@Html.Raw($"<svg {svg}><path d=\"M12 5v14M5 12h14\"/></svg>")New event</a>
+            <span class="small"><a href="/calendar">Open calendar</a></span>
+        </div>
+    </div>
+    <div class="cs-grid">
+        <div class="cs-today">
+            <div class="cs-label">Today · @now.ToString("ddd d MMM")</div>
+            @if (cal.Today.Count == 0)
+            {
+                <div class="cs-empty">Nothing scheduled today. <a href="/calendar?new=1">Add an event</a></div>
+            }
+            else
+            {
+                for (var i = 0; i < cal.Today.Count; i++)
+                {
+                    var a = cal.Today[i];
+                    var live = !a.AllDay && a.Start <= now && a.End > now;
+                    var past = !a.AllDay && a.End <= now;
+                    <a class="cs-ev @(past ? "past" : "") @(live ? "live" : "")" href="@DayLink(now.Date)" style="--c:@a.Color">
+                        <span class="cs-time">@When(a, now.Date)</span>
+                        <span class="cs-bar"></span>
+                        <span class="cs-text"><b>@a.Title</b><span>@(string.IsNullOrEmpty(a.Location) ? a.CalendarName : a.Location + " · " + a.CalendarName)</span></span>
+                        @if (live) { <span class="pill ok">Now</span> }
+                        else if (i == nextIdx) { <span class="pill accent">@In(a.Start)</span> }
+                    </a>
+                }
+            }
+        </div>
+        <div class="cs-side">
+            <div class="cs-week">
+                @foreach (var w in cal.Week)
+                {
+                    <a class="cs-day @(w.Day == now.Date ? "today" : "")" href="@DayLink(w.Day)" title="@w.Day.ToString("dddd d MMMM") · @w.Count event@(w.Count == 1 ? "" : "s")">
+                        <span class="cs-dow">@w.Day.ToString("ddd")</span>
+                        <b>@w.Day.Day</b>
+                        <span class="cs-dots">@foreach (var c in w.Colors) { <i style="--c:@c"></i> }</span>
+                        <span class="cs-count">@(w.Count == 0 ? "Free" : w.Count.ToString())</span>
+                    </a>
+                }
+            </div>
+            <div class="cs-label">Coming up</div>
+            @if (cal.Upcoming.Count == 0)
+            {
+                <div class="cs-empty">Nothing planned in the next two weeks.</div>
+            }
+            else
+            {
+                <div class="cs-up">
+                    @foreach (var a in cal.Upcoming)
+                    {
+                        <a class="cs-up-row" href="@DayLink(a.Start.Date)" style="--c:@a.Color">
+                            <span class="cs-date"><b>@a.Start.Day</b>@a.Start.ToString("MMM")</span>
+                            <i class="cs-dot"></i>
+                            <span class="cs-text"><b>@a.Title</b><span>@a.Start.ToString("dddd") · @(a.AllDay ? "All day" : a.Start.ToString("h:mm tt"))</span></span>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
 <div class="dash-grid">
     <div class="panel">
         <div class="panel-head"><h2>Needs your attention</h2><span class="pill">@Model.Attention.Count(a => a.Tone != "ok")</span></div>
