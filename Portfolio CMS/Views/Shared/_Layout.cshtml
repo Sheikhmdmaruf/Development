@@ -31,6 +31,7 @@
             <nav class="nav">
                 <a class="@On("Home")" href="/">@Html.Raw($"<svg {svg}><rect x=\"3\" y=\"3\" width=\"7\" height=\"9\" rx=\"1.5\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"5\" rx=\"1.5\"/><rect x=\"14\" y=\"12\" width=\"7\" height=\"9\" rx=\"1.5\"/><rect x=\"3\" y=\"16\" width=\"7\" height=\"5\" rx=\"1.5\"/></svg>")Dashboard</a>
                 <a class="@On("Inbox")" href="/inbox">@Html.Raw($"<svg {svg}><path d=\"M3 13h5l1.5 3h5L16 13h5\"/><path d=\"M5 5h14l2 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z\"/></svg>")Inbox @if (unread > 0) { <span class="count">@unread</span> }</a>
+                <a class="@On("Calendar")" href="/calendar">@Html.Raw($"<svg {svg}><rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M3 10h18M8 3v4M16 3v4\"/></svg>")Calendar</a>
 
                 <div class="nav-label">Pages</div>
                 <a class="@OnPage("Index")" href="/hero">@Html.Raw($"<svg {svg}><rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M7 9h6M7 12.5h10M7 16h4\"/></svg>")Hero</a>
@@ -91,6 +92,7 @@
             <div class="cmdk-foot"><span><kbd>↑</kbd> <kbd>↓</kbd> move</span><span><kbd>Enter</kbd> open</span><span><kbd>Esc</kbd> close</span></div>
         </div>
         <template data-cmdk-actions>
+            <a href="/calendar?new=1">New calendar event</a>
             <a href="/projects/create">New project</a>
             <a href="/posts/create">New blog post</a>
             <a href="/services/create">New service</a>

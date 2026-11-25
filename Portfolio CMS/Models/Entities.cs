@@ -223,3 +223,39 @@ public class AdminUser
     [Required] public string PasswordHash { get; set; } = "";
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
+
+// ───────────── Calendar ─────────────
+
+/// <summary>A colour-coded calendar ("Work", "Personal"…) that events belong to. Like Google's "My calendars".</summary>
+public class CalendarList
+{
+    public int Id { get; set; }
+    [Required, StringLength(60)] public string Name { get; set; } = "";
+    [Required, StringLength(9)] public string Color { get; set; } = "#3d7bff";
+    public bool IsVisible { get; set; } = true;
+    public int SortOrder { get; set; }
+    public List<CalendarEvent> Events { get; set; } = [];
+}
+
+/// <summary>One event. Times are the admin's local wall-clock time. Repeating events store the first occurrence.</summary>
+public class CalendarEvent
+{
+    public int Id { get; set; }
+    public int CalendarListId { get; set; }
+    public CalendarList? Calendar { get; set; }
+    [Required, StringLength(200)] public string Title { get; set; } = "";
+    [StringLength(4000)] public string? Description { get; set; }
+    [StringLength(300)] public string? Location { get; set; }
+    public DateTime Start { get; set; }
+    /// <summary>Exclusive end. For all-day events this is midnight after the last day.</summary>
+    public DateTime End { get; set; }
+    public bool AllDay { get; set; }
+    /// <summary>Optional colour that overrides the calendar's colour.</summary>
+    [StringLength(9)] public string? Color { get; set; }
+    /// <summary>none, daily, weekdays, weekly, monthly, yearly.</summary>
+    [StringLength(12)] public string Repeat { get; set; } = "none";
+    /// <summary>Last day a repeating event may occur on (inclusive). Null = forever.</summary>
+    public DateTime? RepeatUntil { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+}

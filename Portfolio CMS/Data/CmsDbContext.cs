@@ -23,6 +23,8 @@ public class CmsDbContext(DbContextOptions<CmsDbContext> options) : DbContext(op
     public DbSet<SiteSetting> SiteSettings => Set<SiteSetting>();
     public DbSet<Submission> Submissions => Set<Submission>();
     public DbSet<AdminUser> AdminUsers => Set<AdminUser>();
+    public DbSet<CalendarList> CalendarLists => Set<CalendarList>();
+    public DbSet<CalendarEvent> CalendarEvents => Set<CalendarEvent>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -31,5 +33,7 @@ public class CmsDbContext(DbContextOptions<CmsDbContext> options) : DbContext(op
         b.Entity<Post>().HasIndex(p => p.Slug).IsUnique().HasFilter("[Slug] IS NOT NULL");
         b.Entity<AdminUser>().HasIndex(u => u.UserName).IsUnique();
         b.Entity<Submission>().HasIndex(s => s.CreatedAt);
+        b.Entity<CalendarEvent>().HasIndex(e => new { e.Start, e.End });
+        b.Entity<CalendarEvent>().HasOne(e => e.Calendar).WithMany(c => c.Events).HasForeignKey(e => e.CalendarListId).OnDelete(DeleteBehavior.Cascade);
     }
 }

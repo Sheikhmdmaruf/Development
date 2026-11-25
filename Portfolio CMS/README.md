@@ -16,6 +16,7 @@ From the dashboard you manage everything on the website:
 | Media | Upload images and use them anywhere |
 | Site settings | Contact email, availability text, reply time, location, Fiverr, Dribbble, GitHub and LinkedIn links |
 | Inbox | Messages sent from the website's contact form |
+| Calendar | Google-Calendar-style planner: Day / Week / Month / Schedule views, colour-coded calendars, repeating events, drag to create / move / resize, search, keyboard shortcuts (C, T, J/K, D/W/M/A, /) |
 
 You can hide or publish items, and change their order. Changes appear on the website the next time a page loads.
 
@@ -64,7 +65,7 @@ When you put the website online, add its address there (for example `https://mar
 Open **SQL Server Management Studio**, connect to `.\SQLEXPRESS` (Windows Authentication) and open
 the `PortfolioCms` database. Main tables: `Projects`, `ProjectMetrics`, `ProjectSteps`, `ProjectImages`,
 `Services`, `ServiceMetrics`, `ServiceIncluded`, `ServiceSteps`, `Posts`, `PostBlocks`, `Reviews`, `Faqs`,
-`Tools`, `SiteSettings`, `Submissions`, `AdminUsers`.
+`Tools`, `SiteSettings`, `Submissions`, `AdminUsers`, `CalendarLists`, `CalendarEvents`.
 
 The connection string is in `appsettings.json` → `ConnectionStrings:Cms`.
 
@@ -78,7 +79,7 @@ dotnet ef database update
 ## Project structure
 
 ```
-Controllers/   ApiController (website API), content CRUD, account, inbox, media, settings
+Controllers/   ApiController (website API), content CRUD, account, inbox, media, settings, CalendarController
 Data/          CmsDbContext, Seeder, migrations, seed.json
 Models/        Entity classes (database tables)
 Infrastructure/ form helpers for the edit pages
