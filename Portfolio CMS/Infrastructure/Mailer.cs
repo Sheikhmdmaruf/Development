@@ -73,64 +73,71 @@ public class Mailer(CmsDbContext db, IDataProtectionProvider dp)
         IEnumerable<(string Path, string FileName, string ContentType)>? files = null)
     {
         if (!s.IsReady) throw new InvalidOperationException("Email isn't set up yet. Open Mail settings first.");
-        using var msg = new MailMessage
-        {
-            From = new MailAddress(s.FromEmail, string.IsNullOrWhiteSpace(s.FromName) ? null : s.FromName),
-            Subject = subject,
-            Body = body,
-            IsBodyHtml = false,
-            BodyEncoding = System.Text.Encoding.UTF8,
-            SubjectEncoding = System.Text.Encoding.UTF8,
-        };
-        foreach (var a in to) msg.To.Add(a);
-        foreach (var a in cc) msg.CC.Add(a);
+
+        // Built with MailKit/MimeKit: .NET's old System.Net.Mail.SmtpClient mishandles the Gmail login
+        // and fails with "connection was closed" instead of sending or giving a real error.
+        var msg = new MimeKit.MimeMessage();
+        msg.From.Add(new MimeKit.MailboxAddress(string.IsNullOrWhiteSpace(s.FromName) ? "" : s.FromName, s.FromEmail));
+        foreach (var a in to) msg.To.Add(new MimeKit.MailboxAddress(a.DisplayName ?? "", a.Address));
+        foreach (var a in cc) msg.Cc.Add(new MimeKit.MailboxAddress(a.DisplayName ?? "", a.Address));
+        msg.Subject = subject;
+        var builder = new MimeKit.BodyBuilder { TextBody = body };
+        var count = 0;
         foreach (var f in files ?? [])
         {
             if (!File.Exists(f.Path)) throw new InvalidOperationException($"The attachment “{f.FileName}” is missing. Remove it and attach it again.");
-            var att = new Attachment(f.Path, f.ContentType);
-            att.ContentDisposition!.FileName = f.FileName;
-            att.Name = f.FileName;
-            att.NameEncoding = System.Text.Encoding.UTF8;
-            msg.Attachments.Add(att);
+            builder.Attachments.Add(f.FileName, await File.ReadAllBytesAsync(f.Path), MimeKit.ContentType.Parse(f.ContentType));
+            count++;
         }
+        msg.Body = builder.ToMessageBody();
 
-        using var smtp = new SmtpClient(s.Host, s.Port)
-        {
-            EnableSsl = s.UseTls,
-            DeliveryMethod = SmtpDeliveryMethod.Network,
-            Timeout = msg.Attachments.Count > 0 ? 300000 : 30000, // big files need longer
-        };
         var pw = Unprotect(s.PasswordProtected);
-        if (!string.IsNullOrWhiteSpace(s.UserName))
-        {
-            if (pw is null) throw new InvalidOperationException("The email password is missing. Type it again in Mail settings.");
-            smtp.UseDefaultCredentials = false;
-            smtp.Credentials = new NetworkCredential(s.UserName, pw);
-        }
+        if (!string.IsNullOrWhiteSpace(s.UserName) && pw is null)
+            throw new InvalidOperationException("The email password is missing. Type it again in Mail settings.");
+
+        // 465 = secure from the start (SSL); otherwise STARTTLS when "Use TLS" is on.
+        var security = s.Port == 465 ? MailKit.Security.SecureSocketOptions.SslOnConnect
+            : s.UseTls ? MailKit.Security.SecureSocketOptions.StartTls
+            : MailKit.Security.SecureSocketOptions.None;
+
+        using var smtp = new MailKit.Net.Smtp.SmtpClient { Timeout = count > 0 ? 300000 : 60000 }; // big files need longer
         try
         {
-            await smtp.SendMailAsync(msg);
-        }
-        catch (SmtpException ex)
-        {
-            var inner = ex.InnerException?.Message;
-            var all = ex.Message + " " + inner;
-            if (ex.StatusCode == SmtpStatusCode.ExceededStorageAllocation || all.Contains("5.3.4") || all.Contains("size", StringComparison.OrdinalIgnoreCase) && all.Contains("exceed", StringComparison.OrdinalIgnoreCase))
-                throw new InvalidOperationException("The email is too big for your mail provider. Gmail allows about 25 MB per email (attachments grow by about a third when sent), so remove or shrink a file and try again.", ex);
-            var text = ex.StatusCode switch
+            await smtp.ConnectAsync(s.Host, s.Port, security);
+            if (!string.IsNullOrWhiteSpace(s.UserName))
             {
-                SmtpStatusCode.MustIssueStartTlsFirst => "The server needs a secure connection. Turn on “Use TLS” and use port 587.",
-                SmtpStatusCode.ClientNotPermitted or SmtpStatusCode.MailboxUnavailable when ex.Message.Contains("auth", StringComparison.OrdinalIgnoreCase)
-                    => "The server refused the login. Check the username and password (Gmail needs an App Password).",
-                _ => ex.Message.Contains("Authentication", StringComparison.OrdinalIgnoreCase) || ex.Message.Contains("5.7.", StringComparison.Ordinal)
-                    ? "The server refused the login. Check the username and password (Gmail needs an App Password)."
-                    : "Couldn’t send: " + ex.Message + (inner is null ? "" : " (" + inner + ")"),
-            };
-            throw new InvalidOperationException(text, ex);
+                // Gmail shows app passwords with spaces; they aren't part of the password.
+                var cred = new NetworkCredential(s.UserName, s.Host.Contains("gmail", StringComparison.OrdinalIgnoreCase) ? pw!.Replace(" ", "") : pw);
+                // Log in with ONE method. If MailKit tries a second method after a refusal, Gmail hangs up
+                // and the real reason ("username and password not accepted") is lost.
+                if (smtp.AuthenticationMechanisms.Contains("PLAIN")) await smtp.AuthenticateAsync(new MailKit.Security.SaslMechanismPlain(cred));
+                else if (smtp.AuthenticationMechanisms.Contains("LOGIN")) await smtp.AuthenticateAsync(new MailKit.Security.SaslMechanismLogin(cred));
+                else await smtp.AuthenticateAsync(cred);
+            }
+            await smtp.SendAsync(new MailKit.SendRequest(msg));
+            await smtp.DisconnectAsync(true);
         }
-        catch (Exception ex) when (ex is not InvalidOperationException)
+        catch (MailKit.Security.AuthenticationException ex)
         {
-            throw new InvalidOperationException("Couldn’t reach the mail server: " + ex.Message, ex);
+            throw new InvalidOperationException(s.Host.Contains("gmail", StringComparison.OrdinalIgnoreCase)
+                ? "Gmail didn't accept the username or password. Use your full Gmail address as Username and a 16-letter App Password (not your normal Gmail password). Create a new one at Google Account → Security → App passwords, then paste it in Mail settings."
+                : "The mail server didn't accept the username or password. Check them in Mail settings.", ex);
+        }
+        catch (MailKit.Net.Smtp.SmtpCommandException ex) when (ex.StatusCode == MailKit.Net.Smtp.SmtpStatusCode.ExceededStorageAllocation || ex.Message.Contains("5.3.4") || ex.Message.Contains("size", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("The email is too big for your mail provider. Gmail allows about 25 MB per email (attachments grow by about a third when sent), so remove or shrink a file and try again.", ex);
+        }
+        catch (MailKit.Net.Smtp.SmtpCommandException ex)
+        {
+            throw new InvalidOperationException($"The mail server refused the email: {ex.Message}", ex);
+        }
+        catch (MailKit.Security.SslHandshakeException ex)
+        {
+            throw new InvalidOperationException("Couldn't make a secure connection. For Gmail use port 587 with “Use TLS” on (or port 465).", ex);
+        }
+        catch (Exception ex) when (ex is System.Net.Sockets.SocketException or TimeoutException or OperationCanceledException or IOException or MailKit.Net.Smtp.SmtpProtocolException)
+        {
+            throw new InvalidOperationException($"Couldn't talk to the mail server {s.Host}:{s.Port}. Check the server and port in Mail settings, and your internet connection. ({ex.Message})", ex);
         }
     }
 }

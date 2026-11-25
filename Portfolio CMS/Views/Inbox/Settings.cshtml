@@ -24,7 +24,7 @@
             <div class="form-grid">
                 <div class="f s8"><label for="msHost">SMTP server</label><input id="msHost" type="text" name="Host" value="@Model.Host" placeholder="smtp.gmail.com" maxlength="200" /></div>
                 <div class="f s4"><label for="msPort">Port</label><input id="msPort" type="number" name="Port" value="@Model.Port" min="1" max="65535" /></div>
-                <div class="f"><label class="check"><input type="checkbox" name="UseTls" value="true" @(Model.UseTls ? "checked" : "") /> Use TLS (STARTTLS) — keep this on with port 587</label><input type="hidden" name="UseTls" value="false" /></div>
+                <div class="f"><label class="check"><input type="checkbox" name="UseTls" value="true" @(Model.UseTls ? "checked" : "") /> Use TLS (STARTTLS) — keep this on with port 587 (port 465 is always secure)</label><input type="hidden" name="UseTls" value="false" /></div>
                 <div class="f s6"><label for="msUser">Username</label><input id="msUser" type="text" name="UserName" value="@Model.UserName" placeholder="you@gmail.com" maxlength="200" autocomplete="off" /></div>
                 <div class="f s6"><label for="msPw">Password @if (hasPw) { <span class="hint">· saved (leave empty to keep it)</span> }</label>
                     <input id="msPw" type="password" name="Password" placeholder="@(hasPw ? "••••••••" : "App password")" autocomplete="new-password" />
@@ -52,7 +52,7 @@
             </ol>
             <p class="muted small">Your normal Gmail password won't work, Google only accepts an App Password here.</p>
             <hr />
-            <p class="muted small">Other providers: use the SMTP server and port from your email host (port 587 with TLS on). Port 465 isn't supported, use 587.</p>
+            <p class="muted small">Other providers: use the SMTP server and port from your email host: port 587 with TLS on, or port 465 (secure from the start).</p>
             <p class="muted small">The password is stored encrypted on this computer. It is never shown again and never sent to your website.</p>
         </div>
     </div>
