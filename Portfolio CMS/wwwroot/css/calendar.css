@@ -21,7 +21,7 @@
 .mini-grid button.out{color:var(--muted);opacity:.6}
 .mini-grid button.inrange{background:var(--accent-soft);border-radius:0;max-width:none}
 .mini-grid button.sel{background:color-mix(in srgb,var(--accent) 30%,transparent);color:var(--text);border-radius:50%;max-width:30px}
-.mini-grid button.today{background:var(--accent);color:#fff;font-weight:700;border-radius:50%;max-width:30px}
+.mini-grid button.today{background:var(--accent);color:var(--accent-text);font-weight:700;border-radius:50%;max-width:30px}
 
 .cal-lists-head{display:flex;align-items:center;justify-content:space-between;padding:0 4px 6px 6px;font:600 13px var(--font-head)}
 .cl-row{display:flex;align-items:center;border-radius:8px}
@@ -95,7 +95,7 @@
 .mo-row .dcell.out{background:color-mix(in srgb,var(--raised) 45%,transparent)}
 .mo-row .dcell.out .num{color:var(--muted)}
 .mo-row .num{min-width:24px;height:24px;padding:0 6px;border-radius:12px;font-size:12px;font-weight:550}
-.mo-row .dcell.today .num{background:var(--accent);color:#fff}
+.mo-row .dcell.today .num{background:var(--accent);color:var(--accent-text)}
 
 /* ───────── day / week time grid ───────── */
 .tg{flex:1;display:flex;flex-direction:column;min-height:0}
@@ -107,7 +107,7 @@
 .tg-day .dow{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
 .tg-day .num{width:40px;height:40px;font:500 22px var(--font-head)}
 .tg-day.today .dow{color:var(--accent)}
-.tg-day.today .num{background:var(--accent);color:#fff}
+.tg-day.today .num{background:var(--accent);color:var(--accent-text)}
 .tg-day.past .num{color:var(--text-2)}
 .tg-allday{border-bottom:1px solid var(--border-strong)}
 .tg-allday .tg-gutter{display:flex;align-items:center;justify-content:flex-end;padding-right:8px}
@@ -134,7 +134,7 @@
 .ev-resize{position:absolute;left:0;right:0;bottom:0;height:8px;cursor:ns-resize}
 .ev-resize::after{content:"";position:absolute;left:50%;bottom:2px;width:16px;height:3px;margin-left:-8px;border-radius:2px;background:currentColor;opacity:0;transition:opacity .12s}
 .ev:hover .ev-resize::after{opacity:.55}
-.ev.ghost{--c:var(--accent);--on:#fff;box-shadow:0 8px 24px rgba(0,0,0,.35);z-index:35;pointer-events:none}
+.ev.ghost{--c:var(--accent);--on:var(--accent-text);box-shadow:0 8px 24px rgba(0,0,0,.35);z-index:35;pointer-events:none}
 
 /* ───────── schedule / search ───────── */
 .sch{flex:1;overflow-y:auto;padding:6px 0}
@@ -237,7 +237,7 @@ input[type=time][hidden]{display:none}
   .cal{grid-template-columns:minmax(0,1fr)}
   .cal-side{position:fixed;z-index:45;inset:0 auto 0 0;width:280px;padding:18px 16px;background:var(--side);border-right:1px solid var(--border);box-shadow:var(--pop-shadow);transform:translateX(-105%);transition:transform .2s ease}
   .cal.side-open .cal-side{transform:none}
-  .cal.side-open .cal-scrim{display:block;position:fixed;inset:0;z-index:44;background:rgba(3,6,14,.45)}
+  .cal.side-open .cal-scrim{display:block;position:fixed;inset:0;z-index:44;background:rgba(0,0,0,.45)}
   .cal-side-btn{display:grid}
 }
 @media (max-width:760px){

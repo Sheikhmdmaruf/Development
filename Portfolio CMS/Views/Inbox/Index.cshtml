@@ -301,7 +301,7 @@
                         {
                             <article class="ol-mail mine @(t.Status == "failed" ? "failed" : "")">
                                 <div class="ol-sender">
-                                    <span class="ol-av" style="--av:var(--accent)">@Initials(me)</span>
+                                    <span class="ol-av" style="--av:var(--accent);--av-text:var(--accent-text)">@Initials(me)</span>
                                     <div class="ol-sender-main">
                                         <div><b>You</b> <span class="muted">to @t.To</span> @if (t.Status == "failed") { <span class="pill off">Not sent</span> }</div>
                                         <div class="muted small">@t.Subject</div>
@@ -320,7 +320,7 @@
                     <article class="ol-mail">
                         <h2 class="ol-mail-subj">@sent.Subject</h2>
                         <div class="ol-sender">
-                            <span class="ol-av lg" style="--av:var(--accent)">@Initials(me)</span>
+                            <span class="ol-av lg" style="--av:var(--accent);--av-text:var(--accent-text)">@Initials(me)</span>
                             <div class="ol-sender-main">
                                 <div><b>You</b> @if (!string.IsNullOrEmpty(Model.Settings.FromEmail)) { <span class="muted">&lt;@Model.Settings.FromEmail&gt;</span> }</div>
                                 <div class="muted small">To: @sent.To</div>
