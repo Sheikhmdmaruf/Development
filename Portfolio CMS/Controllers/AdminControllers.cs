@@ -18,41 +18,10 @@ public record DashboardVm(
     List<(string Tone, string Title, string Detail, string Href, string Go)> Attention,
     List<Submission> Latest,
     List<(string Kind, int Id, string Title, DateTime UpdatedAt, string Ctrl)> Recent,
-    CalendarSummary Calendar);
+    List<CalendarChip> Calendars);
 
-/// <summary>One event occurrence for the dashboard's calendar card.</summary>
-public record AgendaItem(int EventId, string Title, string? Location, DateTime Start, DateTime End, bool AllDay, string Color, string CalendarName);
-
-/// <summary>Today's agenda, the next 7 days at a glance and what's coming up after today.</summary>
-public record CalendarSummary(List<AgendaItem> Today, List<(DateTime Day, int Count, List<string> Colors)> Week,
-    List<AgendaItem> Upcoming, int WeekCount)
-{
-    /// <summary>Loads visible calendars' occurrences for today + the next 13 days.</summary>
-    public static async Task<CalendarSummary> LoadAsync(CmsDbContext db)
-    {
-        var today = DateTime.Today; var to = today.AddDays(14);
-        var events = await db.CalendarEvents.AsNoTracking().Include(e => e.Calendar)
-            .Where(e => e.Calendar!.IsVisible && e.Start < to && (e.Repeat != "none" || e.End > today))
-            .ToListAsync();
-        var all = events
-            .SelectMany(e => CalendarController.Occurrences(e, today, to).Select(o =>
-                new AgendaItem(e.Id, e.Title, e.Location, o.Start, o.End, e.AllDay, e.Color ?? e.Calendar?.Color ?? "#3d7bff", e.Calendar?.Name ?? "")))
-            .OrderBy(a => a.Start).ThenByDescending(a => a.AllDay).ToList();
-
-        bool On(AgendaItem a, DateTime day) => a.Start < day.AddDays(1) && a.End > day;
-        var week = Enumerable.Range(0, 7).Select(i => today.AddDays(i)).Select(d =>
-        {
-            var items = all.Where(a => On(a, d)).ToList();
-            return (d, items.Count, items.Select(a => a.Color).Distinct().Take(4).ToList());
-        }).ToList();
-        var weekEnd = today.AddDays(7);
-        return new CalendarSummary(
-            all.Where(a => On(a, today)).ToList(),
-            week,
-            all.Where(a => a.Start >= today.AddDays(1)).DistinctBy(a => a.EventId).Take(6).ToList(), // a repeating event shows once
-            all.Count(a => a.Start < weekEnd));
-    }
-}
+/// <summary>A calendar (name + colour) for the dashboard month card; the events themselves load from /calendar/events.</summary>
+public record CalendarChip(int Id, string Name, string Color, bool Visible);
 
 public class HomeController(CmsDbContext db) : Controller
 {
@@ -100,7 +69,8 @@ public class HomeController(CmsDbContext db) : Controller
             todo,
             await db.Submissions.AsNoTracking().OrderByDescending(s => s.CreatedAt).Take(5).ToListAsync(),
             recent,
-            await CalendarSummary.LoadAsync(db)));
+            await db.CalendarLists.AsNoTracking().OrderBy(c => c.SortOrder).ThenBy(c => c.Id)
+                .Select(c => new CalendarChip(c.Id, c.Name, c.Color, c.IsVisible)).ToListAsync()));
     }
 
     [AllowAnonymous]

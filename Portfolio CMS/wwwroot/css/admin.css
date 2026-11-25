@@ -399,36 +399,58 @@ code.key{font:12.5px/1.6 var(--font-mono);background:var(--raised);border:1px so
 .btn{line-height:1}
 .btn:not(.icon){padding-top:2px!important}
 
-/* Dashboard: calendar summary card */
-.cal-sum{margin-bottom:16px}
-.cs-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
-.cs-today{padding:14px 12px 14px 20px;border-right:1px solid var(--border)}
-.cs-side{padding:14px 20px 14px 16px;display:flex;flex-direction:column;min-width:0}
-.cs-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:2px 0 8px}
-.cs-empty{padding:14px 0;color:var(--muted);font-size:13px}
-.cs-ev{display:flex;align-items:center;gap:12px;padding:9px 8px;margin:0 -8px;border-radius:var(--r-s);color:var(--text)}
-.cs-ev:hover,.cs-up-row:hover,.cs-day:hover{background:var(--hover);text-decoration:none}
-.cs-time{width:118px;flex:none;font:500 12.5px var(--font-mono);color:var(--text-2);white-space:nowrap}
-.cs-bar{width:4px;align-self:stretch;min-height:32px;border-radius:4px;background:var(--c);flex:none}
-.cs-text{flex:1;min-width:0;line-height:1.3}
-.cs-text b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cs-text span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cs-ev.past{opacity:.5}
-.cs-ev.live{background:color-mix(in srgb,var(--c) 12%,transparent)}
-.cs-ev .pill{flex:none}
-.cs-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-bottom:16px}
-.cs-day{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px 7px;border-radius:11px;border:1px solid var(--border);background:var(--raised);color:var(--text)}
-.cs-day b{font:600 18px/1.1 var(--font-head)}
-.cs-dow{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-.cs-dots{display:flex;gap:3px;height:7px}
-.cs-dots i{width:7px;height:7px;border-radius:50%;background:var(--c)}
-.cs-count{font-size:11px;color:var(--muted);font-weight:500}
-.cs-day.today{border-color:var(--accent);background:var(--accent-soft)}
-.cs-day.today .cs-dow{color:var(--accent)}
-.cs-up{display:flex;flex-direction:column}
-.cs-up-row{display:flex;align-items:center;gap:12px;padding:7px 8px;margin:0 -8px;border-radius:var(--r-s);color:var(--text)}
-.cs-date{width:38px;flex:none;display:flex;flex-direction:column;align-items:center;line-height:1.1;font-size:10.5px;font-weight:600;text-transform:uppercase;color:var(--muted)}
-.cs-date b{font:600 17px var(--font-head);color:var(--text)}
-.cs-dot{width:9px;height:9px;border-radius:50%;background:var(--c);flex:none}
-@media (max-width:1100px){.cs-grid{grid-template-columns:1fr}.cs-today{border-right:0;border-bottom:1px solid var(--border);padding-right:20px}.cs-side{padding-left:20px}}
-@media (max-width:480px){.cs-time{width:84px;font-size:11.5px;white-space:normal}.cs-week{gap:4px}.cs-day b{font-size:15px}}
+/* Dashboard: small month calendar beside "Needs your attention" and "Latest messages" */
+.dash-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) minmax(300px,330px)}
+.dcal{align-self:start}
+.dcal-body{padding:12px 14px 14px}
+.dcal-nav{display:flex;align-items:center;gap:4px;margin-bottom:8px}
+.dcal-month{flex:1;border:0;background:none;color:var(--text);font:600 14px var(--font-head);cursor:pointer;padding:6px;border-radius:8px}
+.dcal-month:hover{background:var(--hover)}
+.dcal-arrow{width:30px;height:30px;border:0;border-radius:50%;background:none;color:var(--text-2);display:grid;place-items:center;cursor:pointer}
+.dcal-arrow:hover{background:var(--hover);color:var(--text)}
+.dcal-arrow svg{width:16px;height:16px}
+.dcal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.dcal-dow{text-align:center;font-size:10.5px;font-weight:600;color:var(--muted);padding:2px 0 6px}
+.dcal-day{position:relative;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;border-radius:10px;background:none;color:var(--text);font:500 12.5px var(--font);cursor:pointer;padding:0}
+.dcal-day:hover,.dcal-day:focus-visible{background:var(--hover);outline:none}
+.dcal-day.out{color:var(--muted);opacity:.55}
+.dcal-day.past:not(.today){color:var(--text-2)}
+.dcal-day.has{font-weight:650}
+.dcal-day.today span{display:grid;place-items:center;width:24px;height:24px;margin:-3px 0 -2px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700}
+.dcal-dots{display:flex;gap:2px;height:5px}
+.dcal-dots b{width:5px;height:5px;border-radius:50%;background:var(--c)}
+.dcal-foot{display:flex;flex-direction:column;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
+.dcal-foot b{color:var(--text-2);font-weight:600}
+.dcal-next{border:0;background:var(--raised);border-radius:8px;padding:7px 9px;text-align:left;color:var(--muted);font:inherit;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dcal-next:hover{background:var(--hover);color:var(--text)}
+
+.dcal-tip{position:fixed;z-index:65;width:270px;padding:8px;background:var(--panel);border:1px solid var(--border-strong);border-radius:12px;box-shadow:var(--pop-shadow);animation:pop-in .12s ease-out}
+.dcal-tip[hidden]{display:none}
+.dt-head{font:600 12.5px var(--font-head);color:var(--text-2);padding:4px 6px 6px}
+.dt-ev{display:grid;grid-template-columns:8px auto minmax(0,1fr);align-items:center;gap:8px;width:100%;border:0;background:none;color:var(--text);font:inherit;text-align:left;padding:7px 6px;border-radius:8px;cursor:pointer}
+.dt-ev:hover,.dt-ev:focus-visible{background:var(--hover);outline:none}
+.dt-ev i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.dt-time{font-size:11.5px;color:var(--muted);white-space:nowrap}
+.dt-title{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dt-more{display:block;padding:6px;font-size:12px;font-weight:600}
+
+.dcal-detail{max-width:460px}
+.dd-head{display:flex;gap:14px;align-items:flex-start;padding:22px 18px 10px 24px}
+.dd-sq{width:16px;height:16px;border-radius:5px;flex:none;margin-top:6px}
+.dd-main{flex:1;min-width:0}
+.dd-main h2{font-size:20px;margin:0 0 6px;overflow-wrap:anywhere}
+.dd-main p{font-size:13.5px;color:var(--text-2)}
+.dd-main p[hidden]{display:none}
+.dd-x{border-color:transparent;background:none;border-radius:50%;margin-top:-4px}
+.dd-x:hover{background:var(--hover)}
+.dd-rows{display:flex;flex-direction:column;gap:12px;padding:6px 24px 22px 54px}
+.dd-row{display:flex;gap:12px;align-items:flex-start;font-size:13.5px;margin-left:-30px}
+.dd-row svg{width:18px;height:18px;flex:none;color:var(--muted)}
+.dd-row a{overflow-wrap:anywhere}
+.dd-desc{white-space:pre-wrap;overflow-wrap:anywhere}
+
+@media (max-width:1280px){
+  .dash-grid{grid-template-columns:minmax(0,1fr) minmax(280px,320px)}
+  .dash-grid > .dcal{grid-column:2;grid-row:1 / span 2}
+}
+@media (max-width:1100px){.dash-grid{grid-template-columns:1fr}.dash-grid > .dcal{grid-column:auto;grid-row:auto}}
