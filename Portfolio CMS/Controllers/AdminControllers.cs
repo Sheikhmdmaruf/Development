@@ -30,7 +30,7 @@ public class HomeController(CmsDbContext db) : Controller
         async Task<(int, int)> Count<T>(IQueryable<T> q) where T : Orderable =>
             (await q.CountAsync(), await q.CountAsync(x => !x.IsPublished));
 
-        var unread = await db.Submissions.CountAsync(s => !s.IsRead);
+        var unread = await db.Submissions.CountAsync(s => !s.IsRead && !s.IsArchived && s.DeletedAt == null);
         var settings = await db.SiteSettings.AsNoTracking().ToDictionaryAsync(s => s.Key, s => s.Value);
         string Setting(string k) => settings.TryGetValue(k, out var v) ? v : "";
 
@@ -64,10 +64,10 @@ public class HomeController(CmsDbContext db) : Controller
 
         return View(new DashboardVm(
             await Count(db.Projects), await Count(db.Services), await Count(db.Posts), await Count(db.Reviews),
-            unread, await db.Submissions.CountAsync(),
+            unread, await db.Submissions.CountAsync(s => s.DeletedAt == null),
             await db.Posts.Where(p => p.IsPublished).MaxAsync(p => (DateTime?)p.PublishedOn),
             todo,
-            await db.Submissions.AsNoTracking().OrderByDescending(s => s.CreatedAt).Take(5).ToListAsync(),
+            await db.Submissions.AsNoTracking().Where(s => s.DeletedAt == null && !s.IsArchived).OrderByDescending(s => s.CreatedAt).Take(5).ToListAsync(),
             recent,
             await db.CalendarLists.AsNoTracking().OrderBy(c => c.SortOrder).ThenBy(c => c.Id)
                 .Select(c => new CalendarChip(c.Id, c.Name, c.Color, c.IsVisible)).ToListAsync()));
@@ -156,36 +156,6 @@ public class AccountController(CmsDbContext db) : Controller
         CookieAuthenticationDefaults.AuthenticationScheme,
         new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, user.UserName)], CookieAuthenticationDefaults.AuthenticationScheme)),
         new AuthenticationProperties { IsPersistent = true });
-}
-
-public class InboxController(CmsDbContext db) : Controller
-{
-    public async Task<IActionResult> Index() =>
-        View(await db.Submissions.AsNoTracking().OrderByDescending(s => s.CreatedAt).ToListAsync());
-
-    public async Task<IActionResult> Open(int id)
-    {
-        var s = await db.Submissions.FindAsync(id);
-        if (s is null) return NotFound();
-        if (!s.IsRead) { s.IsRead = true; await db.SaveChangesAsync(); }
-        return View("Message", s);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> MarkUnread(int id)
-    {
-        var s = await db.Submissions.FindAsync(id);
-        if (s is not null) { s.IsRead = false; await db.SaveChangesAsync(); }
-        return RedirectToAction(nameof(Index));
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var s = await db.Submissions.FindAsync(id);
-        if (s is not null) { db.Submissions.Remove(s); await db.SaveChangesAsync(); TempData["ok"] = "Message deleted successfully."; }
-        return RedirectToAction(nameof(Index));
-    }
 }
 
 public class SettingsController(CmsDbContext db, IConfiguration config) : Controller

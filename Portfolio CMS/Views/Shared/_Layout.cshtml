@@ -1,7 +1,7 @@
 @inject PortfolioCms.Data.CmsDbContext Db
 @{
     var ctrl = ViewContext.RouteData.Values["controller"]?.ToString();
-    var unread = Db.Submissions.Count(s => !s.IsRead);
+    var unread = Db.Submissions.Count(s => !s.IsRead && !s.IsArchived && s.DeletedAt == null);
     var act = ViewContext.RouteData.Values["action"]?.ToString();
     string On(string c) => string.Equals(ctrl, c, StringComparison.OrdinalIgnoreCase) ? "on" : "";
     // Home page / About page menus share the Hero controller, so they also check the action.

@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<CmsDbContext>(o =>
     o.UseSqlServer(builder.Configuration.GetConnectionString("Cms")));
+
+// Encrypts the saved SMTP password (keys are kept in your Windows user profile).
+builder.Services.AddDataProtection().SetApplicationName("PortfolioCms");
+builder.Services.AddScoped<PortfolioCms.Infrastructure.Mailer>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(o =>

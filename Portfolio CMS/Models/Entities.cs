@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PortfolioCms.Models;
 
@@ -213,6 +214,14 @@ public class Submission
     [StringLength(500)] public string? PageUrl { get; set; }
     [StringLength(64)] public string? IpAddress { get; set; }
     public bool IsRead { get; set; }
+    /// <summary>Outlook-style flag (follow up).</summary>
+    public bool IsFlagged { get; set; }
+    /// <summary>Moved to the Archive folder.</summary>
+    public bool IsArchived { get; set; }
+    /// <summary>In the Deleted folder (soft delete). Deleting from there removes it for good.</summary>
+    public DateTime? DeletedAt { get; set; }
+    /// <summary>When you last replied from the CMS.</summary>
+    public DateTime? RepliedAt { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
 
@@ -262,4 +271,41 @@ public class CalendarEvent
     public DateTime? RepeatUntil { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+}
+
+// ───────────── Email (Inbox replies / new mail) ─────────────
+
+/// <summary>An email sent from the Inbox (a reply to a website message, or a new mail).</summary>
+public class OutgoingMail
+{
+    public int Id { get; set; }
+    /// <summary>The website message this replies to (null for a new mail).</summary>
+    public int? SubmissionId { get; set; }
+    public Submission? Submission { get; set; }
+    [Required, StringLength(1000)] public string To { get; set; } = "";
+    [StringLength(1000)] public string? Cc { get; set; }
+    [Required, StringLength(300)] public string Subject { get; set; } = "";
+    [StringLength(50000)] public string Body { get; set; } = "";
+    public DateTime SentAt { get; set; } = DateTime.UtcNow;
+    /// <summary>"sent" or "failed".</summary>
+    [StringLength(10)] public string Status { get; set; } = "sent";
+    [StringLength(1000)] public string? Error { get; set; }
+}
+
+/// <summary>SMTP account used to send email. One row (Id = 1). The password is encrypted with ASP.NET Data Protection.</summary>
+public class MailSettings
+{
+    [DatabaseGenerated(DatabaseGeneratedOption.None)] public int Id { get; set; } = 1;
+    [StringLength(200)] public string Host { get; set; } = "";
+    public int Port { get; set; } = 587;
+    /// <summary>Use STARTTLS (port 587). Almost every provider needs this on.</summary>
+    public bool UseTls { get; set; } = true;
+    [StringLength(200)] public string UserName { get; set; } = "";
+    [StringLength(2000)] public string? PasswordProtected { get; set; }
+    [StringLength(200)] public string FromEmail { get; set; } = "";
+    [StringLength(120)] public string FromName { get; set; } = "";
+    [StringLength(2000)] public string Signature { get; set; } = "";
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    public bool IsReady => !string.IsNullOrWhiteSpace(Host) && !string.IsNullOrWhiteSpace(FromEmail) && Port > 0;
 }

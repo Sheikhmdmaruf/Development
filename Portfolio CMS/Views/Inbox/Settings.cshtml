@@ -1,0 +1,67 @@
+@model MailSettings
+@{
+    ViewData["Title"] = "Mail settings";
+    var hasPw = ViewBag.HasPassword as bool? ?? false;
+}
+<div class="head">
+    <div><div class="crumb"><a href="/inbox">Inbox</a> /</div><h1>Mail settings</h1>
+        <p class="muted" style="margin-top:6px">Connect your email account so you can reply and send email from the Inbox.</p></div>
+    <div class="actions"><a class="btn" href="/inbox">Back to Inbox</a></div>
+</div>
+
+<div class="grid2 ms-grid">
+    <form asp-antiforgery="true" method="post" action="/inbox/settings" class="panel" autocomplete="off">
+        <div class="panel-head"><h2>Email account (SMTP)</h2>
+            <span class="pill @(Model.IsReady ? "ok" : "off")">@(Model.IsReady ? "Ready" : "Not set up")</span></div>
+        <div class="panel-body">
+            <div class="ms-presets">
+                <span class="label">Quick fill:</span>
+                <button type="button" class="btn sm" data-preset="smtp.gmail.com|587">Gmail</button>
+                <button type="button" class="btn sm" data-preset="smtp.zoho.com|587">Zoho Mail</button>
+                <button type="button" class="btn sm" data-preset="smtp.office365.com|587">Microsoft 365</button>
+                <button type="button" class="btn sm" data-preset="smtp.hostinger.com|587">Hostinger</button>
+            </div>
+            <div class="form-grid">
+                <div class="f s8"><label for="msHost">SMTP server</label><input id="msHost" type="text" name="Host" value="@Model.Host" placeholder="smtp.gmail.com" maxlength="200" /></div>
+                <div class="f s4"><label for="msPort">Port</label><input id="msPort" type="number" name="Port" value="@Model.Port" min="1" max="65535" /></div>
+                <div class="f"><label class="check"><input type="checkbox" name="UseTls" value="true" @(Model.UseTls ? "checked" : "") /> Use TLS (STARTTLS) — keep this on with port 587</label><input type="hidden" name="UseTls" value="false" /></div>
+                <div class="f s6"><label for="msUser">Username</label><input id="msUser" type="text" name="UserName" value="@Model.UserName" placeholder="you@gmail.com" maxlength="200" autocomplete="off" /></div>
+                <div class="f s6"><label for="msPw">Password @if (hasPw) { <span class="hint">· saved (leave empty to keep it)</span> }</label>
+                    <input id="msPw" type="password" name="Password" placeholder="@(hasPw ? "••••••••" : "App password")" autocomplete="new-password" />
+                    @if (hasPw) { <label class="check small"><input type="checkbox" name="ClearPassword" value="true" /> Remove saved password</label> }</div>
+                <div class="f s6"><label for="msFrom">From email</label><input id="msFrom" type="email" name="FromEmail" value="@Model.FromEmail" placeholder="you@gmail.com" maxlength="200" /></div>
+                <div class="f s6"><label for="msName">From name</label><input id="msName" type="text" name="FromName" value="@Model.FromName" placeholder="Sheikh Md Maruf" maxlength="120" /></div>
+                <div class="f"><label for="msSig">Signature <span class="hint">· added to new replies</span></label>
+                    <textarea id="msSig" name="Signature" rows="4" maxlength="2000" placeholder="Best regards,&#10;Sheikh Md Maruf&#10;UI/UX Designer">@Model.Signature</textarea></div>
+            </div>
+        </div>
+        <div class="modal-foot" style="justify-content:flex-start">
+            <button class="btn primary" type="submit">Save</button>
+            <button class="btn" type="submit" name="test" value="1">Save &amp; send test email</button>
+        </div>
+    </form>
+
+    <div class="panel">
+        <div class="panel-head"><h2>How to connect Gmail</h2></div>
+        <div class="panel-body ms-help">
+            <ol>
+                <li>Turn on <b>2-Step Verification</b> for your Google account.</li>
+                <li>Open <b>Google Account → Security → App passwords</b> and create one (name it “Portfolio CMS”).</li>
+                <li>Click <b>Gmail</b> above. Put your Gmail address in <b>Username</b> and <b>From email</b>.</li>
+                <li>Paste the 16-letter app password into <b>Password</b>, then click <b>Save &amp; send test email</b>.</li>
+            </ol>
+            <p class="muted small">Your normal Gmail password won't work, Google only accepts an App Password here.</p>
+            <hr />
+            <p class="muted small">Other providers: use the SMTP server and port from your email host (port 587 with TLS on). Port 465 isn't supported, use 587.</p>
+            <p class="muted small">The password is stored encrypted on this computer. It is never shown again and never sent to your website.</p>
+        </div>
+    </div>
+</div>
+<script>
+document.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => {
+  const [host, port] = b.dataset.preset.split('|');
+  document.getElementById('msHost').value = host;
+  document.getElementById('msPort').value = port;
+  document.querySelector('input[name=UseTls][type=checkbox]').checked = true;
+}));
+</script>

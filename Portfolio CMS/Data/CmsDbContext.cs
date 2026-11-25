@@ -25,6 +25,8 @@ public class CmsDbContext(DbContextOptions<CmsDbContext> options) : DbContext(op
     public DbSet<AdminUser> AdminUsers => Set<AdminUser>();
     public DbSet<CalendarList> CalendarLists => Set<CalendarList>();
     public DbSet<CalendarEvent> CalendarEvents => Set<CalendarEvent>();
+    public DbSet<OutgoingMail> OutgoingMails => Set<OutgoingMail>();
+    public DbSet<MailSettings> MailSettings => Set<MailSettings>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -34,6 +36,8 @@ public class CmsDbContext(DbContextOptions<CmsDbContext> options) : DbContext(op
         b.Entity<AdminUser>().HasIndex(u => u.UserName).IsUnique();
         b.Entity<Submission>().HasIndex(s => s.CreatedAt);
         b.Entity<CalendarEvent>().HasIndex(e => new { e.Start, e.End });
+        b.Entity<OutgoingMail>().HasIndex(m => m.SentAt);
+        b.Entity<OutgoingMail>().HasOne(m => m.Submission).WithMany().HasForeignKey(m => m.SubmissionId).OnDelete(DeleteBehavior.SetNull);
         b.Entity<CalendarEvent>().HasOne(e => e.Calendar).WithMany(c => c.Events).HasForeignKey(e => e.CalendarListId).OnDelete(DeleteBehavior.Cascade);
     }
 }
