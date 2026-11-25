@@ -130,10 +130,54 @@
     window.addEventListener('beforeunload', e => { if (!sending && body.value !== start && body.value.trim()) e.preventDefault(); });
   }
 
-  // ── keyboard: J/K or ↑/↓ move through the list, R reply, F forward, N new, / search ──
+  // ── select several messages (checkboxes, Shift+click for a range) → delete them together ──
+  const listBox = ol.querySelector('[data-ol-items]');
+  const bulk = ol.querySelector('[data-ol-bulk]');
+  const allBox = ol.querySelector('[data-ol-all]');
+  const checks = () => [...ol.querySelectorAll('[data-ol-check]')];
+  const picked = () => checks().filter(c => c.checked);
+  let lastCheck = null;
+  function syncSelection() {
+    if (!bulk) return;
+    const all = checks(), n = all.filter(c => c.checked).length;
+    all.forEach(c => c.closest('[data-ol-row]').classList.toggle('checked', c.checked));
+    ol.classList.toggle('selecting', n > 0);
+    bulk.hidden = n === 0;
+    bulk.querySelector('[data-ol-count]').textContent = `${n} selected`;
+    if (allBox) { allBox.checked = n > 0 && n === all.length; allBox.indeterminate = n > 0 && n < all.length; }
+  }
+  function clearSelection() { checks().forEach(c => { c.checked = false; }); syncSelection(); }
+  if (bulk && listBox) {
+    listBox.addEventListener('click', e => {
+      const c = e.target.closest('[data-ol-check]'); if (!c) return;
+      const all = checks();
+      if (e.shiftKey && lastCheck && lastCheck !== c) {
+        const [a, b] = [all.indexOf(lastCheck), all.indexOf(c)].sort((x, y) => x - y);
+        all.slice(a, b + 1).forEach(x => { x.checked = c.checked; });
+      }
+      lastCheck = c; syncSelection();
+    });
+    allBox?.addEventListener('change', () => { checks().forEach(c => { c.checked = allBox.checked; }); syncSelection(); });
+    bulk.querySelector('[data-ol-clear]').addEventListener('click', clearSelection);
+    // Runs before the confirm popup (admin.js listens on document), so the ids are in the form when it is sent.
+    bulk.addEventListener('submit', e => {
+      bulk.querySelectorAll('input[name=ids]').forEach(x => x.remove());
+      const sel = picked();
+      if (!sel.length) { e.preventDefault(); e.stopPropagation(); return; }
+      sel.forEach(c => bulk.insertAdjacentHTML('beforeend', `<input type="hidden" name="ids" value="${+c.value}" />`));
+      bulk.dataset.name = `${sel.length} ${ol.querySelector('.ol-nav a.on[href*="folder=sent"]') ? 'email' : 'message'}${sel.length === 1 ? '' : 's'}`;
+    });
+    syncSelection(); // the browser may restore ticked boxes after Back
+  }
+
+  // ── keyboard: J/K or ↑/↓ move through the list, R reply, F forward, N new, / search, Delete removes selected ──
   document.addEventListener('keydown', e => {
-    if (e.ctrlKey || e.metaKey || e.altKey || e.target.closest('input,textarea,select,[contenteditable]')) return;
+    if (e.ctrlKey || e.metaKey || e.altKey || e.target.closest('input:not([type=checkbox]),textarea,select,[contenteditable]')) return;
     if (document.querySelector('.modal:not([hidden]),[data-cmdk].open')) return;
+    if (bulk && !bulk.hidden) {
+      if (e.key === 'Delete') { e.preventDefault(); bulk.requestSubmit(); return; }
+      if (e.key === 'Escape') { e.preventDefault(); clearSelection(); return; }
+    }
     const items = [...ol.querySelectorAll('[data-ol-item]')];
     const cur = items.findIndex(a => a.classList.contains('sel'));
     const k = e.key;

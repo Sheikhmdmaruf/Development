@@ -106,7 +106,13 @@
                 <input type="search" name="q" value="@Model.Q" placeholder="Search @names[Model.Folder].ToLowerInvariant()" aria-label="Search" data-ol-search />
             </form>
             <div class="ol-list-title">
-                <h1>@names[Model.Folder]</h1>
+                <div class="ol-title-main">
+                    @if (Model.Items.Count > 0)
+                    {
+                        <label class="ol-all" title="Select all"><input type="checkbox" data-ol-all aria-label="Select all messages" /></label>
+                    }
+                    <h1>@names[Model.Folder]</h1>
+                </div>
                 @if (Model.Folder is "inbox" or "unread" && Model.Counts["inbox"] > 0)
                 {
                     <form asp-antiforgery="true" method="post" action="/inbox/markallread" class="inline"><input type="hidden" name="folder" value="@Model.Folder" /><button class="ol-link" title="Mark all as read">@Html.Raw(I(ic["check"])) Mark all read</button></form>
@@ -116,6 +122,24 @@
                     <form asp-antiforgery="true" method="post" action="/inbox/emptydeleted" class="inline" data-confirm="Empty Deleted items?" data-name="Empty Deleted items" data-sub="@Model.Items.Count message(s) will be permanently deleted. This can't be undone."><button class="ol-link danger">Empty folder</button></form>
                 }
             </div>
+            @if (Model.Items.Count > 0)
+            {
+                var forever = Model.Folder is "deleted" or "sent";
+                var isSent = Model.Folder == "sent";
+                string? Only(string v) => forever ? v : null; // null → Razor leaves the attribute out
+                <form method="post" action="/inbox/bulkdelete" class="ol-bulk" data-ol-bulk hidden
+                      data-confirm="@Only(isSent ? "The selected emails and their attachments will be removed from Sent items. This can't be undone." : "The selected messages will be permanently deleted. This can't be undone.")"
+                      data-confirm-title="@Only(isSent ? "Remove from Sent items?" : "Delete forever?")"
+                      data-confirm-ok="@Only(isSent ? "Delete" : "Delete forever")"
+                      data-danger="@Only("")" data-kind="@Only("Selected")">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="folder" value="@Model.Folder" />
+                    @if (Model.Q is not null) { <input type="hidden" name="q" value="@Model.Q" /> }
+                    <b data-ol-count>0 selected</b>
+                    <button type="submit" class="ol-link danger" title="@(forever ? "Delete forever" : "Move to Deleted items") (Delete key)">@Html.Raw(I(ic["deleted"]))@(Model.Folder == "deleted" ? "Delete forever" : "Delete")</button>
+                    <button type="button" class="ol-link" data-ol-clear title="Clear selection (Esc)">Cancel</button>
+                </form>
+            }
         </div>
         <div class="ol-items" data-ol-items>
             @if (Model.Items.Count == 0)
@@ -137,6 +161,8 @@
             {
                 var g = Group(it.At);
                 if (g != lastGroup) { lastGroup = g; <div class="ol-group">@g</div> }
+                <div class="ol-row" data-ol-row>
+                <label class="ol-check" title="Select"><input type="checkbox" value="@it.Id" data-ol-check aria-label="Select message from @it.Name" /></label>
                 <a class="ol-item @(it.Unread ? "unread" : "") @(it.Id == selectedId ? "sel" : "") @(it.Status == "failed" ? "failed" : "")" href="@Url(id: it.Id)" data-ol-item>
                     <span class="ol-av" style="--av:@(it.Kind == "sent" ? "var(--accent)" : Avatar(it.Email))">@Initials(it.Kind == "sent" ? it.Email : it.Name)</span>
                     <span class="ol-item-main">
@@ -149,6 +175,7 @@
                         <span class="ol-prev">@it.Preview</span>
                     </span>
                 </a>
+                </div>
             }
         </div>
     </section>

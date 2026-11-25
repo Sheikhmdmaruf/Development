@@ -255,6 +255,41 @@ public class InboxController(CmsDbContext db, Mailer mailer, IWebHostEnvironment
         return Back(folder);
     }
 
+    static string Count(int n, string word) => $"{n} {word}{(n == 1 ? "" : "s")}";
+
+    /// <summary>Delete several selected messages at once. Same rules as Delete:
+    /// first delete → Deleted folder; from Deleted items (or Sent items) → gone for good.</summary>
+    [HttpPost]
+    public async Task<IActionResult> BulkDelete(List<int>? ids, string? folder, string? q)
+    {
+        ids = (ids ?? []).Distinct().Take(500).ToList();
+        if (ids.Count == 0) { TempData["err"] = "Select at least one message first."; return Back(folder, q: q); }
+
+        if (folder == "sent")
+        {
+            var mails = await db.OutgoingMails.Include(x => x.Attachments).Where(x => ids.Contains(x.Id)).ToListAsync();
+            foreach (var a in mails.SelectMany(m => m.Attachments)) DeleteFile(a);
+            db.OutgoingMails.RemoveRange(mails);
+            await db.SaveChangesAsync();
+            TempData["ok"] = $"{Count(mails.Count, "email")} removed from Sent items.";
+            return Back("sent", q: q);
+        }
+
+        var subs = await db.Submissions.Where(s => ids.Contains(s.Id)).ToListAsync();
+        var now = DateTime.UtcNow;
+        int moved = 0, gone = 0;
+        foreach (var s in subs)
+        {
+            if (s.DeletedAt is null) { s.DeletedAt = now; moved++; }
+            else { db.Submissions.Remove(s); gone++; }
+        }
+        await db.SaveChangesAsync();
+        TempData["ok"] = gone == 0 ? $"{Count(moved, "message")} moved to Deleted items."
+            : moved == 0 ? $"{Count(gone, "message")} permanently deleted."
+            : $"{Count(moved, "message")} moved to Deleted items, {gone} permanently deleted.";
+        return Back(folder, q: q);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Restore(int id, string? folder)
     {
