@@ -15,7 +15,7 @@ From the dashboard you manage everything on the website:
 | Tools | Tools and skills list |
 | Media | Upload images and use them anywhere |
 | Site settings | Contact email, availability text, reply time, location, Fiverr, Dribbble, GitHub and LinkedIn links |
-| Inbox | Outlook-style inbox (folders, message list, reading pane) for website contact-form messages. Reply, forward and send new email through your SMTP account (Inbox → Mail settings; password stored encrypted) |
+| Inbox | Outlook-style inbox (folders, message list, reading pane) for website contact-form messages. Reply, forward and send new email with attachments (JPG, PNG, GIF, Word, Excel, ZIP, RAR, video; up to 30 MB per email, stored privately in App_Data) through your SMTP account (Inbox → Mail settings; password stored encrypted) |
 | Calendar | Google-Calendar-style planner (small month calendar on the Dashboard: hover a date for its events, click one for full details): Day / Week / Month / Schedule views, colour-coded calendars, events with subtitle + image, repeating events, drag to create / move / resize, search, keyboard shortcuts (C, T, J/K, D/W/M/A, /) |
 
 You can hide or publish items, and change their order. Changes appear on the website the next time a page loads.

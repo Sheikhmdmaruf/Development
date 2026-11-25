@@ -21,7 +21,22 @@
         ["restore"] = "<path d=\"M3 12a9 9 0 1 0 3-6.7L3 8\"/><path d=\"M3 3v5h5\"/>",
         ["check"] = "<path d=\"m5 12 5 5L20 7\"/>",
         ["warn"] = "<path d=\"M12 9v4M12 17h.01\"/><path d=\"M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z\"/>",
+        ["clip"] = "<path d=\"m21 11-8.6 8.6a5 5 0 0 1-7-7L14 4a3.3 3.3 0 0 1 4.7 4.7l-8.6 8.6a1.7 1.7 0 0 1-2.4-2.4L15.5 7\"/>",
+        ["download"] = "<path d=\"M12 4v12M7 11l5 5 5-5\"/><path d=\"M4 20h16\"/>",
     };
+    string Ext(string name) { var e = System.IO.Path.GetExtension(name).TrimStart('.').ToUpperInvariant(); return e.Length > 4 ? e[..4] : e; }
+    string FileKind(string name) => System.IO.Path.GetExtension(name).ToLowerInvariant() switch
+    {
+        ".jpg" or ".jpeg" or ".png" or ".gif" => "img",
+        ".doc" or ".docx" => "doc",
+        ".xls" or ".xlsx" => "xls",
+        ".zip" or ".rar" => "zip",
+        _ => "vid",
+    };
+    // Attachment chips with download links (file names are HTML-encoded with Ui.E).
+    string FilesHtml(IEnumerable<MailAttachment> files) =>
+        "<div class=\"ol-files\">" + string.Concat(files.Select(a =>
+            $"<a class=\"oc-file dl\" href=\"/inbox/attachment/{a.Id}\" title=\"Download {Ui.E(a.FileName)}\"><span class=\"oc-ficon {FileKind(a.FileName)}\">{Ui.E(Ext(a.FileName))}</span><span class=\"oc-fname\"><b>{Ui.E(a.FileName)}</b><small>{MailFiles.Size(a.Size)}</small></span><span class=\"oc-fdl\">{I(ic["download"])}</span></a>")) + "</div>";
     var names = new Dictionary<string, string> { ["inbox"] = "Inbox", ["unread"] = "Unread", ["flagged"] = "Flagged", ["sent"] = "Sent items", ["archive"] = "Archive", ["deleted"] = "Deleted items" };
     string[] avatarColors = ["#3d7bff", "#e8590c", "#2b8a3e", "#ae3ec9", "#c2255c", "#0b7285", "#5f3dc4", "#d9480f", "#1971c2", "#087f5b"];
     string Avatar(string key) { var h = 0; foreach (var ch in key.ToLowerInvariant()) h = (h * 31 + ch) & 0x7fffffff; return avatarColors[h % avatarColors.Length]; }
@@ -128,6 +143,7 @@
                         <span class="ol-row1"><b class="ol-from">@it.Name</b>
                             @if (it.Replied) { <span class="ol-ico" title="Replied">@Html.Raw(I(ic["reply"]))</span> }
                             @if (it.Flagged) { <span class="ol-ico flag" title="Flagged">@Html.Raw(I(ic["flagged"]))</span> }
+                            @if (it.HasFiles) { <span class="ol-ico" title="Has attachments">@Html.Raw(I(ic["clip"]))</span> }
                             <time>@When(it.At)</time></span>
                         <span class="ol-subj">@if (it.Status == "failed") { <span class="ol-fail">Not sent</span> }@it.Subject</span>
                         <span class="ol-prev">@it.Preview</span>
@@ -194,11 +210,28 @@
                             <button type="button" class="ol-link" data-oc-cc-toggle @(string.IsNullOrEmpty(compose.Cc) ? "" : "hidden")>Cc</button></div>
                         <div class="oc-field" data-oc-cc @(string.IsNullOrEmpty(compose.Cc) ? "hidden" : "")><label for="ocCc">Cc</label><input id="ocCc" type="text" name="Cc" value="@compose.Cc" placeholder="Separate several addresses with commas" /></div>
                         <div class="oc-field"><label for="ocSubj">Subject</label><input id="ocSubj" type="text" name="Subject" value="@compose.Subject" maxlength="300" required placeholder="Add a subject" /></div>
+                        <div class="oc-files" data-oc-files @(Model.ComposeFiles.Count == 0 ? "hidden" : "")>
+                            <div class="oc-files-list" data-oc-list>
+                                @foreach (var a in Model.ComposeFiles)
+                                {
+                                    <div class="oc-file" data-id="@a.Id" data-size="@a.Size">
+                                        <span class="oc-ficon @FileKind(a.FileName)">@Ext(a.FileName)</span>
+                                        <span class="oc-fname"><b title="@a.FileName">@a.FileName</b><small>@PortfolioCms.Infrastructure.MailFiles.Size(a.Size)</small></span>
+                                        <button type="button" class="oc-fx" data-oc-remove aria-label="Remove @a.FileName">×</button>
+                                        <input type="hidden" name="AttachmentIds" value="@a.Id" />
+                                    </div>
+                                }
+                            </div>
+                            <div class="oc-files-total" data-oc-total></div>
+                        </div>
                         <textarea name="Body" class="oc-body" rows="12" required aria-label="Message" data-oc-body>@compose.Body</textarea>
+                        <input type="file" multiple hidden accept="@PortfolioCms.Infrastructure.MailFiles.AcceptList" data-oc-file />
+                        <div class="oc-drop" data-oc-drop aria-hidden="true"><div>@Html.Raw(I(ic["clip"]))<b>Drop files to attach</b><span>Up to 30 MB in total</span></div></div>
                         <div class="oc-foot">
                             <button type="submit" class="btn primary" @(ready ? "" : "disabled") data-oc-send>@Html.Raw(I(ic["sent"]))Send</button>
+                            <button type="button" class="btn" data-oc-attach title="@PortfolioCms.Infrastructure.MailFiles.Friendly · up to 30 MB">@Html.Raw(I(ic["clip"]))Attach</button>
                             <a class="btn" href="@(msg is not null ? Url(id: msg.Id) : sent is not null ? Url("sent", sent.Id) : Url())" data-oc-discard>Discard</a>
-                            <span class="muted small hide-mobile">Ctrl + Enter to send</span>
+                            <span class="muted small hide-mobile oc-hint">JPG, PNG, GIF, Word, Excel, ZIP, RAR, video · up to 30 MB · Ctrl + Enter to send</span>
                         </div>
                     </form>
                 }
@@ -250,6 +283,7 @@
                                 </div>
                                 @if (t.Status == "failed") { <div class="oc-warn">@Html.Raw(I(ic["warn"]))<span>@t.Error <a href="@Url("sent", compose: "resend", from: t.Id)">Edit &amp; resend</a></span></div> }
                                 <details class="ol-body-fold"><summary>Show message</summary><div class="ol-body">@t.Body</div></details>
+                                @if (t.Attachments.Count > 0) { @Html.Raw(FilesHtml(t.Attachments)) }
                             </article>
                         }
                     }
@@ -273,6 +307,7 @@
                         </div>
                         @if (sent.Status == "failed") { <div class="oc-warn">@Html.Raw(I(ic["warn"]))<span>@sent.Error</span></div> }
                         <div class="ol-body">@sent.Body</div>
+                        @if (sent.Attachments.Count > 0) { @Html.Raw(FilesHtml(sent.Attachments)) }
                     </article>
                 }
             </div>

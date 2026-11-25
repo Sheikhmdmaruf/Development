@@ -6,3 +6,6 @@ appsettings.*.local.json
 # uploaded images live on your computer, not in git
 wwwroot/uploads/*
 !wwwroot/uploads/.gitkeep
+
+# email attachments are private files on your computer
+App_Data/

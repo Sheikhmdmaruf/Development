@@ -290,6 +290,7 @@ public class OutgoingMail
     /// <summary>"sent" or "failed".</summary>
     [StringLength(10)] public string Status { get; set; } = "sent";
     [StringLength(1000)] public string? Error { get; set; }
+    public List<MailAttachment> Attachments { get; set; } = [];
 }
 
 /// <summary>SMTP account used to send email. One row (Id = 1). The password is encrypted with ASP.NET Data Protection.</summary>
@@ -308,4 +309,18 @@ public class MailSettings
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     public bool IsReady => !string.IsNullOrWhiteSpace(Host) && !string.IsNullOrWhiteSpace(FromEmail) && Port > 0;
+}
+
+/// <summary>A file attached to an email. Stored privately in App_Data/mail-attachments (not on the public website).</summary>
+public class MailAttachment
+{
+    public int Id { get; set; }
+    /// <summary>Null while it is only uploaded to a draft; set when the email is sent (or fails).</summary>
+    public int? OutgoingMailId { get; set; }
+    public OutgoingMail? Mail { get; set; }
+    [Required, StringLength(255)] public string FileName { get; set; } = "";
+    [Required, StringLength(80)] public string StoredName { get; set; } = "";
+    [StringLength(120)] public string ContentType { get; set; } = "application/octet-stream";
+    public long Size { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

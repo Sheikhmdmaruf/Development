@@ -229,6 +229,45 @@ namespace PortfolioCms.Data.Migrations
                     b.ToTable("Faqs");
                 });
 
+            modelBuilder.Entity("PortfolioCms.Models.MailAttachment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("OutgoingMailId")
+                        .HasColumnType("int");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("StoredName")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OutgoingMailId");
+
+                    b.ToTable("MailAttachments");
+                });
+
             modelBuilder.Entity("PortfolioCms.Models.MailSettings", b =>
                 {
                     b.Property<int>("Id")
@@ -1026,6 +1065,16 @@ namespace PortfolioCms.Data.Migrations
                     b.Navigation("Calendar");
                 });
 
+            modelBuilder.Entity("PortfolioCms.Models.MailAttachment", b =>
+                {
+                    b.HasOne("PortfolioCms.Models.OutgoingMail", "Mail")
+                        .WithMany("Attachments")
+                        .HasForeignKey("OutgoingMailId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Mail");
+                });
+
             modelBuilder.Entity("PortfolioCms.Models.OutgoingMail", b =>
                 {
                     b.HasOne("PortfolioCms.Models.Submission", "Submission")
@@ -1102,6 +1151,11 @@ namespace PortfolioCms.Data.Migrations
             modelBuilder.Entity("PortfolioCms.Models.CalendarList", b =>
                 {
                     b.Navigation("Events");
+                });
+
+            modelBuilder.Entity("PortfolioCms.Models.OutgoingMail", b =>
+                {
+                    b.Navigation("Attachments");
                 });
 
             modelBuilder.Entity("PortfolioCms.Models.Post", b =>

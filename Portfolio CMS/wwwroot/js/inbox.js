@@ -28,7 +28,94 @@
       e.currentTarget.hidden = true;
       const cc = form.querySelector('[data-oc-cc]'); cc.hidden = false; cc.querySelector('input').focus();
     });
+    // ── attachments: Attach button, drag & drop or paste → uploaded straight away to /inbox/attach ──
+    const MAX = 30 * 1024 * 1024;
+    const OK = ['jpg', 'jpeg', 'png', 'gif', 'doc', 'docx', 'xls', 'xlsx', 'zip', 'rar', 'mp4', 'mov', 'avi', 'mkv', 'webm', 'wmv', 'm4v'];
+    const box = form.querySelector('[data-oc-files]'), list = form.querySelector('[data-oc-list]'), total = form.querySelector('[data-oc-total]');
+    const picker = form.querySelector('[data-oc-file]'), drop = form.querySelector('[data-oc-drop]');
+    const token = () => document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+    const fmt = b => b >= 1048576 ? (b / 1048576).toFixed(1).replace(/\.0$/, '') + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
+    const ext = n => (n.split('.').pop() || '').toLowerCase();
+    const kind = e => ['jpg', 'jpeg', 'png', 'gif'].includes(e) ? 'img' : ['doc', 'docx'].includes(e) ? 'doc' : ['xls', 'xlsx'].includes(e) ? 'xls' : ['zip', 'rar'].includes(e) ? 'zip' : 'vid';
+    const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    let uploads = 0;
+    const used = () => [...list.querySelectorAll('.oc-file')].reduce((s, c) => s + (+c.dataset.size || 0), 0);
+    function refresh() {
+      const n = list.querySelectorAll('.oc-file').length, u = used();
+      box.hidden = n === 0;
+      total.innerHTML = n ? `${n} file${n === 1 ? '' : 's'} · <b class="${u > MAX ? 'over' : ''}">${fmt(u)}</b> of 30 MB` + (u > 25 * 1048576 ? ' <span class="oc-gmail">Gmail allows about 25 MB per email</span>' : '') : '';
+      if (send && !send.hasAttribute('data-locked')) send.disabled = uploads > 0 || u > MAX;
+      if (send) send.title = uploads > 0 ? 'Wait for the files to finish uploading' : u > MAX ? 'Attachments are over 30 MB' : '';
+    }
+    if (send?.disabled) send.setAttribute('data-locked', ''); // email not set up: stays disabled
+    function error(msg) {
+      const t = document.createElement('div');
+      t.className = 'oc-file err';
+      t.innerHTML = `<span class="oc-ficon err">!</span><span class="oc-fname"><b></b><small>Not attached</small></span><button type="button" class="oc-fx" aria-label="Dismiss">×</button>`;
+      t.querySelector('b').textContent = msg;
+      t.querySelector('.oc-fx').addEventListener('click', () => { t.remove(); refresh(); });
+      list.append(t); box.hidden = false;
+      setTimeout(() => { t.remove(); refresh(); }, 9000);
+    }
+    function upload(file) {
+      const e = ext(file.name);
+      if (!OK.includes(e)) return error(`“${file.name}” can't be attached (allowed: JPG, PNG, GIF, Word, Excel, ZIP, RAR, video).`);
+      if (file.size > MAX) return error(`“${file.name}” is ${fmt(file.size)}. Files can be up to 30 MB.`);
+      if (used() + file.size > MAX) return error(`“${file.name}” would take this email over 30 MB.`);
+      const chip = document.createElement('div');
+      chip.className = 'oc-file busy';
+      chip.dataset.size = file.size;
+      chip.innerHTML = `<span class="oc-ficon ${kind(e)}">${esc(e.toUpperCase().slice(0, 4))}</span><span class="oc-fname"><b title="${esc(file.name)}">${esc(file.name)}</b><small>Uploading… 0%</small></span><button type="button" class="oc-fx" data-oc-remove aria-label="Cancel">×</button><i class="oc-prog"></i>`;
+      list.append(chip); uploads++; refresh();
+      const xhr = new XMLHttpRequest();
+      chip._xhr = xhr;
+      xhr.open('POST', '/inbox/attach');
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.upload.onprogress = ev => {
+        if (!ev.lengthComputable) return;
+        const p = Math.round(ev.loaded / ev.total * 100);
+        chip.querySelector('small').textContent = `Uploading… ${p}%`;
+        chip.querySelector('.oc-prog').style.width = p + '%';
+      };
+      xhr.onloadend = () => {
+        uploads--;
+        let data = null; try { data = JSON.parse(xhr.responseText); } catch { }
+        if (xhr.status === 200 && data?.id) {
+          chip.classList.remove('busy');
+          chip.dataset.id = data.id;
+          chip.querySelector('small').textContent = data.sizeText;
+          chip.querySelector('.oc-prog').remove();
+          chip.querySelector('[data-oc-remove]').setAttribute('aria-label', 'Remove ' + file.name);
+          chip.insertAdjacentHTML('beforeend', `<input type="hidden" name="AttachmentIds" value="${+data.id}" />`);
+        } else if (xhr.status !== 0 || !chip._cancelled) {
+          chip.remove();
+          if (!chip._cancelled) error(data?.error || (xhr.status === 413 || (xhr.status === 400 && !data) ? `“${file.name}” is too big. Files can be up to 30 MB.` : `Couldn't upload “${file.name}”. Please try again.`));
+        }
+        refresh();
+      };
+      const fd = new FormData(); fd.append('file', file); fd.append('__RequestVerificationToken', token());
+      xhr.send(fd);
+    }
+    const addFiles = files => [...files].forEach(upload);
+    form.querySelector('[data-oc-attach]').addEventListener('click', () => picker.click());
+    picker.addEventListener('change', () => { addFiles(picker.files); picker.value = ''; });
+    list.addEventListener('click', e => {
+      const x = e.target.closest('[data-oc-remove]'); if (!x) return;
+      const chip = x.closest('.oc-file');
+      if (chip._xhr && chip.classList.contains('busy')) { chip._cancelled = true; chip._xhr.abort(); chip.remove(); refresh(); return; }
+      const id = chip.dataset.id; chip.remove(); refresh();
+      if (id) { const fd = new FormData(); fd.append('__RequestVerificationToken', token()); fetch('/inbox/detach/' + id, { method: 'POST', body: fd }); }
+    });
+    let depth = 0;
+    form.addEventListener('dragenter', e => { if ([...(e.dataTransfer?.types || [])].includes('Files')) { depth++; drop.classList.add('on'); } });
+    form.addEventListener('dragleave', () => { if (--depth <= 0) { depth = 0; drop.classList.remove('on'); } });
+    form.addEventListener('dragover', e => { if ([...(e.dataTransfer?.types || [])].includes('Files')) e.preventDefault(); });
+    form.addEventListener('drop', e => { if (!e.dataTransfer?.files?.length) return; e.preventDefault(); depth = 0; drop.classList.remove('on'); addFiles(e.dataTransfer.files); });
+    form.addEventListener('paste', e => { const f = [...(e.clipboardData?.files || [])]; if (f.length) { e.preventDefault(); addFiles(f); } });
+    refresh();
+
     form.addEventListener('submit', e => {
+      if (uploads > 0) { e.preventDefault(); return; }
       if (sending || send?.disabled) { e.preventDefault(); return; }
       sending = true;
       if (send) { send.lastChild.textContent = 'Sending…'; send.setAttribute('aria-busy', 'true'); }
