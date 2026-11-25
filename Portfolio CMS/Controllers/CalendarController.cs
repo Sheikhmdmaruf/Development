@@ -17,7 +17,8 @@ public partial class CalendarController(CmsDbContext db) : Controller
     const string Fmt = "yyyy-MM-dd'T'HH:mm:ss";
 
     public record EventForm(int? Id, int CalendarId, string? Title, string? Description, string? Location,
-        DateTime Start, DateTime End, bool AllDay, string? Color, string? Repeat, DateTime? RepeatUntil);
+        DateTime Start, DateTime End, bool AllDay, string? Color, string? Repeat, DateTime? RepeatUntil,
+        string? Subtitle = null, string? ImageUrl = null);
     public record MoveForm(int Id, int StartMinutes, int EndMinutes);
     public record CalendarForm(int? Id, string? Name, string? Color);
     public record ToggleForm(int Id, bool Visible);
@@ -58,7 +59,7 @@ public partial class CalendarController(CmsDbContext db) : Controller
         q = q?.Trim();
         if (string.IsNullOrEmpty(q)) return Json(Array.Empty<object>());
         var list = await db.CalendarEvents.AsNoTracking().Include(e => e.Calendar)
-            .Where(e => e.Title.Contains(q) || (e.Location != null && e.Location.Contains(q)) || (e.Description != null && e.Description.Contains(q)))
+            .Where(e => e.Title.Contains(q) || (e.Subtitle != null && e.Subtitle.Contains(q)) || (e.Location != null && e.Location.Contains(q)) || (e.Description != null && e.Description.Contains(q)))
             .Take(200).ToListAsync();
         var from = DateTime.Today.AddMonths(-3);
         var to = DateTime.Today.AddYears(1);
@@ -79,6 +80,10 @@ public partial class CalendarController(CmsDbContext db) : Controller
         if (!await db.CalendarLists.AnyAsync(c => c.Id == f.CalendarId)) return BadRequest(new { error = "Pick a calendar." });
         var repeat = RepeatKinds.Contains(f.Repeat) ? f.Repeat! : "none";
         if (f.Color is { Length: > 0 } && !IsColor(f.Color)) return BadRequest(new { error = "That colour isn't valid." });
+        var image = f.ImageUrl?.Trim();
+        if (string.IsNullOrEmpty(image)) image = null;
+        else if (!(image.StartsWith("/uploads/") || image.StartsWith("https://") || image.StartsWith("http://")) || image.Length > 500 || image.Contains('"'))
+            return BadRequest(new { error = "The image must be an uploaded image or an https:// link." });
 
         CalendarEvent? e;
         if (f.Id is int id)
@@ -93,6 +98,8 @@ public partial class CalendarController(CmsDbContext db) : Controller
         }
         e.CalendarListId = f.CalendarId;
         e.Title = Cut(title, 200)!;
+        e.Subtitle = Cut(string.IsNullOrWhiteSpace(f.Subtitle) ? null : f.Subtitle.Trim(), 200);
+        e.ImageUrl = image;
         e.Description = Cut(f.Description?.Trim(), 4000);
         e.Location = Cut(f.Location?.Trim(), 300);
         e.Start = start; e.End = end; e.AllDay = f.AllDay;
@@ -175,11 +182,11 @@ public partial class CalendarController(CmsDbContext db) : Controller
             .Select(c => new { id = c.Id, name = c.Name, color = c.Color, visible = c.IsVisible, count = c.Events.Count() })
             .ToListAsync()).Cast<object>().ToList();
 
-    record EventJson(int id, int calendarId, string title, string? description, string? location, string start, string end,
+    record EventJson(int id, int calendarId, string title, string? subtitle, string? imageUrl, string? description, string? location, string start, string end,
         bool allDay, string color, string? ownColor, string repeat, string? repeatUntil, string seriesStart, string seriesEnd);
 
     static EventJson ToJson(CalendarEvent e, DateTime s, DateTime en) => new(
-        e.Id, e.CalendarListId, e.Title, e.Description, e.Location,
+        e.Id, e.CalendarListId, e.Title, e.Subtitle, e.ImageUrl, e.Description, e.Location,
         s.ToString(Fmt, CultureInfo.InvariantCulture), en.ToString(Fmt, CultureInfo.InvariantCulture),
         e.AllDay, e.Color ?? e.Calendar?.Color ?? "#3d7bff", e.Color, e.Repeat,
         e.RepeatUntil?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),

@@ -364,7 +364,7 @@
     const el = h('div', 'ev' + (mins < 45 ? ' short' : '') + (e.e < now() ? ' past' : ''));
     const w = 100 / sg.n;
     el.style.cssText = `top:${top}px;height:${Math.max(mins / 60 * HOUR - 2, 18)}px;left:calc(${sg.col * w}% + 1px);width:calc(${sg.col === sg.n - 1 ? w : w * 1.6}% - ${sg.col === sg.n - 1 ? 6 : 2}px);z-index:${2 + sg.col};--c:${e.color};--on:${textOn(e.color)}`;
-    el.innerHTML = `<div class="ev-t">${esc(e.title)}</div><div class="ev-time">${esc(fRange(e.s, e.e))}</div>${e.location ? `<div class="ev-loc">${esc(e.location)}</div>` : ''}${sg.isEnd ? '<div class="ev-resize" aria-hidden="true"></div>' : ''}`;
+    el.innerHTML = `<div class="ev-t">${esc(e.title)}</div>${e.subtitle && mins >= 60 ? `<div class="ev-sub">${esc(e.subtitle)}</div>` : ''}<div class="ev-time">${esc(fRange(e.s, e.e))}</div>${e.location ? `<div class="ev-loc">${esc(e.location)}</div>` : ''}${sg.isEnd ? '<div class="ev-resize" aria-hidden="true"></div>' : ''}`;
     el.tabIndex = 0;
     el._ev = e; el._sg = sg;
     el.title = `${e.title} · ${whenText(e)}`;
@@ -402,7 +402,7 @@
         r.style.setProperty('--c', e.color);
         const multi = daysBetween(e.s, lastDay(e)) > 0;
         const time = e.allDay ? 'All day' : multi ? (sameDay(e.s, d) ? `${fTime(e.s)} –` : sameDay(lastDay(e), d) && !sameDay(day0(e.e), e.e) ? `– ${fTime(e.e)}` : 'All day') : fRange(e.s, e.e);
-        r.innerHTML = `<i></i><span class="sch-time">${esc(time)}</span><span class="sch-title">${esc(e.title)}${e.repeat !== 'none' ? icon('repeat', 'rep') : ''}</span><span class="sch-loc">${esc(e.location || '')}</span>`;
+        r.innerHTML = `<i></i><span class="sch-time">${esc(time)}</span><span class="sch-title"><span class="sch-tt">${esc(e.title)}${e.subtitle ? ` <small>· ${esc(e.subtitle)}</small>` : ''}</span>${e.repeat !== 'none' ? icon('repeat', 'rep') : ''}</span><span class="sch-loc">${e.imageUrl ? `<img src="${esc(e.imageUrl)}" alt="" loading="lazy" />` : ''}${esc(e.location || '')}</span>`;
         r._ev = e;
         ul.append(r);
       }
@@ -504,8 +504,9 @@
         <button type="button" data-p="del" title="Delete event" aria-label="Delete event">${icon('trash')}</button>
         <button type="button" class="pop-x" data-p="close" aria-label="Close">${icon('close')}</button>
       </div>
+      ${e.imageUrl ? `<div class="pop-img"><img src="${esc(e.imageUrl)}" alt="" loading="lazy" /></div>` : ''}
       <div class="pop-detail">
-        <div class="pop-line top"><span class="sq" style="--c:${esc(e.color)}"></span><div><h3>${esc(e.title)}</h3><p>${esc(whenText(e))}</p>${e.repeat !== 'none' ? `<p class="muted">${esc(repeatText(e))}</p>` : ''}</div></div>
+        <div class="pop-line top"><span class="sq" style="--c:${esc(e.color)}"></span><div><h3>${esc(e.title)}</h3>${e.subtitle ? `<p class="pop-sub">${esc(e.subtitle)}</p>` : ''}<p>${esc(whenText(e))}</p>${e.repeat !== 'none' ? `<p class="muted">${esc(repeatText(e))}</p>` : ''}</div></div>
         ${loc ? `<div class="pop-line">${icon('pin')}<span>${loc}</span></div>` : ''}
         ${e.description ? `<div class="pop-line">${icon('text')}<span class="desc">${esc(e.description)}</span></div>` : ''}
         <div class="pop-line">${icon('cal')}<span>${esc(cal?.name || '')}</span></div>
@@ -671,12 +672,14 @@
 
   // ───────── saving ─────────
   const draftOf = e => ({
-    id: e.id, calendarId: e.calendarId, title: e.title, description: e.description || '', location: e.location || '',
+    id: e.id, calendarId: e.calendarId, title: e.title, subtitle: e.subtitle || '', imageUrl: e.imageUrl || '',
+    description: e.description || '', location: e.location || '',
     start: parse(e.seriesStart), end: parse(e.seriesEnd), allDay: e.allDay, color: e.ownColor || '',
     repeat: e.repeat, repeatUntil: e.repeatUntil || '', occurrence: e.repeat !== 'none',
   });
   const payload = d => ({
-    id: d.id || null, calendarId: d.calendarId, title: d.title, description: d.description || null, location: d.location || null,
+    id: d.id || null, calendarId: d.calendarId, title: d.title, subtitle: d.subtitle || null, imageUrl: d.imageUrl || null,
+    description: d.description || null, location: d.location || null,
     start: iso(d.start), end: iso(d.end), allDay: !!d.allDay, color: d.color || null, repeat: d.repeat || 'none',
     repeatUntil: d.repeat && d.repeat !== 'none' && d.repeatUntil ? d.repeatUntil + 'T00:00:00' : null,
   });
@@ -744,6 +747,8 @@
     const f = edForm;
     $('[data-ed-heading]').textContent = d.id ? 'Edit event' : 'New event';
     f.title.value = d.title || '';
+    f.subtitle.value = d.subtitle || '';
+    setImage(d.imageUrl || '');
     f.location.value = d.location || '';
     f.description.value = d.description || '';
     f.allDay.checked = !!d.allDay;
@@ -769,6 +774,42 @@
     setTimeout(() => f.title.focus(), 0);
   }
   const closeEditor = () => { ed.hidden = true; edDraft = null; };
+
+  // ── event image: click / drag & drop / paste → /media/upload (same library as the Media page) ──
+  const imgBox = $('[data-ed-image]'), imgFile = $('[data-ed-file]'), drop = $('[data-ed-drop]');
+  let uploading = false;
+  function setImage(url) {
+    edForm.imageUrl.value = url || '';
+    const img = $('[data-ed-img]');
+    img.hidden = !url; if (url) img.src = url; else img.removeAttribute('src');
+    $('[data-ed-empty]').hidden = !!url;
+    $('[data-ed-tools]').hidden = !url;
+    imgBox.classList.toggle('has', !!url);
+  }
+  async function uploadImage(file) {
+    if (!file || uploading) return;
+    if (!file.type.startsWith('image/')) { edError('Please choose an image file (JPG, PNG, WebP, GIF or SVG).'); return; }
+    if (file.size > 10 * 1024 * 1024) { edError('Images must be 10 MB or smaller.'); return; }
+    edError('');
+    uploading = true; $('[data-ed-busy]').hidden = false; drop.classList.add('busy');
+    try {
+      const fd = new FormData(); fd.append('file', file); fd.append('__RequestVerificationToken', token());
+      const r = await fetch('/media/upload?json=true', { method: 'POST', body: fd });
+      let data = null; try { data = await r.json(); } catch { }
+      if (!r.ok || !data?.url) throw new Error(data?.error || 'Upload failed. Please try again.');
+      setImage(data.url);
+    } catch (err) { edError(err.message); }
+    finally { uploading = false; $('[data-ed-busy]').hidden = true; drop.classList.remove('busy'); imgFile.value = ''; }
+  }
+  drop.addEventListener('click', () => { if (!edForm.imageUrl.value) imgFile.click(); });
+  drop.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); imgFile.click(); } });
+  $('[data-ed-change]').addEventListener('click', () => imgFile.click());
+  $('[data-ed-remove]').addEventListener('click', () => setImage(''));
+  imgFile.addEventListener('change', () => uploadImage(imgFile.files[0]));
+  drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+  drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); uploadImage(e.dataTransfer.files[0]); });
+  ed.addEventListener('paste', e => { const f = [...(e.clipboardData?.files || [])].find(x => x.type.startsWith('image/')); if (f) { e.preventDefault(); uploadImage(f); } });
   const edError = m => { const p = $('[data-ed-error]'); p.textContent = m; p.hidden = !m; };
   const toggleTimed = () => $$('[data-timed]', edForm).forEach(i => { i.hidden = edForm.allDay.checked; });
 
@@ -799,10 +840,12 @@
   edForm.addEventListener('submit', async e => {
     e.preventDefault();
     const f = edForm, dt = edDates();
+    if (uploading) return edError('Please wait until the image has finished uploading.');
     if (!dt) return edError('Choose the dates.');
     if (dt.end <= dt.start) return edError('The end must be after the start.');
     const d = {
-      ...edDraft, ...dt, title: f.title.value.trim(), location: f.location.value.trim(), description: f.description.value.trim(),
+      ...edDraft, ...dt, title: f.title.value.trim(), subtitle: f.subtitle.value.trim(), imageUrl: f.imageUrl.value,
+      location: f.location.value.trim(), description: f.description.value.trim(),
       calendarId: +f.calendarId.value, color: (f.querySelector('input[name=color]:checked')?.value) || '',
       repeat: f.repeat.value, repeatUntil: f.repeatUntil.value,
     };

@@ -116,7 +116,7 @@
     tipDay = btn.dataset.day; pinned = !!pin;
     const max = 5;
     tip.innerHTML = `<div class="dt-head">${esc(F(d, { weekday: 'long', month: 'short', day: 'numeric' }))}</div>` +
-      list.slice(0, max).map((e, i) => `<button type="button" class="dt-ev" data-i="${i}" style="--c:${esc(e.color)}"><i></i><span class="dt-time">${esc(timeOn(e, d))}</span><span class="dt-title">${esc(e.title)}</span></button>`).join('') +
+      list.slice(0, max).map((e, i) => `<button type="button" class="dt-ev" data-i="${i}" style="--c:${esc(e.color)}"><i></i><span class="dt-time">${esc(timeOn(e, d))}</span><span class="dt-title">${esc(e.title)}${e.subtitle ? `<small>${esc(e.subtitle)}</small>` : ''}</span>${e.imageUrl ? `<img src="${esc(e.imageUrl)}" alt="" loading="lazy" />` : ''}</button>`).join('') +
       (list.length > max ? `<a class="dt-more" href="/calendar#/day/${isoDate(d)}">+${list.length - max} more in calendar</a>` : '');
     tip._list = list;
     tip.hidden = false;
@@ -155,6 +155,11 @@
     const $ = s => modal.querySelector(s);
     $('[data-dd-color]').style.background = e.color;
     $('[data-dd-title]').textContent = e.title;
+    $('[data-dd-sub]').textContent = e.subtitle || '';
+    $('[data-dd-sub]').hidden = !e.subtitle;
+    const img = $('[data-dd-img]');
+    $('[data-dd-imgwrap]').hidden = !e.imageUrl;
+    if (e.imageUrl) img.src = e.imageUrl; else img.removeAttribute('src');
     $('[data-dd-when]').textContent = whenText(e);
     const rep = repeatText(e);
     $('[data-dd-repeat]').textContent = rep;

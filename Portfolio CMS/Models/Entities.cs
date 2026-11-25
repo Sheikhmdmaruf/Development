@@ -244,6 +244,10 @@ public class CalendarEvent
     public int CalendarListId { get; set; }
     public CalendarList? Calendar { get; set; }
     [Required, StringLength(200)] public string Title { get; set; } = "";
+    /// <summary>Short line under the title (e.g. "Kick-off with Acme").</summary>
+    [StringLength(200)] public string? Subtitle { get; set; }
+    /// <summary>Cover image: an /uploads/… path from the Media library, or an https link.</summary>
+    [StringLength(500)] public string? ImageUrl { get; set; }
     [StringLength(4000)] public string? Description { get; set; }
     [StringLength(300)] public string? Location { get; set; }
     public DateTime Start { get; set; }
